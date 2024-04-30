@@ -121,3 +121,5 @@ mapsplatformSescretsPlugin = { id = "com.google.android.libraries.mapsplatform.s
 # Convention plugins
 runique-android-application = { id = "runique.android.application", version = "unspecified" }
 runique-android-application-compose = { id = "runique.android.application.compose", version = "unspecified" }
+runique-android-library = { id = "runique.android.library", version = "unspecified" }
+runique-android-library-compose = { id = "runique.android.library.compose", version = "unspecified" }
