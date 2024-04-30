@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_disk_full">Failed to save the item, because your disk is full.</string>
+    <string name="error_request_timeout">The request timed out.</string>
+    <string name="error_too_many_requests">Too many requests.</string>
+    <string name="error_no_internet">No internet connection.</string>
+    <string name="error_payload_too_large">The file is too large for upload.</string>
+    <string name="error_server_error">Something went wrong.</string>
+    <string name="error_serialization_error">Wrong data to parse.</string>
+    <string name="error_unknown_error">Unknown error occured.</string>
+</resources>
