@@ -23,12 +23,12 @@ val DarkColorScheme = darkColorScheme(
 )
 
 val LightColorScheme = darkColorScheme(
-    primary = RuniqueBlue,
+    primary = RuniqueGreen,
     background = RuniqueWhite,
     surface = RuniqueGray5,
     secondary = RuniqueBlack,
     tertiary = RuniqueBlack,
-    primaryContainer = RuniqueBlue30,
+    primaryContainer = RuniqueGreen30,
     onPrimary = RuniqueWhite,
     onBackground = RuniqueBlack,
     onSurface = RuniqueBlack,
