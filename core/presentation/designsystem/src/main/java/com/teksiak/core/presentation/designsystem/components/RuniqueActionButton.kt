@@ -21,7 +21,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.teksiak.core.presentation.designsystem.RuniqueBlack
-import com.teksiak.core.presentation.designsystem.RuniqueBlue
 import com.teksiak.core.presentation.designsystem.RuniqueGray
 
 @Composable
