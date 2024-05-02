@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
@@ -74,6 +76,7 @@ private fun RegisterScreen(
     GradientBackground {
         Column(
             modifier = Modifier
+                .imePadding()
                 .verticalScroll(rememberScrollState())
                 .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 32.dp)
@@ -136,7 +139,7 @@ private fun RegisterScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             RuniquePasswordTextField(
-                state = state.email,
+                state = state.password,
                 isPasswordVisible = state.isPasswordVisible,
                 onTogglePasswordVisibility = {
                     onAction(RegisterAction.OnTogglePasswordVisibilityClick)
@@ -184,7 +187,7 @@ private fun RegisterScreen(
             RuniqueActionButton(
                 text = stringResource(id = R.string.register),
                 isLoading = state.isRegistering,
-                enabled = state.passwordValidationState.isValid,
+                enabled = state.canRegister,
                 onClick = {
                     onAction(RegisterAction.OnRegisterClick)
                 },
@@ -200,7 +203,7 @@ fun PasswordRequirement(
     modifier: Modifier = Modifier
 ) {
     val iconColor by animateColorAsState(
-        targetValue = if (isValid) RuniqueGreen else RuniqueDarkRed,
+        targetValue = if (isValid) MaterialTheme.colorScheme.primary else RuniqueDarkRed,
         label = "Icon color"
     )
 
@@ -213,6 +216,7 @@ fun PasswordRequirement(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
+                modifier = Modifier.size(12.dp),
                 imageVector = if (isValid) CheckIcon else CrossIcon,
                 contentDescription = null,
                 tint = iconColor
@@ -234,9 +238,9 @@ private fun RegisterScreenPreview() {
         RegisterScreen(
             state = RegisterState(
                 passwordValidationState = PasswordValidationState(
-                    hasMinLength = true,
+                    hasMinLength = false,
                     hasNumber = true,
-                    hasLowerCaseCharacter = true,
+                    hasLowerCaseCharacter = false,
                     hasUpperCaseCharacter = true
                 ),
             ),

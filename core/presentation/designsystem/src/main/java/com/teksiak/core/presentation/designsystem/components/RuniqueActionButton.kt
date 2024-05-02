@@ -1,5 +1,8 @@
 package com.teksiak.core.presentation.designsystem.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -15,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -31,13 +35,19 @@ fun RuniqueActionButton(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) {
+    val animatedButtonColor by animateColorAsState(
+        targetValue = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+        animationSpec = tween(100, 0, LinearEasing),
+        label = ""
+    )
+
     Button(
         onClick = onClick,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = animatedButtonColor,
             contentColor = MaterialTheme.colorScheme.onPrimary,
-            disabledContainerColor = RuniqueGray,
+            disabledContainerColor = animatedButtonColor,
             disabledContentColor = RuniqueBlack
         ),
         shape = RoundedCornerShape(100f),

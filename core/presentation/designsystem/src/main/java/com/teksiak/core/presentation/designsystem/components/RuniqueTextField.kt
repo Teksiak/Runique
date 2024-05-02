@@ -2,6 +2,9 @@
 
 package com.teksiak.core.presentation.designsystem.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -58,6 +61,25 @@ fun RuniqueTextField(
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = if(isFocused) {
+            MaterialTheme.colorScheme.surfaceContainer
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
+        animationSpec = tween(200, 0, LinearEasing),
+        label = ""
+    )
+    val animatedBorderColor by animateColorAsState(
+        targetValue = if(isFocused) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            Color.Transparent
+        },
+        animationSpec = tween(200, 0, LinearEasing),
+        label = ""
+    )
+
     Column(
         modifier = modifier
     ) {
@@ -100,20 +122,10 @@ fun RuniqueTextField(
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
-                .background(
-                    if (isFocused) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
-                    } else {
-                        MaterialTheme.colorScheme.surface
-                    }
-                )
+                .background(animatedBackgroundColor)
                 .border(
                     width = 1.dp,
-                    color = if (isFocused) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        Color.Transparent
-                    },
+                    color = animatedBorderColor,
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(12.dp)
@@ -152,9 +164,9 @@ fun RuniqueTextField(
                         Icon(
                             imageVector = endIcon,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onBackground,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
-                                .padding(start = 8.dp)
+                                .padding(start = 8.dp, end = 8.dp)
                         )
                     }
                 }

@@ -20,6 +20,8 @@ val DarkColorScheme = darkColorScheme(
     onBackground = RuniqueWhite,
     onSurface = RuniqueWhite,
     onSurfaceVariant = RuniqueGray,
+    surfaceVariant = RuniqueGray,
+    surfaceContainer = RuniqueDarkGreen,
     error = RuniqueDarkRed,
 )
 
@@ -34,13 +36,15 @@ val LightColorScheme = darkColorScheme(
     onBackground = RuniqueBlack,
     onSurface = RuniqueBlack,
     onSurfaceVariant = RuniqueGray,
+    surfaceVariant = RuniqueGray40,
+    surfaceContainer = RuniqueLightBlue,
     error = RuniqueDarkRed,
 )
 
 @Composable
 fun RuniqueTheme(
-//    darkTheme: Boolean = isSystemInDarkTheme(),
-    darkTheme: Boolean = true,
+    darkTheme: Boolean = isSystemInDarkTheme(),
+//    darkTheme: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

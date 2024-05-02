@@ -2,6 +2,9 @@
 
 package com.teksiak.core.presentation.designsystem.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -64,6 +67,25 @@ fun RuniquePasswordTextField(
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = if(isFocused) {
+            MaterialTheme.colorScheme.surfaceContainer
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
+        animationSpec = tween(200, 0, LinearEasing),
+        label = ""
+    )
+    val animatedBorderColor by animateColorAsState(
+        targetValue = if(isFocused) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            Color.Transparent
+        },
+        animationSpec = tween(200, 0, LinearEasing),
+        label = ""
+    )
+
     Column(
         modifier = modifier
     ) {
@@ -84,9 +106,9 @@ fun RuniquePasswordTextField(
         BasicSecureTextField(
             state = state,
             textObfuscationMode = if(isPasswordVisible) {
-                TextObfuscationMode.RevealLastTyped
+                TextObfuscationMode.Visible
             } else {
-                TextObfuscationMode.Hidden
+                TextObfuscationMode.RevealLastTyped
             },
             keyboardType = KeyboardType.Password,
             textStyle = LocalTextStyle.current.copy(
@@ -95,20 +117,10 @@ fun RuniquePasswordTextField(
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
-                .background(
-                    if (isFocused) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
-                    } else {
-                        MaterialTheme.colorScheme.surface
-                    }
-                )
+                .background(animatedBackgroundColor)
                 .border(
                     width = 1.dp,
-                    color = if (isFocused) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        Color.Transparent
-                    },
+                    color = animatedBorderColor,
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(horizontal = 12.dp)
