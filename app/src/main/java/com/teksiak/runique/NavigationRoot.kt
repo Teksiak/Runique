@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.teksiak.auth.presentation.intro.IntroScreenRoot
+import com.teksiak.auth.presentation.login.LoginScreenRoot
 import com.teksiak.auth.presentation.register.RegisterScreenRoot
 
 sealed interface Routes {
@@ -17,6 +18,11 @@ sealed interface Routes {
         const val INTRO = "intro"
         const val REGISTER = "register"
         const val LOGIN = "login"
+    }
+
+    object Run {
+        const val NAV_ROUTE = "run"
+        const val HOME = "home"
     }
 }
 
@@ -61,13 +67,35 @@ private fun NavGraphBuilder.authGraph(navController: NavHostController) {
                     }
                 },
                 onSuccessfulRegistration = {
-                    navController.navigate(Routes.Auth.LOGIN)
+                    navController.navigate(Routes.Auth.LOGIN) {
+                        popUpTo(Routes.Auth.REGISTER) {
+                            inclusive = true
+                        }
+                    }
                 },
                 snackbarHostState = sharedSnackbarHostState
             )
         }
         composable(Routes.Auth.LOGIN) {
-            Text(text = "Login")
+            LoginScreenRoot(
+                onSignUpClick = {
+                    navController.navigate(Routes.Auth.REGISTER) {
+                        popUpTo(Routes.Auth.LOGIN) {
+                            inclusive = true
+                            saveState = true
+                        }
+                        restoreState = true
+                    }
+                },
+                onSuccessfulLogin = {
+                    navController.navigate(Routes.Run.NAV_ROUTE) {
+                        popUpTo(Routes.Auth.NAV_ROUTE) {
+                            inclusive = true
+                        }
+                    }
+                },
+                snackbarHostState = sharedSnackbarHostState
+            )
         }
     }
 }

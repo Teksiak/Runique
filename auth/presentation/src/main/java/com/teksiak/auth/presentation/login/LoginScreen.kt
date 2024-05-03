@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalFoundationApi::class)
 
-package com.teksiak.auth.presentation.register
+package com.teksiak.auth.presentation.login
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.sp
 import com.teksiak.auth.domain.PasswordValidationState
 import com.teksiak.auth.domain.UserDataValidator
 import com.teksiak.auth.presentation.R
-import com.teksiak.auth.presentation.login.LoginAction
 import com.teksiak.core.presentation.designsystem.CheckIcon
 import com.teksiak.core.presentation.designsystem.CrossIcon
 import com.teksiak.core.presentation.designsystem.EmailIcon
@@ -64,18 +63,18 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun RegisterScreenRoot(
-    onSignInClick: () -> Unit,
-    onSuccessfulRegistration: () -> Unit,
-    viewModel: RegisterViewModel = koinViewModel(),
+fun LoginScreenRoot(
+    onSignUpClick: () -> Unit,
+    onSuccessfulLogin: () -> Unit,
+    viewModel: LoginViewModel = koinViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
-    ObserveAsEvents(viewModel.events) {event ->
+    ObserveAsEvents(viewModel.events) { event ->
         when(event) {
-            is RegisterEvent.Error -> {
+            is LoginEvent.Error -> {
                 keyboardController?.hide()
                 scope.launch {
                     snackbarHostState.showSnackbar(
@@ -84,12 +83,12 @@ fun RegisterScreenRoot(
                     )
                 }
             }
-            RegisterEvent.RegistrationSuccess -> {
+            LoginEvent.LoginSuccess -> {
                 keyboardController?.hide()
-                onSuccessfulRegistration()
+                onSuccessfulLogin()
                 scope.launch {
                     snackbarHostState.showSnackbar(
-                        message = context.getString(R.string.registration_successful),
+                        message = context.getString(R.string.youre_logged_in),
                         duration = SnackbarDuration.Short
                     )
                 }
@@ -103,11 +102,11 @@ fun RegisterScreenRoot(
             .imePadding()
             .fillMaxSize()
     ) {
-        RegisterScreen(
+        LoginScreen(
             state = viewModel.state,
             onAction = { action ->
                 when(action) {
-                    RegisterAction.OnSignInClick -> onSignInClick()
+                    LoginAction.OnSignUpClick -> onSignUpClick()
                     else -> Unit
                 }
                 viewModel.onAction(action)
@@ -131,9 +130,9 @@ fun RegisterScreenRoot(
 }
 
 @Composable
-private fun RegisterScreen(
-    state: RegisterState,
-    onAction: (RegisterAction) -> Unit,
+private fun LoginScreen(
+    state: LoginState,
+    onAction: (LoginAction) -> Unit,
 ) {
     GradientBackground {
         Column(
@@ -144,44 +143,14 @@ private fun RegisterScreen(
                 .padding(top = 32.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.create_account),
+                text = stringResource(id = R.string.hi_there),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground,
             )
-            val annotatedString = buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        fontFamily = Poppins,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                ) {
-                    append(stringResource(id = R.string.already_have_an_account) + " ")
-                    pushStringAnnotation(
-                        tag = "clickable_text",
-                        annotation = stringResource(id = R.string.sign_in)
-                    )
-                    withStyle(
-                        style = SpanStyle(
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontFamily = Poppins
-                        )
-                    ) {
-                        append(stringResource(id = R.string.sign_in))
-                    }
-                }
-            }
-            ClickableText(
-                text = annotatedString,
-                onClick = { offset ->
-                    annotatedString.getStringAnnotations(
-                        tag = "clickable_text",
-                        start = offset,
-                        end = offset
-                    ).firstOrNull()?.let {
-                        onAction(RegisterAction.OnSignInClick)
-                    }
-                }
+            Text(
+                text = stringResource(id = R.string.login_welcome),
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.height(48.dp))
 
@@ -191,10 +160,6 @@ private fun RegisterScreen(
                 hint = stringResource(id = R.string.example_email),
                 title = stringResource(id = R.string.email),
                 startIcon = EmailIcon,
-                endIcon = if (state.isEmailValid) {
-                    CheckIcon
-                } else null,
-                additionalInfo = stringResource(id = R.string.must_be_valid_email),
                 keyboardType = KeyboardType.Email,
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -203,90 +168,66 @@ private fun RegisterScreen(
                 state = state.password,
                 isPasswordVisible = state.isPasswordVisible,
                 onTogglePasswordVisibility = {
-                    onAction(RegisterAction.OnTogglePasswordVisibility)
+                    onAction(LoginAction.OnTogglePasswordVisibility)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 hint = stringResource(id = R.string.password),
                 title = stringResource(id = R.string.password),
             )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            PasswordRequirement(
-                text = stringResource(
-                    id = R.string.at_least_x_characters,
-                    UserDataValidator.MIN_PASSWORD_LENGTH
-                ),
-                isValid = state.passwordValidationState.hasMinLength,
-                modifier = Modifier.padding(start = 8.dp)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            PasswordRequirement(
-                text = stringResource(
-                    id = R.string.at_least_one_number
-                ),
-                isValid = state.passwordValidationState.hasNumber,
-                modifier = Modifier.padding(start = 8.dp)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            PasswordRequirement(
-                text = stringResource(
-                    id = R.string.contains_lowercase_characters,
-                ),
-                isValid = state.passwordValidationState.hasLowerCaseCharacter,
-                modifier = Modifier.padding(start = 8.dp)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            PasswordRequirement(
-                text = stringResource(
-                    id = R.string.contains_uppercase_characters,
-                ),
-                isValid = state.passwordValidationState.hasUpperCaseCharacter,
-                modifier = Modifier.padding(start = 8.dp)
-            )
             Spacer(modifier = Modifier.height(32.dp))
 
             RuniqueActionButton(
-                text = stringResource(id = R.string.register),
-                isLoading = state.isRegistering,
-                enabled = state.canRegister,
+                text = stringResource(id = R.string.login),
+                isLoading = state.isLoggingIn,
+                enabled = state.canLogin,
                 onClick = {
-                    onAction(RegisterAction.OnRegisterClick)
+                    onAction(LoginAction.OnLoginClick)
                 },
             )
+            Spacer(modifier = Modifier.height(32.dp))
         }
-    }
-}
-
-@Composable
-fun PasswordRequirement(
-    text: String,
-    isValid: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val iconColor by animateColorAsState(
-        targetValue = if (isValid) MaterialTheme.colorScheme.primary else RuniqueDarkRed,
-        label = "Icon color"
-    )
-
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
         ) {
-            Icon(
-                modifier = Modifier.size(12.dp),
-                imageVector = if (isValid) CheckIcon else CrossIcon,
-                contentDescription = null,
-                tint = iconColor
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = text,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp
+            val annotatedString = buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        fontFamily = Poppins,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                ) {
+                    append(stringResource(id = R.string.dont_have_an_account) + " ")
+                    pushStringAnnotation(
+                        tag = "clickable_text",
+                        annotation = stringResource(id = R.string.sign_up)
+                    )
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontFamily = Poppins
+                        )
+                    ) {
+                        append(stringResource(id = R.string.sign_up))
+                    }
+                }
+            }
+            ClickableText(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 48.dp),
+                text = annotatedString,
+                onClick = { offset ->
+                    annotatedString.getStringAnnotations(
+                        tag = "clickable_text",
+                        start = offset,
+                        end = offset
+                    ).firstOrNull()?.let {
+                        onAction(LoginAction.OnSignUpClick)
+                    }
+                }
             )
         }
     }
@@ -294,17 +235,10 @@ fun PasswordRequirement(
 
 @Preview
 @Composable
-private fun RegisterScreenPreview() {
+private fun LoginScreenPreview() {
     RuniqueTheme {
-        RegisterScreen(
-            state = RegisterState(
-                passwordValidationState = PasswordValidationState(
-                    hasMinLength = false,
-                    hasNumber = true,
-                    hasLowerCaseCharacter = false,
-                    hasUpperCaseCharacter = true
-                ),
-            ),
+        LoginScreen(
+            state = LoginState(),
             onAction = {},
         )
     }
