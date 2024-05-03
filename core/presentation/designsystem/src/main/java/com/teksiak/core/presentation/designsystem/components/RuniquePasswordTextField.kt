@@ -123,7 +123,7 @@ fun RuniquePasswordTextField(
                     color = animatedBorderColor,
                     shape = RoundedCornerShape(16.dp)
                 )
-                .padding(horizontal = 12.dp)
+                .padding(start = 12.dp, end = 6.dp)
                 .onFocusChanged {
                     isFocused = it.isFocused
                 },
@@ -155,7 +155,9 @@ fun RuniquePasswordTextField(
                     }
                     IconButton(
                         onClick = onTogglePasswordVisibility,
-                        modifier = Modifier.minimumInteractiveComponentSize()
+                        modifier = Modifier
+                            .minimumInteractiveComponentSize()
+                            .padding(start = 8.dp)
                     ) {
                         Icon(
                             imageVector = if(isPasswordVisible) EyeOpenedIcon else EyeClosedIcon,
@@ -165,8 +167,6 @@ fun RuniquePasswordTextField(
                                 stringResource(id = R.string.show_password)
                             },
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier
-                                .padding(start = 8.dp)
                         )
                     }
                 }

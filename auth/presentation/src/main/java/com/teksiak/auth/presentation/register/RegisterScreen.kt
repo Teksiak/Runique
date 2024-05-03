@@ -2,9 +2,9 @@
 
 package com.teksiak.auth.presentation.register
 
-import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +21,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -99,27 +100,44 @@ fun RegisterScreenRoot(
     }
 
 
-    RegisterScreen(
-        snackbarHostState = snackbarHostState,
-        state = viewModel.state,
-        onAction = viewModel::onAction
-    )
+    Box(
+        modifier = Modifier
+            .imePadding()
+            .fillMaxSize()
+    ) {
+        RegisterScreen(
+            state = viewModel.state,
+            onAction = viewModel::onAction
+        )
+
+        SnackbarHost(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            hostState = snackbarHostState,
+            snackbar = { snackbarData ->
+                Snackbar(
+                    snackbarData = snackbarData,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    containerColor = RuniqueDarkRed,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                )
+            },
+        )
+    }
 }
 
 @Composable
 private fun RegisterScreen(
-    snackbarHostState: SnackbarHostState,
     state: RegisterState,
     onAction: (RegisterAction) -> Unit,
 ) {
     GradientBackground {
         Column(
             modifier = Modifier
-                .imePadding()
                 .verticalScroll(rememberScrollState())
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 32.dp)
-                .padding(top = 16.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .padding(top = 32.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.create_account),
@@ -232,19 +250,6 @@ private fun RegisterScreen(
                 },
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
-        SnackbarHost(
-            hostState = snackbarHostState,
-            snackbar = { snackbarData ->
-                Snackbar(
-                    snackbarData = snackbarData,
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    containerColor = RuniqueDarkRed.copy(alpha = 0.6f),
-                    contentColor = MaterialTheme.colorScheme.onSurface,
-                )
-            },
-        )
     }
 }
 
@@ -288,7 +293,6 @@ fun PasswordRequirement(
 private fun RegisterScreenPreview() {
     RuniqueTheme {
         RegisterScreen(
-            snackbarHostState = SnackbarHostState(),
             state = RegisterState(
                 passwordValidationState = PasswordValidationState(
                     hasMinLength = false,

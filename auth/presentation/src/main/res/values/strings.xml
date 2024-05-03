@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="runique">Runique\n</string>
+    <string name="runique">Runique</string>
     <string name="intro_welcome">Welcome to Runique!</string>
     <string name="intro_description">Track your runs, set your goals and achieve fitness milestones with our intuitive app.</string>
     <string name="sign_up">Sign up</string>
@@ -16,6 +16,6 @@
     <string name="contains_lowercase_characters">Contains lowercase character</string>
     <string name="contains_uppercase_characters">Contains uppercase character</string>
     <string name="register">Register</string>
-    <string name="error_email_exists">Specified email address is already in use!</string>
+    <string name="error_email_exists">Specified email is already in use!</string>
     <string name="registration_successful">Registration successful! You can log in now.</string>
 </resources>
