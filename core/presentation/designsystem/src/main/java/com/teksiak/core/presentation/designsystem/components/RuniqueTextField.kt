@@ -67,8 +67,8 @@ fun RuniqueTextField(
         } else {
             MaterialTheme.colorScheme.surface
         },
-        animationSpec = tween(200, 0, LinearEasing),
-        label = ""
+        animationSpec = tween(100, 0, LinearEasing),
+        label = "Background color"
     )
     val animatedBorderColor by animateColorAsState(
         targetValue = if(isFocused) {
@@ -76,8 +76,8 @@ fun RuniqueTextField(
         } else {
             Color.Transparent
         },
-        animationSpec = tween(200, 0, LinearEasing),
-        label = ""
+        animationSpec = tween(100, 0, LinearEasing),
+        label = "Border color"
     )
 
     Column(
