@@ -16,13 +16,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -51,39 +59,48 @@ import com.teksiak.core.presentation.designsystem.components.RuniqueActionButton
 import com.teksiak.core.presentation.designsystem.components.RuniquePasswordTextField
 import com.teksiak.core.presentation.designsystem.components.RuniqueTextField
 import com.teksiak.core.presentation.ui.ObserveAsEvents
+import com.teksiak.core.presentation.ui.UiText
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RegisterScreenRoot(
     onSignInClick: () -> Unit,
     onSuccessfulRegistration: () -> Unit,
-    viewModel: RegisterViewModel = koinViewModel()
+    viewModel: RegisterViewModel = koinViewModel(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
     ObserveAsEvents(viewModel.events) {event ->
         when(event) {
             is RegisterEvent.Error -> {
                 keyboardController?.hide()
-                Toast.makeText(
-                    context,
-                    event.error.asString(context),
-                    Toast.LENGTH_SHORT
-                ).show()
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = event.error.asString(context),
+                        duration = SnackbarDuration.Short
+                    )
+                }
             }
             RegisterEvent.RegistrationSuccess -> {
                 keyboardController?.hide()
-                Toast.makeText(
-                    context,
-                    R.string.registration_successful,
-                    Toast.LENGTH_SHORT
-                ).show()
                 onSuccessfulRegistration()
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.registration_successful),
+                        duration = SnackbarDuration.Short
+                    )
+                }
             }
         }
     }
 
+
     RegisterScreen(
+        snackbarHostState = snackbarHostState,
         state = viewModel.state,
         onAction = viewModel::onAction
     )
@@ -91,6 +108,7 @@ fun RegisterScreenRoot(
 
 @Composable
 private fun RegisterScreen(
+    snackbarHostState: SnackbarHostState,
     state: RegisterState,
     onAction: (RegisterAction) -> Unit,
 ) {
@@ -214,6 +232,19 @@ private fun RegisterScreen(
                 },
             )
         }
+        Spacer(modifier = Modifier.weight(1f))
+        SnackbarHost(
+            hostState = snackbarHostState,
+            snackbar = { snackbarData ->
+                Snackbar(
+                    snackbarData = snackbarData,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    containerColor = RuniqueDarkRed.copy(alpha = 0.6f),
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                )
+            },
+        )
     }
 }
 
@@ -257,6 +288,7 @@ fun PasswordRequirement(
 private fun RegisterScreenPreview() {
     RuniqueTheme {
         RegisterScreen(
+            snackbarHostState = SnackbarHostState(),
             state = RegisterState(
                 passwordValidationState = PasswordValidationState(
                     hasMinLength = false,

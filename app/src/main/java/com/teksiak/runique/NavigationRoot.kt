@@ -1,5 +1,6 @@
 package com.teksiak.runique
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
@@ -36,6 +37,8 @@ private fun NavGraphBuilder.authGraph(navController: NavHostController) {
         route = Routes.Auth.NAV_ROUTE,
         startDestination = Routes.Auth.INTRO
     ) {
+        val sharedSnackbarHostState = SnackbarHostState()
+
         composable(Routes.Auth.INTRO) {
             IntroScreenRoot(
                 onSignUpClick = {
@@ -59,7 +62,8 @@ private fun NavGraphBuilder.authGraph(navController: NavHostController) {
                 },
                 onSuccessfulRegistration = {
                     navController.navigate(Routes.Auth.LOGIN)
-                }
+                },
+                snackbarHostState = sharedSnackbarHostState
             )
         }
         composable(Routes.Auth.LOGIN) {
