@@ -34,11 +34,12 @@ sealed interface Routes {
 
 @Composable
 fun NavigationRoot(
-    navController: NavHostController
+    navController: NavHostController,
+    isLoggedIn: Boolean
 ) {
     NavHost(
         navController = navController,
-        startDestination = Routes.Auth.NAV_ROUTE
+        startDestination = if(isLoggedIn) Routes.Run.NAV_ROUTE else Routes.Auth.NAV_ROUTE
     ) {
         authGraph(navController)
         runGraph(navController)

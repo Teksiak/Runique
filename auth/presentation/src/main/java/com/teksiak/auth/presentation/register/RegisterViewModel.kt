@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalFoundationApi::class)
+@file:Suppress("OPT_IN_USAGE_FUTURE_ERROR")
 
 package com.teksiak.auth.presentation.register
 
