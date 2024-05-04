@@ -60,13 +60,14 @@ import com.teksiak.core.presentation.designsystem.components.RuniqueActionButton
 import com.teksiak.core.presentation.designsystem.components.RuniquePasswordTextField
 import com.teksiak.core.presentation.designsystem.components.RuniqueTextField
 import com.teksiak.core.presentation.ui.ObserveAsEvents
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RegisterScreenRoot(
     onSignInClick: () -> Unit,
-    onSuccessfulRegistration: () -> Unit,
+    onSuccessfulRegistration: (SnackbarHostState) -> Unit,
     viewModel: RegisterViewModel = koinViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
@@ -86,13 +87,7 @@ fun RegisterScreenRoot(
             }
             RegisterEvent.RegistrationSuccess -> {
                 keyboardController?.hide()
-                onSuccessfulRegistration()
-                scope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = context.getString(R.string.registration_successful),
-                        duration = SnackbarDuration.Short
-                    )
-                }
+                onSuccessfulRegistration(snackbarHostState)
             }
         }
     }
@@ -118,12 +113,15 @@ fun RegisterScreenRoot(
             modifier = Modifier.align(Alignment.BottomCenter),
             hostState = snackbarHostState,
             snackbar = { snackbarData ->
+                val isErrorSnackbar =
+                    snackbarData.visuals.message != stringResource(id = R.string.registration_successful)
+                            && snackbarData.visuals.message != stringResource(id = R.string.youre_logged_in)
                 Snackbar(
                     snackbarData = snackbarData,
                     modifier = Modifier.padding(bottom = 8.dp),
                     shape = RoundedCornerShape(16.dp),
-                    containerColor = RuniqueDarkRed,
-                    contentColor = RuniqueWhite,
+                    containerColor = if(isErrorSnackbar) RuniqueDarkRed else MaterialTheme.colorScheme.primary,
+                    contentColor = if(isErrorSnackbar) RuniqueWhite else MaterialTheme.colorScheme.onPrimary,
                 )
             },
         )

@@ -73,7 +73,7 @@ fun LoginScreenRoot(
     val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
     ObserveAsEvents(viewModel.events) { event ->
-        when(event) {
+        when (event) {
             is LoginEvent.Error -> {
                 keyboardController?.hide()
                 scope.launch {
@@ -83,6 +83,7 @@ fun LoginScreenRoot(
                     )
                 }
             }
+
             LoginEvent.LoginSuccess -> {
                 keyboardController?.hide()
                 onSuccessfulLogin()
@@ -105,7 +106,7 @@ fun LoginScreenRoot(
         LoginScreen(
             state = viewModel.state,
             onAction = { action ->
-                when(action) {
+                when (action) {
                     LoginAction.OnSignUpClick -> onSignUpClick()
                     else -> Unit
                 }
@@ -117,12 +118,15 @@ fun LoginScreenRoot(
             modifier = Modifier.align(Alignment.BottomCenter),
             hostState = snackbarHostState,
             snackbar = { snackbarData ->
+                val isErrorSnackbar =
+                    snackbarData.visuals.message != stringResource(id = R.string.registration_successful)
+                            && snackbarData.visuals.message != stringResource(id = R.string.youre_logged_in)
                 Snackbar(
                     snackbarData = snackbarData,
                     modifier = Modifier.padding(bottom = 8.dp),
                     shape = RoundedCornerShape(16.dp),
-                    containerColor = RuniqueDarkRed,
-                    contentColor = RuniqueWhite,
+                    containerColor = if (isErrorSnackbar) RuniqueDarkRed else MaterialTheme.colorScheme.primary,
+                    contentColor = if (isErrorSnackbar) RuniqueWhite else MaterialTheme.colorScheme.onPrimary,
                 )
             },
         )
