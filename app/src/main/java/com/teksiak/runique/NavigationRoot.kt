@@ -2,7 +2,6 @@ package com.teksiak.runique
 
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
@@ -14,6 +13,7 @@ import com.teksiak.auth.presentation.R
 import com.teksiak.auth.presentation.intro.IntroScreenRoot
 import com.teksiak.auth.presentation.login.LoginScreenRoot
 import com.teksiak.auth.presentation.register.RegisterScreenRoot
+import com.teksiak.run.presentation.run_overview.RunOverviewScreenRoot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -123,7 +123,7 @@ private fun NavGraphBuilder.runGraph(navController: NavHostController) {
         startDestination = Routes.Run.HOME
     ) {
         composable(Routes.Run.HOME) {
-            Text(text = "Run home")
+            RunOverviewScreenRoot()
         }
     }
 }
