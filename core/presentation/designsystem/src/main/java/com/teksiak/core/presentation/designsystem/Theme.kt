@@ -43,8 +43,8 @@ val LightColorScheme = darkColorScheme(
 
 @Composable
 fun RuniqueTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-//    darkTheme: Boolean = true,
+//    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
