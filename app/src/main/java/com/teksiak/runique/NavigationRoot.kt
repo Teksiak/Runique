@@ -2,6 +2,7 @@ package com.teksiak.runique
 
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
@@ -40,6 +41,7 @@ fun NavigationRoot(
         startDestination = Routes.Auth.NAV_ROUTE
     ) {
         authGraph(navController)
+        runGraph(navController)
     }
 }
 
@@ -110,6 +112,17 @@ private fun NavGraphBuilder.authGraph(navController: NavHostController) {
                 },
                 snackbarHostState = sharedSnackbarHostState
             )
+        }
+    }
+}
+
+private fun NavGraphBuilder.runGraph(navController: NavHostController) {
+    navigation(
+        route = Routes.Run.NAV_ROUTE,
+        startDestination = Routes.Run.HOME
+    ) {
+        composable(Routes.Run.HOME) {
+            Text(text = "Run home")
         }
     }
 }

@@ -17,6 +17,7 @@ import com.teksiak.core.domain.util.Result
 import com.teksiak.core.presentation.ui.UiText
 import com.teksiak.core.presentation.ui.asUiText
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -34,24 +35,17 @@ class RegisterViewModel(
     val events = eventChannel.receiveAsFlow()
 
     init {
-        state.email.textAsFlow()
-            .onEach { email ->
-                val isEmailValid = userDataValidator.isValidEmail(email.toString())
-                state = state.copy(
-                    isEmailValid = isEmailValid,
-                    canRegister = isEmailValid && state.passwordValidationState.isValid
-                )
-            }.launchIn(viewModelScope)
+        combine(state.email.textAsFlow(), state.password.textAsFlow()) { email, password ->
+            val isEmailValid = userDataValidator.isValidEmail(email.toString())
+            val passwordValidationState =
+                userDataValidator.validatePassword(password.toString())
 
-        state.password.textAsFlow()
-            .onEach { password ->
-                val passwordValidationState =
-                    userDataValidator.validatePassword(password.toString())
-                state = state.copy(
-                    passwordValidationState = passwordValidationState,
-                    canRegister = state.isEmailValid && passwordValidationState.isValid
-                )
-            }.launchIn(viewModelScope)
+            state = state.copy(
+                isEmailValid = isEmailValid,
+                passwordValidationState = passwordValidationState,
+                canRegister = isEmailValid && state.passwordValidationState.isValid
+            )
+        }.launchIn(viewModelScope)
     }
 
     fun onAction(action: RegisterAction) {
@@ -67,7 +61,7 @@ class RegisterViewModel(
     private fun register() {
         viewModelScope.launch {
             state = state.copy(isRegistering = true)
-            val result = authRepository.reigster(
+            val result = authRepository.register(
                 email = state.email.text.toString().trim(),
                 password = state.password.text.toString()
             )

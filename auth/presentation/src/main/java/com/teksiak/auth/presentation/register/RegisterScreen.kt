@@ -16,12 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -46,21 +44,18 @@ import androidx.compose.ui.unit.sp
 import com.teksiak.auth.domain.PasswordValidationState
 import com.teksiak.auth.domain.UserDataValidator
 import com.teksiak.auth.presentation.R
-import com.teksiak.auth.presentation.login.LoginAction
 import com.teksiak.core.presentation.designsystem.CheckIcon
 import com.teksiak.core.presentation.designsystem.CrossIcon
 import com.teksiak.core.presentation.designsystem.EmailIcon
 import com.teksiak.core.presentation.designsystem.Poppins
 import com.teksiak.core.presentation.designsystem.RuniqueDarkRed
-import com.teksiak.core.presentation.designsystem.RuniqueGray
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
-import com.teksiak.core.presentation.designsystem.RuniqueWhite
 import com.teksiak.core.presentation.designsystem.components.GradientBackground
+import com.teksiak.core.presentation.designsystem.components.RuniqueMessageSnackbar
 import com.teksiak.core.presentation.designsystem.components.RuniqueActionButton
 import com.teksiak.core.presentation.designsystem.components.RuniquePasswordTextField
 import com.teksiak.core.presentation.designsystem.components.RuniqueTextField
 import com.teksiak.core.presentation.ui.ObserveAsEvents
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -81,7 +76,8 @@ fun RegisterScreenRoot(
                 scope.launch {
                     snackbarHostState.showSnackbar(
                         message = event.error.asString(context),
-                        duration = SnackbarDuration.Short
+                        duration = SnackbarDuration.Short,
+                        withDismissAction = true
                     )
                 }
             }
@@ -113,15 +109,12 @@ fun RegisterScreenRoot(
             modifier = Modifier.align(Alignment.BottomCenter),
             hostState = snackbarHostState,
             snackbar = { snackbarData ->
-                val isErrorSnackbar =
+                val isErrorMessage =
                     snackbarData.visuals.message != stringResource(id = R.string.registration_successful)
                             && snackbarData.visuals.message != stringResource(id = R.string.youre_logged_in)
-                Snackbar(
+                RuniqueMessageSnackbar(
                     snackbarData = snackbarData,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    containerColor = if(isErrorSnackbar) RuniqueDarkRed else MaterialTheme.colorScheme.primary,
-                    contentColor = if(isErrorSnackbar) RuniqueWhite else MaterialTheme.colorScheme.onPrimary,
+                    isErrorMessage = isErrorMessage,
                 )
             },
         )

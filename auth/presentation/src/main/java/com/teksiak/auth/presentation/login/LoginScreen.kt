@@ -2,32 +2,24 @@
 
 package com.teksiak.auth.presentation.login
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -43,18 +35,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.teksiak.auth.domain.PasswordValidationState
-import com.teksiak.auth.domain.UserDataValidator
 import com.teksiak.auth.presentation.R
-import com.teksiak.core.presentation.designsystem.CheckIcon
-import com.teksiak.core.presentation.designsystem.CrossIcon
 import com.teksiak.core.presentation.designsystem.EmailIcon
 import com.teksiak.core.presentation.designsystem.Poppins
-import com.teksiak.core.presentation.designsystem.RuniqueDarkRed
-import com.teksiak.core.presentation.designsystem.RuniqueGray
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
-import com.teksiak.core.presentation.designsystem.RuniqueWhite
 import com.teksiak.core.presentation.designsystem.components.GradientBackground
+import com.teksiak.core.presentation.designsystem.components.RuniqueMessageSnackbar
 import com.teksiak.core.presentation.designsystem.components.RuniqueActionButton
 import com.teksiak.core.presentation.designsystem.components.RuniquePasswordTextField
 import com.teksiak.core.presentation.designsystem.components.RuniqueTextField
@@ -79,7 +65,8 @@ fun LoginScreenRoot(
                 scope.launch {
                     snackbarHostState.showSnackbar(
                         message = event.error.asString(context),
-                        duration = SnackbarDuration.Short
+                        duration = SnackbarDuration.Short,
+                        withDismissAction = true
                     )
                 }
             }
@@ -90,7 +77,7 @@ fun LoginScreenRoot(
                 scope.launch {
                     snackbarHostState.showSnackbar(
                         message = context.getString(R.string.youre_logged_in),
-                        duration = SnackbarDuration.Short
+                        duration = SnackbarDuration.Short,
                     )
                 }
             }
@@ -118,17 +105,14 @@ fun LoginScreenRoot(
             modifier = Modifier.align(Alignment.BottomCenter),
             hostState = snackbarHostState,
             snackbar = { snackbarData ->
-                val isErrorSnackbar =
+                val isErrorMessage =
                     snackbarData.visuals.message != stringResource(id = R.string.registration_successful)
                             && snackbarData.visuals.message != stringResource(id = R.string.youre_logged_in)
-                Snackbar(
+                RuniqueMessageSnackbar(
                     snackbarData = snackbarData,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    containerColor = if (isErrorSnackbar) RuniqueDarkRed else MaterialTheme.colorScheme.primary,
-                    contentColor = if (isErrorSnackbar) RuniqueWhite else MaterialTheme.colorScheme.onPrimary,
+                    isErrorMessage = isErrorMessage,
                 )
-            },
+            }
         )
     }
 }
@@ -188,7 +172,6 @@ private fun LoginScreen(
                     onAction(LoginAction.OnLoginClick)
                 },
             )
-            Spacer(modifier = Modifier.height(32.dp))
         }
         Box(
             modifier = Modifier
@@ -221,7 +204,7 @@ private fun LoginScreen(
             ClickableText(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 48.dp),
+                    .padding(bottom = 32.dp),
                 text = annotatedString,
                 onClick = { offset ->
                     annotatedString.getStringAnnotations(
