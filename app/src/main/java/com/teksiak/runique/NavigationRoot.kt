@@ -133,7 +133,11 @@ private fun NavGraphBuilder.runGraph(navController: NavHostController) {
             )
         }
         composable(Routes.Run.ACTIVE_RUN) {
-            ActiveRunScreenRoot()
+            ActiveRunScreenRoot(
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

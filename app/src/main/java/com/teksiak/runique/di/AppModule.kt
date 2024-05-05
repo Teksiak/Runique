@@ -8,6 +8,8 @@ import com.teksiak.auth.data.EmailPatternValidator
 import com.teksiak.auth.domain.PatternValidator
 import com.teksiak.auth.domain.UserDataValidator
 import com.teksiak.runique.MainViewModel
+import com.teksiak.runique.RuniqueApp
+import kotlinx.coroutines.CoroutineScope
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.singleOf
@@ -23,5 +25,9 @@ val appModule = module {
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
     }
+    single<CoroutineScope> {
+        (androidApplication() as RuniqueApp).applicationScope
+    }
+
     viewModelOf(::MainViewModel)
 }
