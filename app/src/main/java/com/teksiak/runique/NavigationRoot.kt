@@ -13,6 +13,7 @@ import com.teksiak.auth.presentation.R
 import com.teksiak.auth.presentation.intro.IntroScreenRoot
 import com.teksiak.auth.presentation.login.LoginScreenRoot
 import com.teksiak.auth.presentation.register.RegisterScreenRoot
+import com.teksiak.run.presentation.active_run.ActiveRunScreenRoot
 import com.teksiak.run.presentation.run_overview.RunOverviewScreenRoot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,9 @@ sealed interface Routes {
 
     object Run {
         const val NAV_ROUTE = "run"
-        const val HOME = "home"
+        const val RUN_OVERVIEW = "overview"
+        const val ACTIVE_RUN = "active_run"
+
     }
 }
 
@@ -120,10 +123,17 @@ private fun NavGraphBuilder.authGraph(navController: NavHostController) {
 private fun NavGraphBuilder.runGraph(navController: NavHostController) {
     navigation(
         route = Routes.Run.NAV_ROUTE,
-        startDestination = Routes.Run.HOME
+        startDestination = Routes.Run.RUN_OVERVIEW
     ) {
-        composable(Routes.Run.HOME) {
-            RunOverviewScreenRoot()
+        composable(Routes.Run.RUN_OVERVIEW) {
+            RunOverviewScreenRoot(
+                onStartRunClick = {
+                    navController.navigate(Routes.Run.ACTIVE_RUN)
+                }
+            )
+        }
+        composable(Routes.Run.ACTIVE_RUN) {
+            ActiveRunScreenRoot()
         }
     }
 }
