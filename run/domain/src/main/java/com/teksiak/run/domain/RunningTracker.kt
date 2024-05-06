@@ -38,15 +38,26 @@ class RunningTracker(
 
 
     val currentLocation = isObservingLocation
-        .flatMapLatest {isObservingLocation ->
+        .flatMapLatest { isObservingLocation ->
             if(isObservingLocation) {
-                locationObserver.observeLocation(1000)
+                locationObserver.observeLocation(500)
             } else flowOf()
         }
         .stateIn(applicationScope, SharingStarted.WhileSubscribed(), null)
 
     init {
         isTracking
+            .onEach {isTracking ->
+                if(!isTracking) {
+                    val newList = buildList {
+                        addAll(_runData.value.locations)
+                        add(emptyList<LocationTimestamp>())
+                    }.toList()
+                    _runData.update {
+                        it.copy(locations = newList)
+                    }
+                }
+            }
             .flatMapLatest { isTracking ->
                 if(isTracking) {
                     Timer.timeAndEmit()
