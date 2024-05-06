@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,8 +26,8 @@ fun RuniqueDialog(
     onDismiss: () -> Unit,
     description: String,
     modifier: Modifier = Modifier,
-    primaryAction: @Composable () -> Unit = {},
-    secondaryAction: @Composable () -> Unit = {}
+    primaryAction: @Composable RowScope.() -> Unit = {},
+    secondaryAction: @Composable RowScope.() -> Unit = {}
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Column(

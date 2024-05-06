@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
 import com.teksiak.core.presentation.designsystem.StartIcon
 import com.teksiak.core.presentation.designsystem.StopIcon
+import com.teksiak.core.presentation.designsystem.components.RuniqueActionButton
 import com.teksiak.core.presentation.designsystem.components.RuniqueDialog
 import com.teksiak.core.presentation.designsystem.components.RuniqueFloatingActionButton
 import com.teksiak.core.presentation.designsystem.components.RuniqueOutlinedActionButton
@@ -46,13 +47,7 @@ fun ActiveRunScreenRoot(
 ) {
     ActiveRunScreen(
         state = viewModel.state,
-        onAction = { action ->
-            when(action) {
-                ActiveRunAction.OnBackClick -> onBackClick()
-                else -> Unit
-            }
-            viewModel.onAction(action)
-        }
+        onAction = viewModel::onAction
     )
 }
 
@@ -126,7 +121,7 @@ private fun ActiveRunScreen(
         floatingActionButton = {
             RuniqueFloatingActionButton(
 //                modifier = Modifier.shadow(6.dp, CircleShape),
-                icon = if(state.shouldTrack) StopIcon else StartIcon,
+                icon = if (state.shouldTrack) StopIcon else StartIcon,
                 onClick = {
                     onAction(ActiveRunAction.OnToggleRunClick)
                 },
@@ -159,6 +154,36 @@ private fun ActiveRunScreen(
                     .fillMaxWidth()
             )
         }
+    }
+
+    if(!state.shouldTrack && state.hasStartedRunning) {
+        RuniqueDialog(
+            title = stringResource(id = R.string.running_is_paused),
+            onDismiss = {
+                onAction(ActiveRunAction.OnResumeRunClick)
+            },
+            description = stringResource(id = R.string.resume_or_finish_run),
+            primaryAction = {
+                RuniqueOutlinedActionButton(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(id = R.string.finish),
+                    isLoading = false,
+                    onClick = {
+                        onAction(ActiveRunAction.OnFinishRunClick)
+                    }
+                )
+            },
+            secondaryAction = {
+                RuniqueActionButton(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(id = R.string.resume),
+                    isLoading = false,
+                    onClick = {
+                        onAction(ActiveRunAction.OnResumeRunClick)
+                    }
+                )
+            }
+        )
     }
 
     if(state.showLocationPermissionRationale || state.showNotificationPermissionRationale) {
