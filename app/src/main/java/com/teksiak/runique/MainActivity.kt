@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
                     if(!viewModel.state.isCheckingAuth) {
                         NavigationRoot(
                             navController = navController,
-                            isLoggedIn = viewModel.state.isLoggedIn
+                            isLoggedIn = viewModel.state.isLoggedIn,
                         )
                     }
                 }

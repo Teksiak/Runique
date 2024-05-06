@@ -38,7 +38,7 @@ sealed interface Routes {
 @Composable
 fun NavigationRoot(
     navController: NavHostController,
-    isLoggedIn: Boolean
+    isLoggedIn: Boolean,
 ) {
     NavHost(
         navController = navController,
@@ -49,7 +49,9 @@ fun NavigationRoot(
     }
 }
 
-private fun NavGraphBuilder.authGraph(navController: NavHostController) {
+private fun NavGraphBuilder.authGraph(
+    navController: NavHostController,
+) {
     navigation(
         route = Routes.Auth.NAV_ROUTE,
         startDestination = Routes.Auth.INTRO
