@@ -8,12 +8,14 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.teksiak.auth.presentation.R
 import com.teksiak.auth.presentation.intro.IntroScreenRoot
 import com.teksiak.auth.presentation.login.LoginScreenRoot
 import com.teksiak.auth.presentation.register.RegisterScreenRoot
 import com.teksiak.run.presentation.active_run.ActiveRunScreenRoot
+import com.teksiak.run.presentation.active_run.service.ActiveRunService
 import com.teksiak.run.presentation.run_overview.RunOverviewScreenRoot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -134,10 +136,31 @@ private fun NavGraphBuilder.runGraph(navController: NavHostController) {
                 }
             )
         }
-        composable(Routes.Run.ACTIVE_RUN) {
+        composable(
+            route = Routes.Run.ACTIVE_RUN,
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "runique://active_run"
+                }
+            )
+        ) {
+            val context = LocalContext.current
             ActiveRunScreenRoot(
-                onBackClick = {
-                    navController.popBackStack()
+                onServiceToggle = { shouldServiceRun ->
+                    if(shouldServiceRun) {
+                        context.startService(
+                            ActiveRunService.createStartIntent(
+                                context = context,
+                                activityClass = MainActivity::class.java
+                            )
+                        )
+                    } else {
+                        context.startService(
+                            ActiveRunService.createStopIntent(
+                                context = context,
+                            )
+                        )
+                    }
                 }
             )
         }
