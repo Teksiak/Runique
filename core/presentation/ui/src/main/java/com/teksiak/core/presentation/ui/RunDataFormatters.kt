@@ -29,6 +29,14 @@ fun Double.toFormattedKm(): String {
     return "${this.roundToDecimals(2)} km"
 }
 
+fun Double.toFormattedKmh(): String {
+    return "${this.roundToDecimals(2)} km/h"
+}
+
+fun Int.toFormattedMeters(): String {
+    return "$this m"
+}
+
 private fun Double.roundToDecimals(decimalCount: Int): Double {
     val factor = 10f.pow(decimalCount)
     return round(this * factor) / factor
