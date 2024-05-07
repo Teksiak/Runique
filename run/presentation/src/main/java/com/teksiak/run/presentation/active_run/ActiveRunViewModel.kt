@@ -92,9 +92,7 @@ class ActiveRunViewModel(
                 )
             }
             ActiveRunAction.OnBackClick -> {
-                state = state.copy(
-                    shouldTrack = false
-                )
+
             }
             ActiveRunAction.OnToggleRunClick -> {
                 state = state.copy(

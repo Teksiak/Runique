@@ -43,13 +43,22 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ActiveRunScreenRoot(
+    onBackClick: () -> Unit,
     onServiceToggle: (shouldServiceRun: Boolean) -> Unit,
     viewModel: ActiveRunViewModel = koinViewModel()
 ) {
     ActiveRunScreen(
         state = viewModel.state,
         onServiceToggle = onServiceToggle,
-        onAction = viewModel::onAction
+        onAction = { action ->
+            when(action) {
+                is ActiveRunAction.OnBackClick -> {
+                    onBackClick()
+                }
+                else -> Unit
+            }
+            viewModel.onAction(action)
+        }
     )
 }
 

@@ -40,9 +40,8 @@ fun RunDataCard(
 ) {
     Column(
         modifier = modifier
-            .shadow(6.dp, RoundedCornerShape(14.dp))
             .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.90f))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

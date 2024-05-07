@@ -1,5 +1,7 @@
 package com.teksiak.runique
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -132,7 +134,9 @@ private fun NavGraphBuilder.runGraph(navController: NavHostController) {
         composable(Routes.Run.RUN_OVERVIEW) {
             RunOverviewScreenRoot(
                 onStartRunClick = {
-                    navController.navigate(Routes.Run.ACTIVE_RUN)
+                    navController.navigate(Routes.Run.ACTIVE_RUN) {
+                        restoreState = true
+                    }
                 }
             )
         }
@@ -146,6 +150,14 @@ private fun NavGraphBuilder.runGraph(navController: NavHostController) {
         ) {
             val context = LocalContext.current
             ActiveRunScreenRoot(
+                onBackClick = {
+                    navController.navigate(Routes.Run.RUN_OVERVIEW) {
+                        popUpTo(Routes.Run.ACTIVE_RUN) {
+                            inclusive = true
+                            saveState = true
+                        }
+                    }
+                },
                 onServiceToggle = { shouldServiceRun ->
                     if(shouldServiceRun) {
                         context.startService(

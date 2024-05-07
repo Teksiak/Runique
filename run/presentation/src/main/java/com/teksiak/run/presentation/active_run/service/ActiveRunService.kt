@@ -7,9 +7,11 @@ import android.app.Service
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import com.teksiak.core.presentation.ui.formatted
@@ -35,7 +37,10 @@ class ActiveRunService: Service() {
             .setSmallIcon(com.teksiak.core.presentation.designsystem.R.drawable.logo)
             .setOngoing(true)
             .setAutoCancel(false)
+            .setOnlyAlertOnce(true)
             .setContentTitle(getString(R.string.active_run))
+            .setChannelId(CHANNEL_ID)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
     }
 
     private val runningTracker by inject<RunningTracker>()
@@ -63,6 +68,11 @@ class ActiveRunService: Service() {
         if(!isServiceActive) {
             isServiceActive = true
             createNotificationChannel()
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val serviceIntent = Intent(applicationContext, ActiveRunService::class.java)
+                startForegroundService(serviceIntent)
+            }
 
             val activityIntent = Intent(applicationContext, activityClass).apply {
                 data = "runique://active_run".toUri()
