@@ -20,4 +20,5 @@
     <string name="resume_or_finish_run">Do you want to resume or finish this run?</string>
     <string name="resume">Resume</string>
     <string name="finish">Finish</string>
+    <string name="paused">" - Paused"</string>
 </resources>

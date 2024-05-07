@@ -19,7 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
@@ -30,9 +30,11 @@ class ActiveRunService: Service() {
         getSystemService<NotificationManager>()!!
     }
 
-    private val baseNotification by lazy {
+    private val activeRunNotification by lazy {
         NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setSmallIcon(com.teksiak.core.presentation.designsystem.R.drawable.logo)
+            .setOngoing(true)
+            .setAutoCancel(false)
             .setContentTitle(getString(R.string.active_run))
     }
 
@@ -71,10 +73,11 @@ class ActiveRunService: Service() {
                 getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE)
             }
 
-            val notification = baseNotification
+            val notification = activeRunNotification
                 .setContentText("00:00:00")
                 .setContentIntent(pendingIntent)
                 .build()
+
 
             startForeground(NOTIFICATION_ID, notification)
             updateNotification()
@@ -90,15 +93,19 @@ class ActiveRunService: Service() {
     }
 
     private fun updateNotification() {
-        runningTracker.elapsedTime
-            .onEach { elapsedTime ->
-                val notification = baseNotification
-                    .setContentText(elapsedTime.formatted())
-                    .build()
-
-                notificationManager.notify(NOTIFICATION_ID, notification)
+        combine(runningTracker.elapsedTime, runningTracker.isTracking) { elapsedTime, isTracking ->
+            if(isTracking) {
+                elapsedTime.formatted()
+            } else {
+                elapsedTime.formatted() + getString(R.string.paused)
             }
-            .launchIn(serviceScope)
+        }.onEach { contentText ->
+            val notification = activeRunNotification
+                .setContentText(contentText)
+                .build()
+
+            notificationManager.notify(NOTIFICATION_ID, notification)
+        }.launchIn(serviceScope)
     }
 
     private fun createNotificationChannel() {
