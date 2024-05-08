@@ -2,18 +2,11 @@
 
 package com.teksiak.run.presentation.run_overview.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +19,6 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,14 +26,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,16 +39,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import coil.compose.SubcomposeAsyncImage
 import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
@@ -70,11 +57,8 @@ import com.teksiak.run.presentation.R
 import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import com.teksiak.run.presentation.run_overview.model.RunDataUi
 import com.teksiak.run.presentation.run_overview.model.RunUi
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
+import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -84,7 +68,7 @@ fun RunListItem(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showDropdown by remember {
+    var showDeleteDropdown by remember {
         mutableStateOf(false)
     }
 
@@ -96,7 +80,7 @@ fun RunListItem(
                 .combinedClickable(
                     onClick = {},
                     onLongClick = {
-                        showDropdown = true
+                        showDeleteDropdown = true
                     }
                 )
                 .padding(16.dp),
@@ -121,68 +105,12 @@ fun RunListItem(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-            DropdownMenu(
-                expanded = showDropdown,
-                onDismissRequest = { showDropdown = false }
-            ) {
-                DropdownMenuItem(
-                    text = {
-                           Text(text = stringResource(id = R.string.delete))
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Delete,
-                            contentDescription = null,
-                        )
-                    },
-                    onClick = {
-                        onDeleteClick()
-                        showDropdown = false
-                    }
-                )
-            }
-//        AnimatedVisibility(
-//            visible = showDropdown,
-//            modifier = Modifier
-//                .align(Alignment.BottomCenter)
-//                .offset(y = 46.dp),
-//            enter = expandVertically(
-//                expandFrom = Alignment.CenterVertically,
-//                animationSpec = tween(300)
-//            ),
-//            exit = shrinkVertically(
-//                shrinkTowards = Alignment.CenterVertically,
-//                animationSpec = tween(300)
-//            )
-//        ) {
-//            Row(
-//                modifier = Modifier
-//                    .padding(horizontal = 16.dp)
-//                    .padding(top = 2.dp)
-//                    .fillMaxWidth()
-//                    .clip(RoundedCornerShape(8.dp))
-//                    .background(MaterialTheme.colorScheme.errorContainer)
-//                    .clickable {
-//                        onDeleteClick()
-//                        showDropdown = false
-//                    }
-//                    .padding(horizontal = 16.dp, vertical = 8.dp)
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Rounded.Delete,
-//                    contentDescription = null,
-//                    tint = MaterialTheme.colorScheme.error,
-//                )
-//                Spacer(modifier = Modifier.width(8.dp))
-//                Text(
-//                    text = stringResource(id = R.string.delete),
-//                    color = MaterialTheme.colorScheme.error,
-//                )
-//            }
-//        }
+        DeleteRunDropdown(
+            isVisible = showDeleteDropdown,
+            onDismissRequest = { showDeleteDropdown = false },
+            onDeleteClick = onDeleteClick
+        )
     }
-
-
 }
 
 @Composable
@@ -363,6 +291,47 @@ private fun DataGridCell(
             text = runData.value,
             color = MaterialTheme.colorScheme.onSurface,
         )
+    }
+}
+
+@Composable
+fun DeleteRunDropdown(
+    isVisible: Boolean,
+    onDismissRequest: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
+    val topOffset = with(LocalDensity.current) { 48.dp.toPx() }
+    if (isVisible) {
+        Popup(
+            alignment = Alignment.BottomCenter,
+            offset = IntOffset(0, topOffset.roundToInt()),
+            onDismissRequest = onDismissRequest
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 32.dp)
+                    .padding(top = 2.dp)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.errorContainer)
+                    .clickable {
+                        onDeleteClick()
+                        onDismissRequest()
+                    }
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(id = R.string.delete),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        }
     }
 }
 
