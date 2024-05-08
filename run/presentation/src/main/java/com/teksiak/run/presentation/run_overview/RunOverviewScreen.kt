@@ -6,14 +6,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +36,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.teksiak.core.domain.location.Location
+import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.AnalyticsIcon
 import com.teksiak.core.presentation.designsystem.CrossIcon
 import com.teksiak.core.presentation.designsystem.LogoIcon
@@ -46,7 +51,13 @@ import com.teksiak.core.presentation.designsystem.components.RuniqueScaffold
 import com.teksiak.core.presentation.designsystem.components.RuniqueToolbar
 import com.teksiak.core.presentation.designsystem.components.util.ToolbarMenuItem
 import com.teksiak.run.presentation.R
+import com.teksiak.run.presentation.run_overview.components.ActiveRunInfo
+import com.teksiak.run.presentation.run_overview.components.RunListItem
+import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import org.koin.androidx.compose.koinViewModel
+import java.time.ZonedDateTime
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun RunOverviewScreenRoot(
@@ -120,71 +131,13 @@ private fun RunOverviewScreen(
         },
         floatingActionButton = {
             if(state.isRunActive) {
-                Column(
-                    modifier = Modifier
-                        .offset(y = (16).dp)
-                        .fillMaxWidth()
-                        .clip(
-                            RoundedCornerShape(
-                                topStart = 16.dp,
-                                topEnd = 16.dp,
-                                bottomStart = 0.dp,
-                                bottomEnd = 0.dp
-                            )
-                        )
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 16.dp, bottom = 4.dp),
-                ) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(id = R.string.run_in_progress),
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        TextButton(
-                            onClick = {
-                                onAction(RunOverviewAction.OnStartRunClick)
-                            }
-                        ) {
-                            Icon(
-                                imageVector = StartIcon,
-                                contentDescription = stringResource(id = R.string.resume),
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                            )
-                            Text(
-                                text = stringResource(id = R.string.resume),
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                        TextButton(
-                            onClick = { /* Discard run */ }
-                        ) {
-                            Icon(
-                                imageVector = CrossIcon,
-                                contentDescription = stringResource(id = R.string.discard),
-                                tint = RuniqueDarkRed,
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .size(14.dp)
-                            )
-                            Text(
-                                text = stringResource(id = R.string.discard),
-                                fontSize = 16.sp,
-                                color = RuniqueDarkRed
-                            )
-                        }
-                    }
-                }
+                ActiveRunInfo(
+                    onResumeRun = {
+                         onAction(RunOverviewAction.OnStartRunClick)
+                    },
+                    onDiscardRun = { /*TODO*/ },
+                    modifier = Modifier.offset(y = 16.dp)
+                )
             } else {
                 RuniqueFloatingActionButton(
                     icon = RunIcon,
@@ -195,9 +148,29 @@ private fun RunOverviewScreen(
             }
         }
     ) { padding ->
-
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+        ) {
+            item {
+                RunListItem(
+                    runUi = Run(
+                        id = "123",
+                        duration = 10.minutes + 30.seconds,
+                        dateTimeUtc = ZonedDateTime.now(),
+                        distanceMeters = 5500,
+                        location = Location(0.0, 0.0),
+                        maxSpeedKmh = 15.0,
+                        totalElevationMeters = 123,
+                        mapPictureUrl = null
+                    ).toRunUi(),
+                    onDeleteClick = {}
+                )
+            }
+        }
     }
-
 }
 
 @Preview

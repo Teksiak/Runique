@@ -23,6 +23,7 @@ val DarkColorScheme = darkColorScheme(
     surfaceVariant = RuniqueGray,
     surfaceContainer = RuniqueDarkGreen,
     error = RuniqueDarkRed,
+    errorContainer = RuniqueDarkRed30,
 )
 
 val LightColorScheme = darkColorScheme(
@@ -39,6 +40,7 @@ val LightColorScheme = darkColorScheme(
     surfaceVariant = RuniqueGray40,
     surfaceContainer = RuniqueLightBlue,
     error = RuniqueDarkRed,
+    errorContainer = RuniqueDarkRed30,
 )
 
 @Composable

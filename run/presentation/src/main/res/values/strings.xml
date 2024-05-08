@@ -23,4 +23,11 @@
     <string name="discard">Discard</string>
     <string name="paused">" - Paused"</string>
     <string name="run_in_progress">Run in Progress</string>
+    <string name="run_map">Run map</string>
+    <string name="error_loading_image">Couldn\'t load image.</string>
+    <string name="running_time">Running time</string>
+    <string name="avg_speed">Avg. speed</string>
+    <string name="max_speed">Max speed</string>
+    <string name="total_elevation">Total elevation</string>
+    <string name="delete">Delete</string>
 </resources>

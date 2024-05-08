@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -126,9 +127,8 @@ private fun LoginScreen(
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 16.dp)
-                .padding(top = 32.dp)
+                .padding(horizontal = 16.dp)
+                .padding(top = 48.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.hi_there),
@@ -204,7 +204,7 @@ private fun LoginScreen(
             ClickableText(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 32.dp),
+                    .padding(bottom = 18.dp),
                 text = annotatedString,
                 onClick = { offset ->
                     annotatedString.getStringAnnotations(
