@@ -4,6 +4,7 @@ import android.app.Application
 import com.teksiak.auth.data.di.authDataModule
 import com.teksiak.auth.presentation.di.authViewModelModule
 import com.teksiak.core.data.di.coreDataModule
+import com.teksiak.core.database.di.databaseModule
 import com.teksiak.run.location.di.locationModule
 import com.teksiak.run.presentation.di.runPresentationModel
 import com.teksiak.runique.di.appModule
@@ -33,7 +34,8 @@ class RuniqueApp: Application() {
                 authDataModule,
                 authViewModelModule,
                 runPresentationModel,
-                locationModule
+                locationModule,
+                databaseModule
             )
         }
     }
