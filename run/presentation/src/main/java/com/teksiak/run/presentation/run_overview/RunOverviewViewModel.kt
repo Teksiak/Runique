@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.teksiak.core.presentation.ui.formatted
 import com.teksiak.run.domain.RunningTracker
 import com.teksiak.run.presentation.active_run.service.ActiveRunService
 import kotlinx.coroutines.flow.launchIn
@@ -24,6 +25,14 @@ class RunOverviewViewModel(
             .onEach { isTracking ->
                 state = state.copy(
                     isRunActive = isTracking
+                )
+            }
+            .launchIn(viewModelScope)
+
+        runningTracker.elapsedTime
+            .onEach {
+                state = state.copy(
+                    activeRunDuration = it.formatted()
                 )
             }
             .launchIn(viewModelScope)

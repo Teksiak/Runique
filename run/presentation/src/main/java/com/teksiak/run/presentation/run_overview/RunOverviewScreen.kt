@@ -134,6 +134,7 @@ private fun RunOverviewScreen(
             ) { isRunActive ->
                 if (isRunActive) {
                     ActiveRunBar(
+                        elapsedTime = state.activeRunDuration,
                         onResumeRun = {
                             onAction(RunOverviewAction.OnStartRunClick)
                         },

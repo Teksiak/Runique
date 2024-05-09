@@ -1,6 +1,9 @@
 package com.teksiak.run.presentation.run_overview.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,11 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
@@ -24,10 +31,12 @@ import com.teksiak.core.presentation.designsystem.CrossIcon
 import com.teksiak.core.presentation.designsystem.RuniqueDarkRed
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
 import com.teksiak.core.presentation.designsystem.StartIcon
+import com.teksiak.core.presentation.designsystem.components.RuniqueTextButton
 import com.teksiak.run.presentation.R
 
 @Composable
 fun ActiveRunBar(
+    elapsedTime: String,
     onResumeRun: () -> Unit,
     onDiscardRun: () -> Unit,
     modifier: Modifier = Modifier
@@ -49,7 +58,7 @@ fun ActiveRunBar(
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(id = R.string.run_in_progress),
+            text = stringResource(id = R.string.run_in_progress) + " - $elapsedTime",
             fontSize = 16.sp,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -59,39 +68,18 @@ fun ActiveRunBar(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            TextButton(
+            RuniqueTextButton(
+                text = stringResource(id = R.string.resume),
+                color = MaterialTheme.colorScheme.primary,
+                leadingIcon = StartIcon,
                 onClick = onResumeRun
-            ) {
-                Icon(
-                    imageVector = StartIcon,
-                    contentDescription = stringResource(id = R.string.resume),
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                )
-                Text(
-                    text = stringResource(id = R.string.resume),
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-            TextButton(
+            )
+            RuniqueTextButton(
+                text = stringResource(id = R.string.discard),
+                color = MaterialTheme.colorScheme.error,
+                leadingIcon = CrossIcon,
                 onClick = onDiscardRun
-            ) {
-                Icon(
-                    imageVector = CrossIcon,
-                    contentDescription = stringResource(id = R.string.discard),
-                    tint = RuniqueDarkRed,
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .size(14.dp)
-                )
-                Text(
-                    text = stringResource(id = R.string.discard),
-                    fontSize = 16.sp,
-                    color = RuniqueDarkRed
-                )
-            }
+            )
         }
     }
 }
@@ -101,6 +89,7 @@ fun ActiveRunBar(
 private fun ActiveRunBarPreview() {
     RuniqueTheme {
         ActiveRunBar(
+            elapsedTime = "00:03:50",
             onResumeRun = {},
             onDiscardRun = {}
         )
