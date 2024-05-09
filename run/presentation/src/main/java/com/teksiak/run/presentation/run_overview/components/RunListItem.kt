@@ -2,6 +2,15 @@
 
 package com.teksiak.run.presentation.run_overview.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,6 +56,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import coil.compose.SubcomposeAsyncImage
 import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
@@ -301,11 +311,15 @@ fun DeleteRunDropdown(
     onDeleteClick: () -> Unit
 ) {
     val topOffset = with(LocalDensity.current) { 48.dp.toPx() }
-    if (isVisible) {
-        Popup(
-            alignment = Alignment.BottomCenter,
-            offset = IntOffset(0, topOffset.roundToInt()),
-            onDismissRequest = onDismissRequest
+    Popup(
+        alignment = Alignment.BottomCenter,
+        offset = IntOffset(0, topOffset.roundToInt()),
+        onDismissRequest = onDismissRequest
+    ) {
+        AnimatedVisibility(
+            visible = isVisible,
+            enter = fadeIn(),
+            exit = fadeOut(),
         ) {
             Row(
                 modifier = Modifier
