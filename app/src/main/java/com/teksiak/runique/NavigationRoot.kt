@@ -132,11 +132,18 @@ private fun NavGraphBuilder.runGraph(navController: NavHostController) {
         startDestination = Routes.Run.RUN_OVERVIEW
     ) {
         composable(Routes.Run.RUN_OVERVIEW) {
+            val context = LocalContext.current
+
             RunOverviewScreenRoot(
                 onStartRunClick = {
-                    navController.navigate(Routes.Run.ACTIVE_RUN) {
-                        restoreState = true
-                    }
+                    navController.navigate(Routes.Run.ACTIVE_RUN)
+                },
+                onStopService = {
+                    context.startService(
+                        ActiveRunService.createStopIntent(
+                            context = context,
+                        )
+                    )
                 }
             )
         }
@@ -154,7 +161,6 @@ private fun NavGraphBuilder.runGraph(navController: NavHostController) {
                     navController.navigate(Routes.Run.RUN_OVERVIEW) {
                         popUpTo(Routes.Run.ACTIVE_RUN) {
                             inclusive = true
-                            saveState = true
                         }
                     }
                 },

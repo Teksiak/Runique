@@ -30,4 +30,7 @@
     <string name="max_speed">Max speed</string>
     <string name="total_elevation">Total elevation</string>
     <string name="delete">Delete</string>
+    <string name="discard_run">Discard run</string>
+    <string name="discard_run_description">Are you sure you want to discard the run in progress?</string>
+    <string name="cancel">Cancel</string>
 </resources>

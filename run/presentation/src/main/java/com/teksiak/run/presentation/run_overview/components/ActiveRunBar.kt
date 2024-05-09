@@ -17,15 +17,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.teksiak.core.presentation.designsystem.CrossIcon
 import com.teksiak.core.presentation.designsystem.RuniqueDarkRed
+import com.teksiak.core.presentation.designsystem.RuniqueTheme
 import com.teksiak.core.presentation.designsystem.StartIcon
 import com.teksiak.run.presentation.R
 
 @Composable
-fun ActiveRunInfo(
+fun ActiveRunBar(
     onResumeRun: () -> Unit,
     onDiscardRun: () -> Unit,
     modifier: Modifier = Modifier
@@ -48,7 +50,7 @@ fun ActiveRunInfo(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.run_in_progress),
-            fontSize = 18.sp,
+            fontSize = 16.sp,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -91,5 +93,16 @@ fun ActiveRunInfo(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun ActiveRunBarPreview() {
+    RuniqueTheme {
+        ActiveRunBar(
+            onResumeRun = {},
+            onDiscardRun = {}
+        )
     }
 }

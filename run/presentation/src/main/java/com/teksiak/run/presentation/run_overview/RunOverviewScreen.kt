@@ -2,56 +2,41 @@
 
 package com.teksiak.run.presentation.run_overview
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.AnalyticsIcon
-import com.teksiak.core.presentation.designsystem.CrossIcon
 import com.teksiak.core.presentation.designsystem.LogoIcon
 import com.teksiak.core.presentation.designsystem.LogoutIcon
 import com.teksiak.core.presentation.designsystem.RunIcon
-import com.teksiak.core.presentation.designsystem.RuniqueDarkRed
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
-import com.teksiak.core.presentation.designsystem.StartIcon
+import com.teksiak.core.presentation.designsystem.components.RuniqueActionButton
+import com.teksiak.core.presentation.designsystem.components.RuniqueDialog
 import com.teksiak.core.presentation.designsystem.components.RuniqueFloatingActionButton
+import com.teksiak.core.presentation.designsystem.components.RuniqueOutlinedActionButton
 import com.teksiak.core.presentation.designsystem.components.RuniqueScaffold
 import com.teksiak.core.presentation.designsystem.components.RuniqueToolbar
 import com.teksiak.core.presentation.designsystem.components.util.ToolbarMenuItem
 import com.teksiak.run.presentation.R
-import com.teksiak.run.presentation.run_overview.components.ActiveRunInfo
+import com.teksiak.run.presentation.run_overview.components.ActiveRunBar
 import com.teksiak.run.presentation.run_overview.components.RunListItem
 import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import org.koin.androidx.compose.koinViewModel
@@ -62,12 +47,14 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun RunOverviewScreenRoot(
     onStartRunClick: () -> Unit,
+    onStopService: () -> Unit,
     viewModel: RunOverviewViewModel = koinViewModel()
 ) {
     RunOverviewScreen(
         state = viewModel.state,
+        onStopService = onStopService,
         onAction = { action ->
-            when(action) {
+            when (action) {
                 is RunOverviewAction.OnStartRunClick -> onStartRunClick()
                 else -> Unit
             }
@@ -79,7 +66,8 @@ fun RunOverviewScreenRoot(
 @Composable
 private fun RunOverviewScreen(
     state: RunOverviewState,
-    onAction: (RunOverviewAction) -> Unit
+    onStopService: () -> Unit,
+    onAction: (RunOverviewAction) -> Unit,
 ) {
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
@@ -130,12 +118,14 @@ private fun RunOverviewScreen(
             )
         },
         floatingActionButton = {
-            if(state.isRunActive) {
-                ActiveRunInfo(
+            if (state.isRunActive) {
+                ActiveRunBar(
                     onResumeRun = {
-                         onAction(RunOverviewAction.OnStartRunClick)
+                        onAction(RunOverviewAction.OnStartRunClick)
                     },
-                    onDiscardRun = { /*TODO*/ },
+                    onDiscardRun = {
+                        onAction(RunOverviewAction.OnDiscardRunClick)
+                    },
                     modifier = Modifier.offset(y = 16.dp)
                 )
             } else {
@@ -170,6 +160,37 @@ private fun RunOverviewScreen(
                 )
             }
         }
+
+        if (state.isDiscardRunDialogShown) {
+            RuniqueDialog(
+                title = stringResource(id = R.string.discard_run),
+                onDismiss = {
+                    onAction(RunOverviewAction.OnDismissDiscardRunDialogClick)
+                },
+                description = stringResource(id = R.string.discard_run_description),
+                primaryAction = {
+                    RuniqueOutlinedActionButton(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(id = R.string.discard),
+                        isLoading = false,
+                        onClick = {
+                            onAction(RunOverviewAction.OnDiscardRunClick)
+                            onStopService()
+                        }
+                    )
+                },
+                secondaryAction = {
+                    RuniqueActionButton(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(id = R.string.cancel),
+                        isLoading = false,
+                        onClick = {
+                            onAction(RunOverviewAction.OnDismissDiscardRunDialogClick)
+                        }
+                    )
+                }
+            )
+        }
     }
 }
 
@@ -181,6 +202,7 @@ fun RunOverviewScreenPreview() {
             state = RunOverviewState(
                 isRunActive = true
             ),
+            onStopService = {},
             onAction = {}
         )
     }

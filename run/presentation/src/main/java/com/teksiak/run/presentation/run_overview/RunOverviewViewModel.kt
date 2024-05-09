@@ -15,7 +15,7 @@ class RunOverviewViewModel(
 ): ViewModel() {
 
     var state by mutableStateOf(RunOverviewState(
-        isRunActive = ActiveRunService.isServiceActive
+        isRunActive = runningTracker.isTracking.value,
     ))
         private set
 
@@ -23,7 +23,7 @@ class RunOverviewViewModel(
         runningTracker.isTracking
             .onEach { isTracking ->
                 state = state.copy(
-                    isRunActive = ActiveRunService.isServiceActive || isTracking
+                    isRunActive = isTracking
                 )
             }
             .launchIn(viewModelScope)
@@ -34,6 +34,23 @@ class RunOverviewViewModel(
             is RunOverviewAction.OnCheckRunStatus -> {
                 state = state.copy(
                     isRunActive = ActiveRunService.isServiceActive
+                )
+            }
+            is RunOverviewAction.OnDiscardRunClick -> {
+                if(state.isDiscardRunDialogShown) {
+                    runningTracker.finishRun()
+                    state = state.copy(
+                        isDiscardRunDialogShown = false
+                    )
+                } else {
+                    state = state.copy(
+                        isDiscardRunDialogShown = true
+                    )
+                }
+            }
+            is RunOverviewAction.OnDismissDiscardRunDialogClick -> {
+                state = state.copy(
+                    isDiscardRunDialogShown = false
                 )
             }
             else -> Unit
