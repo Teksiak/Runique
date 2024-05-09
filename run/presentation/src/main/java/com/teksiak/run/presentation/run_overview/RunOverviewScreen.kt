@@ -1,7 +1,16 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 
 package com.teksiak.run.presentation.run_overview
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -63,6 +72,7 @@ fun RunOverviewScreenRoot(
     )
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun RunOverviewScreen(
     state: RunOverviewState,
@@ -118,23 +128,28 @@ private fun RunOverviewScreen(
             )
         },
         floatingActionButton = {
-            if (state.isRunActive) {
-                ActiveRunBar(
-                    onResumeRun = {
-                        onAction(RunOverviewAction.OnStartRunClick)
-                    },
-                    onDiscardRun = {
-                        onAction(RunOverviewAction.OnDiscardRunClick)
-                    },
-                    modifier = Modifier.offset(y = 16.dp)
-                )
-            } else {
-                RuniqueFloatingActionButton(
-                    icon = RunIcon,
-                    onClick = {
-                        onAction(RunOverviewAction.OnStartRunClick)
-                    }
-                )
+            AnimatedContent(
+                targetState = state.isRunActive,
+                label = ""
+            ) { isRunActive ->
+                if (isRunActive) {
+                    ActiveRunBar(
+                        onResumeRun = {
+                            onAction(RunOverviewAction.OnStartRunClick)
+                        },
+                        onDiscardRun = {
+                            onAction(RunOverviewAction.OnDiscardRunClick)
+                        },
+                        modifier = Modifier.offset(y = 16.dp)
+                    )
+                } else {
+                    RuniqueFloatingActionButton(
+                        icon = RunIcon,
+                        onClick = {
+                            onAction(RunOverviewAction.OnStartRunClick)
+                        }
+                    )
+                }
             }
         }
     ) { padding ->
