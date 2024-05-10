@@ -52,7 +52,8 @@ fun ActiveRunBar(
                     bottomEnd = 0.dp
                 )
             )
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
+            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.2f))
             .padding(horizontal = 16.dp)
             .padding(top = 16.dp, bottom = 4.dp),
     ) {

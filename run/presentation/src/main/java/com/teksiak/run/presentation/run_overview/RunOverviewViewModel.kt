@@ -5,14 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.teksiak.core.domain.run.RunRepository
 import com.teksiak.core.presentation.ui.formatted
 import com.teksiak.run.domain.RunningTracker
-import com.teksiak.run.presentation.active_run.service.ActiveRunService
+import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class RunOverviewViewModel(
-    private val runningTracker: RunningTracker
+    private val runningTracker: RunningTracker,
+    private val runRepository: RunRepository
 ): ViewModel() {
 
     var state by mutableStateOf(RunOverviewState(
@@ -21,6 +24,19 @@ class RunOverviewViewModel(
         private set
 
     init {
+        runRepository.getRuns()
+            .onEach { runs ->
+                val runsUi = runs.map { it.toRunUi() }
+                state = state.copy(
+                    runs = runsUi
+                )
+            }
+            .launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            runRepository.fetchRuns()
+        }
+
         runningTracker.isTracking
             .onEach { isTracking ->
                 state = state.copy(
@@ -40,10 +56,10 @@ class RunOverviewViewModel(
 
     fun onAction(action: RunOverviewAction) {
         when(action) {
-            is RunOverviewAction.OnCheckRunStatus -> {
-                state = state.copy(
-                    isRunActive = ActiveRunService.isServiceActive
-                )
+            is RunOverviewAction.OnDeleteRunClick -> {
+                viewModelScope.launch {
+                    runRepository.deleteRun(action.run.id)
+                }
             }
             is RunOverviewAction.OnDiscardRunClick -> {
                 if(state.isDiscardRunDialogShown) {

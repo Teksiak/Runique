@@ -1,4 +1,6 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class,
+    ExperimentalFoundationApi::class
+)
 
 package com.teksiak.run.presentation.run_overview
 
@@ -11,12 +13,17 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.with
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +34,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -72,7 +80,6 @@ fun RunOverviewScreenRoot(
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun RunOverviewScreen(
     state: RunOverviewState,
@@ -157,23 +164,25 @@ private fun RunOverviewScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .padding(horizontal = 16.dp),
+            contentPadding = padding,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
+            items(
+                items = state.runs,
+                key = { it.id }
+            ) {
                 RunListItem(
-                    runUi = Run(
-                        id = "123",
-                        duration = 10.minutes + 30.seconds,
-                        dateTimeUtc = ZonedDateTime.now(),
-                        distanceMeters = 5500,
-                        location = Location(0.0, 0.0),
-                        maxSpeedKmh = 15.0,
-                        totalElevationMeters = 123,
-                        mapPictureUrl = null
-                    ).toRunUi(),
-                    onDeleteClick = {}
+                    runUi = it,
+                    onDeleteClick = {
+                        onAction(RunOverviewAction.OnDeleteRunClick(it))
+                    },
+                    modifier = Modifier.animateItemPlacement()
                 )
+            }
+            item { 
+                Spacer(modifier = Modifier.height(86.dp))
             }
         }
 

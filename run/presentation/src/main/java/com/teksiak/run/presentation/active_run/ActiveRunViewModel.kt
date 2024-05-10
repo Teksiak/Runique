@@ -8,6 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
+import com.teksiak.core.domain.run.RunRepository
+import com.teksiak.core.domain.util.Result
+import com.teksiak.core.presentation.ui.asUiText
 import com.teksiak.run.domain.LocationDataCalculator
 import com.teksiak.run.domain.RunningTracker
 import com.teksiak.run.presentation.active_run.service.ActiveRunService
@@ -25,7 +28,8 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 
 class ActiveRunViewModel(
-    private val runningTracker: RunningTracker
+    private val runningTracker: RunningTracker,
+    private val runRepository: RunRepository
 ): ViewModel() {
 
     var state by mutableStateOf(ActiveRunState(
@@ -100,11 +104,6 @@ class ActiveRunViewModel(
                     shouldTrack = true
                 )
             }
-            ActiveRunAction.OnBackClick -> {
-//                state = state.copy(
-//                    shouldTrack = false
-//                )
-            }
             ActiveRunAction.OnToggleRunClick -> {
                 state = state.copy(
                     hasStartedRunning = true,
@@ -128,10 +127,10 @@ class ActiveRunViewModel(
                     showNotificationPermissionRationale = false
                 )
             }
-
             is ActiveRunAction.OnRunProcessed -> {
                 finishRun(action.mapPictureBytes)
             }
+            else -> Unit
         }
     }
 
@@ -156,6 +155,20 @@ class ActiveRunViewModel(
             )
 
             runningTracker.finishRun()
+
+            when(val result = runRepository.upsertRun(run, mapPictureBytes)) {
+                is Result.Failure -> {
+                    eventChannel.send(ActiveRunEvent.Error(result.error.asUiText()))
+                }
+                is Result.Success -> {
+                    state = state.copy(
+                        hasStartedRunning = false,
+                        shouldTrack = false,
+                    )
+                    eventChannel.send(ActiveRunEvent.RunSaved)
+                }
+            }
+
             state = state.copy(isSavingRun = false)
         }
     }

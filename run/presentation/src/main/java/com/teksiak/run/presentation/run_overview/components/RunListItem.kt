@@ -327,6 +327,7 @@ fun DeleteRunDropdown(
                     .padding(top = 2.dp)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.background)
                     .background(MaterialTheme.colorScheme.errorContainer)
                     .clickable {
                         onDeleteClick()

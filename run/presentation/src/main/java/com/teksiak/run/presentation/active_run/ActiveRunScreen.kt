@@ -5,6 +5,7 @@ package com.teksiak.run.presentation.active_run
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -32,6 +33,7 @@ import com.teksiak.core.presentation.designsystem.components.RuniqueFloatingActi
 import com.teksiak.core.presentation.designsystem.components.RuniqueOutlinedActionButton
 import com.teksiak.core.presentation.designsystem.components.RuniqueScaffold
 import com.teksiak.core.presentation.designsystem.components.RuniqueToolbar
+import com.teksiak.core.presentation.ui.ObserveAsEvents
 import com.teksiak.run.presentation.R
 import com.teksiak.run.presentation.active_run.components.RunDataCard
 import com.teksiak.run.presentation.active_run.maps.TrackerMap
@@ -46,18 +48,32 @@ import java.io.ByteArrayOutputStream
 @Composable
 fun ActiveRunScreenRoot(
     onBackClick: () -> Unit,
+    onFinishRun: () -> Unit,
     onServiceToggle: (shouldServiceRun: Boolean) -> Unit,
     viewModel: ActiveRunViewModel = koinViewModel()
 ) {
+    val context = LocalContext.current
+    ObserveAsEvents(flow = viewModel.events) { event ->
+        when(event) {
+            is ActiveRunEvent.Error -> {
+                Toast.makeText(
+                    context,
+                    event.error.asString(context),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            ActiveRunEvent.RunSaved -> {
+                onFinishRun()
+            }
+        }
+    }
+
     ActiveRunScreen(
         state = viewModel.state,
         onServiceToggle = onServiceToggle,
         onAction = { action ->
             when (action) {
-                is ActiveRunAction.OnBackClick -> {
-                    onBackClick()
-                }
-
+                is ActiveRunAction.OnBackClick -> onBackClick()
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -204,7 +220,7 @@ private fun ActiveRunScreen(
                 RuniqueOutlinedActionButton(
                     modifier = Modifier.weight(1f),
                     text = stringResource(id = R.string.finish),
-                    isLoading = false,
+                    isLoading = state.isSavingRun,
                     onClick = {
                         onAction(ActiveRunAction.OnFinishRunClick)
                     }
