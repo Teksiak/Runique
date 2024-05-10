@@ -18,5 +18,6 @@ val databaseModule = module {
         ).build()
     }
     single { get<RunDatabase>().runDao }
+    single { get<RunDatabase>().runSyncDao }
     singleOf(::RoomLocalRunDataSource).bind<LocalRunDataSource>()
 }

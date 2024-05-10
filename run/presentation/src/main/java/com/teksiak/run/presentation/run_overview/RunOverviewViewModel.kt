@@ -34,6 +34,7 @@ class RunOverviewViewModel(
             .launchIn(viewModelScope)
 
         viewModelScope.launch {
+            runRepository.syncRunsWithRemote()
             runRepository.fetchRuns()
         }
 
