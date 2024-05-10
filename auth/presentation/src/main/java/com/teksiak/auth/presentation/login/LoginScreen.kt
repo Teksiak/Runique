@@ -52,13 +52,14 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LoginScreenRoot(
     onSignUpClick: () -> Unit,
-    onSuccessfulLogin: () -> Unit,
+    onSuccessfulLogin: (SnackbarHostState) -> Unit,
     viewModel: LoginViewModel = koinViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
+
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is LoginEvent.Error -> {
@@ -74,13 +75,7 @@ fun LoginScreenRoot(
 
             LoginEvent.LoginSuccess -> {
                 keyboardController?.hide()
-                onSuccessfulLogin()
-                scope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = context.getString(R.string.youre_logged_in),
-                        duration = SnackbarDuration.Short,
-                    )
-                }
+                onSuccessfulLogin(snackbarHostState)
             }
         }
     }
@@ -112,6 +107,7 @@ fun LoginScreenRoot(
                 RuniqueMessageSnackbar(
                     snackbarData = snackbarData,
                     isErrorMessage = isErrorMessage,
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
         )

@@ -3,15 +3,12 @@
 package com.teksiak.run.presentation.run_overview.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandIn
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -78,7 +75,7 @@ fun RunListItem(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showDeleteDropdown by remember {
+    var showDeletePopup by remember {
         mutableStateOf(false)
     }
 
@@ -90,7 +87,7 @@ fun RunListItem(
                 .combinedClickable(
                     onClick = {},
                     onLongClick = {
-                        showDeleteDropdown = true
+                        showDeletePopup = true
                     }
                 )
                 .padding(16.dp),
@@ -115,9 +112,9 @@ fun RunListItem(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        DeleteRunDropdown(
-            isVisible = showDeleteDropdown,
-            onDismissRequest = { showDeleteDropdown = false },
+        DeleteRunPopup(
+            isVisible = showDeletePopup,
+            onDismissRequest = { showDeletePopup = false },
             onDeleteClick = onDeleteClick
         )
     }
@@ -305,7 +302,7 @@ private fun DataGridCell(
 }
 
 @Composable
-fun DeleteRunDropdown(
+fun DeleteRunPopup(
     isVisible: Boolean,
     onDismissRequest: () -> Unit,
     onDeleteClick: () -> Unit
@@ -314,6 +311,9 @@ fun DeleteRunDropdown(
     Popup(
         alignment = Alignment.BottomCenter,
         offset = IntOffset(0, topOffset.roundToInt()),
+        properties = PopupProperties(
+            clippingEnabled = false,
+        ),
         onDismissRequest = onDismissRequest
     ) {
         AnimatedVisibility(

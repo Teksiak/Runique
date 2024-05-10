@@ -4,6 +4,7 @@
     <string name="analytics">Analytics</string>
     <string name="help">Help</string>
     <string name="logout">Logout</string>
+    <string name="youre_logged_in">You\'re logged in!</string>
     <string name="active_run">Active run</string>
     <string name="pause_run">Pause run</string>
     <string name="start_run">Start run</string>

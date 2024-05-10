@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -48,20 +49,31 @@ fun NavigationRoot(
         navController = navController,
         startDestination = if(isLoggedIn) Routes.Run.NAV_ROUTE else Routes.Auth.NAV_ROUTE
     ) {
-        authGraph(navController)
-        runGraph(navController)
+        val snackbarScope = CoroutineScope(Dispatchers.Main)
+        val sharedSnackbarHostState = SnackbarHostState()
+
+        authGraph(
+            navController = navController,
+            sharedSnackbarHostState = sharedSnackbarHostState,
+            snackbarScope = snackbarScope,
+        )
+        runGraph(
+            navController = navController,
+            sharedSnackbarHostState = sharedSnackbarHostState,
+            snackbarScope = snackbarScope,
+        )
     }
 }
 
 private fun NavGraphBuilder.authGraph(
     navController: NavHostController,
+    sharedSnackbarHostState: SnackbarHostState = SnackbarHostState(),
+    snackbarScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 ) {
     navigation(
         route = Routes.Auth.NAV_ROUTE,
         startDestination = Routes.Auth.INTRO
     ) {
-        val sharedSnackbarHostState = SnackbarHostState()
-        val snackbarScope = CoroutineScope(Dispatchers.Main)
 
         composable(Routes.Auth.INTRO) {
             IntroScreenRoot(
@@ -73,6 +85,7 @@ private fun NavGraphBuilder.authGraph(
                 }
             )
         }
+
         composable(Routes.Auth.REGISTER) {
             val context = LocalContext.current
 
@@ -102,7 +115,10 @@ private fun NavGraphBuilder.authGraph(
                 snackbarHostState = sharedSnackbarHostState
             )
         }
+
         composable(Routes.Auth.LOGIN) {
+            val localContext = LocalContext.current
+
             LoginScreenRoot(
                 onSignUpClick = {
                     navController.navigate(Routes.Auth.REGISTER) {
@@ -113,11 +129,17 @@ private fun NavGraphBuilder.authGraph(
                         restoreState = true
                     }
                 },
-                onSuccessfulLogin = {
+                onSuccessfulLogin = { snackbarHostState ->
                     navController.navigate(Routes.Run.NAV_ROUTE) {
                         popUpTo(Routes.Auth.NAV_ROUTE) {
                             inclusive = true
                         }
+                    }
+                    snackbarScope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = localContext.getString(R.string.youre_logged_in),
+                            duration = SnackbarDuration.Short,
+                        )
                     }
                 },
                 snackbarHostState = sharedSnackbarHostState
@@ -126,11 +148,16 @@ private fun NavGraphBuilder.authGraph(
     }
 }
 
-private fun NavGraphBuilder.runGraph(navController: NavHostController) {
+private fun NavGraphBuilder.runGraph(
+    navController: NavHostController,
+    sharedSnackbarHostState: SnackbarHostState = SnackbarHostState(),
+    snackbarScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+) {
     navigation(
         route = Routes.Run.NAV_ROUTE,
         startDestination = Routes.Run.RUN_OVERVIEW
     ) {
+
         composable(Routes.Run.RUN_OVERVIEW) {
             val context = LocalContext.current
 
@@ -144,9 +171,11 @@ private fun NavGraphBuilder.runGraph(navController: NavHostController) {
                             context = context,
                         )
                     )
-                }
+                },
+                snackbarHostState = sharedSnackbarHostState
             )
         }
+
         composable(
             route = Routes.Run.ACTIVE_RUN,
             deepLinks = listOf(

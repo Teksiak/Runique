@@ -14,11 +14,12 @@ import com.teksiak.core.presentation.designsystem.RuniqueWhite
 @Composable
 fun RuniqueMessageSnackbar(
     snackbarData: SnackbarData,
-    isErrorMessage: Boolean = false
+    modifier: Modifier = Modifier,
+    isErrorMessage: Boolean = false,
 ) {
     Snackbar(
         snackbarData = snackbarData,
-        modifier = Modifier.padding(bottom = 8.dp),
+        modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         containerColor = if(isErrorMessage) RuniqueDarkRed else MaterialTheme.colorScheme.primary,
         contentColor = if(isErrorMessage) RuniqueWhite else MaterialTheme.colorScheme.onPrimary,

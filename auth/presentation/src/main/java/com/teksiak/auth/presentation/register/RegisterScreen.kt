@@ -115,6 +115,7 @@ fun RegisterScreenRoot(
                 RuniqueMessageSnackbar(
                     snackbarData = snackbarData,
                     isErrorMessage = isErrorMessage,
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
             },
         )

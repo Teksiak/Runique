@@ -15,6 +15,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.animation.with
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,9 +31,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -48,6 +53,7 @@ import com.teksiak.core.presentation.designsystem.RuniqueTheme
 import com.teksiak.core.presentation.designsystem.components.RuniqueActionButton
 import com.teksiak.core.presentation.designsystem.components.RuniqueDialog
 import com.teksiak.core.presentation.designsystem.components.RuniqueFloatingActionButton
+import com.teksiak.core.presentation.designsystem.components.RuniqueMessageSnackbar
 import com.teksiak.core.presentation.designsystem.components.RuniqueOutlinedActionButton
 import com.teksiak.core.presentation.designsystem.components.RuniqueScaffold
 import com.teksiak.core.presentation.designsystem.components.RuniqueToolbar
@@ -65,19 +71,25 @@ import kotlin.time.Duration.Companion.seconds
 fun RunOverviewScreenRoot(
     onStartRunClick: () -> Unit,
     onStopService: () -> Unit,
-    viewModel: RunOverviewViewModel = koinViewModel()
+    viewModel: RunOverviewViewModel = koinViewModel(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
-    RunOverviewScreen(
-        state = viewModel.state,
-        onStopService = onStopService,
-        onAction = { action ->
-            when (action) {
-                is RunOverviewAction.OnStartRunClick -> onStartRunClick()
-                else -> Unit
-            }
-            viewModel.onAction(action)
-        }
-    )
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        RunOverviewScreen(
+            state = viewModel.state,
+            onStopService = onStopService,
+            onAction = { action ->
+                when (action) {
+                    is RunOverviewAction.OnStartRunClick -> onStartRunClick()
+                    else -> Unit
+                }
+                viewModel.onAction(action)
+            },
+            snackbarHostState = snackbarHostState
+        )
+    }
 }
 
 @Composable
@@ -85,6 +97,7 @@ private fun RunOverviewScreen(
     state: RunOverviewState,
     onStopService: () -> Unit,
     onAction: (RunOverviewAction) -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
@@ -161,29 +174,48 @@ private fun RunOverviewScreen(
             }
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .padding(horizontal = 16.dp),
-            contentPadding = padding,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            items(
-                items = state.runs,
-                key = { it.id }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
+                    .padding(horizontal = 16.dp),
+                contentPadding = padding,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                RunListItem(
-                    runUi = it,
-                    onDeleteClick = {
-                        onAction(RunOverviewAction.OnDeleteRunClick(it))
-                    },
-                    modifier = Modifier.animateItemPlacement()
-                )
+                items(
+                    items = state.runs,
+                    key = { it.id }
+                ) {
+                    RunListItem(
+                        runUi = it,
+                        onDeleteClick = {
+                            onAction(RunOverviewAction.OnDeleteRunClick(it))
+                        },
+                        modifier = Modifier.animateItemPlacement()
+                    )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(86.dp))
+                }
             }
-            item { 
-                Spacer(modifier = Modifier.height(86.dp))
-            }
+
+            SnackbarHost(
+                modifier = Modifier.align(Alignment.TopCenter),
+                hostState = snackbarHostState,
+                snackbar = { snackbarData ->
+                    val isErrorMessage = snackbarData.visuals.message != stringResource(id = R.string.youre_logged_in)
+                    RuniqueMessageSnackbar(
+                        snackbarData = snackbarData,
+                        isErrorMessage = isErrorMessage,
+                        modifier = Modifier
+                            .padding(padding)
+                            .offset(y = (-8).dp)
+                    )
+                }
+            )
         }
 
         if (state.isDiscardRunDialogShown) {
