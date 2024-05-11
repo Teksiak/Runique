@@ -47,7 +47,7 @@ fun NavigationRoot(
 ) {
     NavHost(
         navController = navController,
-        startDestination = if(isLoggedIn) Routes.Run.NAV_ROUTE else Routes.Auth.NAV_ROUTE
+        startDestination = if (isLoggedIn) Routes.Run.NAV_ROUTE else Routes.Auth.NAV_ROUTE
     ) {
         val snackbarScope = CoroutineScope(Dispatchers.Main)
         val sharedSnackbarHostState = SnackbarHostState()
@@ -60,7 +60,6 @@ fun NavigationRoot(
         runGraph(
             navController = navController,
             sharedSnackbarHostState = sharedSnackbarHostState,
-            snackbarScope = snackbarScope,
         )
     }
 }
@@ -151,7 +150,6 @@ private fun NavGraphBuilder.authGraph(
 private fun NavGraphBuilder.runGraph(
     navController: NavHostController,
     sharedSnackbarHostState: SnackbarHostState = SnackbarHostState(),
-    snackbarScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 ) {
     navigation(
         route = Routes.Run.NAV_ROUTE,
@@ -164,6 +162,13 @@ private fun NavGraphBuilder.runGraph(
             RunOverviewScreenRoot(
                 onStartRunClick = {
                     navController.navigate(Routes.Run.ACTIVE_RUN)
+                },
+                onLogoutClick = {
+                    navController.navigate(Routes.Auth.NAV_ROUTE) {
+                        popUpTo(Routes.Run.NAV_ROUTE) {
+                            inclusive = true
+                        }
+                    }
                 },
                 onStopService = {
                     context.startService(
@@ -193,7 +198,7 @@ private fun NavGraphBuilder.runGraph(
                     navController.navigateUp()
                 },
                 onServiceToggle = { shouldServiceRun ->
-                    if(shouldServiceRun) {
+                    if (shouldServiceRun) {
                         context.startService(
                             ActiveRunService.createStartIntent(
                                 context = context,

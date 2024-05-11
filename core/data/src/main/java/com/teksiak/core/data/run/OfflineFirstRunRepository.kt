@@ -1,5 +1,6 @@
 package com.teksiak.core.data.run
 
+import com.teksiak.core.data.networking.get
 import com.teksiak.core.database.dao.RunSyncDao
 import com.teksiak.core.database.mappers.toRun
 import com.teksiak.core.domain.SessionStorage
@@ -12,6 +13,10 @@ import com.teksiak.core.domain.util.DataError
 import com.teksiak.core.domain.util.EmptyResult
 import com.teksiak.core.domain.util.Result
 import com.teksiak.core.domain.util.asEmptyDataResult
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
+import io.ktor.client.plugins.plugin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -27,6 +32,7 @@ class OfflineFirstRunRepository(
     private val runSyncDao: RunSyncDao,
     private val runSyncScheduler: RunSyncScheduler,
     private val sessionStorage: SessionStorage,
+    private val client: HttpClient,
     private val applicationScope: CoroutineScope
 ) : RunRepository {
 
@@ -97,6 +103,10 @@ class OfflineFirstRunRepository(
         }
     }
 
+    override suspend fun deleteAllRuns() {
+        localRunDataSource.deleteAllRuns()
+    }
+
     override suspend fun syncRunsWithRemote() {
         withContext(Dispatchers.IO) {
             val userId = sessionStorage.get()?.userId ?: return@withContext
@@ -144,6 +154,20 @@ class OfflineFirstRunRepository(
                 }
             }
         }.joinAll()
+    }
+
+    override suspend fun logout(): EmptyResult<DataError.Network> {
+        val result = client.get<Unit>(
+            route = "/logout"
+        ).asEmptyDataResult()
+
+        client.plugin(Auth).providers.filterIsInstance<BearerAuthProvider>()
+            .firstOrNull()
+            ?.clearToken()
+
+        sessionStorage.set(null)
+
+        return result
     }
 
 }
