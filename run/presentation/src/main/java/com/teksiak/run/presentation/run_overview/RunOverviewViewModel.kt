@@ -7,15 +7,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.teksiak.core.domain.run.RunRepository
 import com.teksiak.core.presentation.ui.formatted
+import com.teksiak.core.domain.run.RunSyncScheduler
 import com.teksiak.run.domain.RunningTracker
 import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.minutes
 
 class RunOverviewViewModel(
     private val runningTracker: RunningTracker,
-    private val runRepository: RunRepository
+    private val runRepository: RunRepository,
+    private val runSyncScheduler: RunSyncScheduler
 ): ViewModel() {
 
     var state by mutableStateOf(RunOverviewState(
@@ -36,6 +39,12 @@ class RunOverviewViewModel(
         viewModelScope.launch {
             runRepository.syncRunsWithRemote()
             runRepository.fetchRuns()
+        }
+
+        viewModelScope.launch {
+            runSyncScheduler.scheduleSync(
+                RunSyncScheduler.SyncType.FetchRuns(30.minutes)
+            )
         }
 
         runningTracker.isTracking

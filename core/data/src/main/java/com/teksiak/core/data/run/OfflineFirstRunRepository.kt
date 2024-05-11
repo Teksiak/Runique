@@ -7,6 +7,7 @@ import com.teksiak.core.domain.run.LocalRunDataSource
 import com.teksiak.core.domain.run.RemoteRunDataSource
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.domain.run.RunRepository
+import com.teksiak.core.domain.run.RunSyncScheduler
 import com.teksiak.core.domain.util.DataError
 import com.teksiak.core.domain.util.EmptyResult
 import com.teksiak.core.domain.util.Result
@@ -24,6 +25,7 @@ class OfflineFirstRunRepository(
     private val localRunDataSource: LocalRunDataSource,
     private val remoteRunDataSource: RemoteRunDataSource,
     private val runSyncDao: RunSyncDao,
+    private val runSyncScheduler: RunSyncScheduler,
     private val sessionStorage: SessionStorage,
     private val applicationScope: CoroutineScope
 ) : RunRepository {
@@ -57,6 +59,11 @@ class OfflineFirstRunRepository(
 
         return when (remoteResult) {
             is Result.Failure -> {
+                applicationScope.launch {
+                    runSyncScheduler.scheduleSync(
+                        type = RunSyncScheduler.SyncType.CreateRun(runWithId, mapPicture)
+                    )
+                }.join()
                 Result.Success(Unit)
             }
 
@@ -81,6 +88,13 @@ class OfflineFirstRunRepository(
             remoteRunDataSource.deleteRun(id)
         }.await()
 
+        if(remoteResult is Result.Failure) {
+            applicationScope.launch {
+                runSyncScheduler.scheduleSync(
+                    type = RunSyncScheduler.SyncType.DeleteRun(id)
+                )
+            }.join()
+        }
     }
 
     override suspend fun syncRunsWithRemote() {
