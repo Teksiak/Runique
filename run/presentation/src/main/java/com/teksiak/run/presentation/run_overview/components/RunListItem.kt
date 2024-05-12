@@ -4,9 +4,15 @@ package com.teksiak.run.presentation.run_overview.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
@@ -31,9 +37,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -79,38 +88,81 @@ fun RunListItem(
         mutableStateOf(false)
     }
 
+    var expandInfo by remember {
+        mutableStateOf(false)
+    }
+    val expandIconRotate by animateFloatAsState(
+        targetValue = if (expandInfo) 180f else 0f,
+        animationSpec = tween(300),
+        label = ""
+    )
+
     Box {
         Column(
             modifier = modifier
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
                 .combinedClickable(
-                    onClick = {},
+                    onClick = {
+                        expandInfo = !expandInfo
+                    },
                     onLongClick = {
                         showDeletePopup = true
                     }
                 )
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             MapImage(
                 imageUrl = runUi.mapPictureUrl,
             )
+            Spacer(modifier = Modifier.height(16.dp))
+
             RunningTimeSection(
                 duration = runUi.duration,
                 modifier = Modifier.fillMaxWidth()
             )
+            Spacer(modifier = Modifier.height(16.dp))
+
             HorizontalDivider(
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
             )
-            RunningDateSection(
-                dateTime = runUi.dateTime,
-                modifier = Modifier.fillMaxWidth()
-            )
-            DataGrid(
-                run = runUi,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RunningDateSection(
+                    dateTime = runUi.dateTime
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = { expandInfo = !expandInfo }) {
+                    Icon(
+                        imageVector = Icons.Rounded.KeyboardArrowUp,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.rotate(expandIconRotate)
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                visible = expandInfo,
+                enter = expandVertically(
+                    expandFrom = Alignment.Top,
+                    animationSpec = tween(300)
+                ),
+                exit = shrinkVertically(
+                    shrinkTowards = Alignment.Top,
+                    animationSpec = tween(300)
+                )
+            ) {
+                DataGrid(
+                    run = runUi,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
         }
         DeleteRunPopup(
             isVisible = showDeletePopup,
