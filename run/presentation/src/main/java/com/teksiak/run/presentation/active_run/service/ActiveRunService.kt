@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
+import timber.log.Timber
 
 class ActiveRunService: Service() {
 
@@ -34,12 +35,12 @@ class ActiveRunService: Service() {
 
     private val activeRunNotification by lazy {
         NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-            .setSmallIcon(com.teksiak.core.presentation.designsystem.R.drawable.logo)
             .setOngoing(true)
             .setAutoCancel(false)
             .setOnlyAlertOnce(true)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setSmallIcon(com.teksiak.core.presentation.designsystem.R.drawable.logo)
             .setContentTitle(getString(R.string.active_run))
-            .setChannelId(CHANNEL_ID)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
     }
 
@@ -69,11 +70,6 @@ class ActiveRunService: Service() {
             isServiceActive = true
             createNotificationChannel()
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val serviceIntent = Intent(applicationContext, ActiveRunService::class.java)
-                startForegroundService(serviceIntent)
-            }
-
             val activityIntent = Intent(applicationContext, activityClass).apply {
                 data = "runique://active_run".toUri()
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -88,8 +84,17 @@ class ActiveRunService: Service() {
                 .setContentIntent(pendingIntent)
                 .build()
 
+            ServiceCompat.startForeground(
+                this,
+                NOTIFICATION_ID,
+                notification,
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    FOREGROUND_SERVICE_TYPE_LOCATION
+                } else {
+                    0
+                }
+            )
 
-            startForeground(NOTIFICATION_ID, notification)
             updateNotification()
         }
     }
@@ -100,6 +105,7 @@ class ActiveRunService: Service() {
         serviceScope.cancel()
 
         serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        println("Service stopped")
     }
 
     private fun updateNotification() {

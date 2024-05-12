@@ -143,7 +143,9 @@ private fun ActiveRunScreen(
     }
 
     LaunchedEffect(state.isRunFinished) {
-        onServiceToggle(false)
+        if(state.isRunFinished) {
+            onServiceToggle(false)
+        }
     }
 
     LaunchedEffect(state.shouldTrack) {
