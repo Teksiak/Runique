@@ -94,6 +94,11 @@ class ActiveRunViewModel(
     fun onAction(action: ActiveRunAction) {
         when(action) {
             ActiveRunAction.OnFinishRunClick -> {
+                if(state.runData.distanceMeters == 0) {
+                    state = state.copy(isSavingRun = false)
+                    return
+                }
+
                 state = state.copy(
                     isRunFinished = true,
                     isSavingRun = true
@@ -136,10 +141,6 @@ class ActiveRunViewModel(
 
     private fun finishRun(mapPictureBytes: ByteArray) {
         val locations = state.runData.locations
-        if(locations.isEmpty() || locations.first().size <= 1) {
-            state = state.copy(isSavingRun = false)
-            return
-        }
 
         viewModelScope.launch {
             val run = Run(

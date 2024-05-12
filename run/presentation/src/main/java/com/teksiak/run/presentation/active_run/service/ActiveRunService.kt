@@ -103,9 +103,7 @@ class ActiveRunService: Service() {
         stopSelf()
         isServiceActive = false
         serviceScope.cancel()
-
         serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        println("Service stopped")
     }
 
     private fun updateNotification() {
