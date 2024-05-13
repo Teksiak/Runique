@@ -8,6 +8,7 @@ import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -25,7 +26,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
-import timber.log.Timber
 
 class ActiveRunService: Service() {
 
@@ -39,7 +39,7 @@ class ActiveRunService: Service() {
             .setAutoCancel(false)
             .setOnlyAlertOnce(true)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
-            .setSmallIcon(com.teksiak.core.presentation.designsystem.R.drawable.logo)
+            .setSmallIcon(com.teksiak.core.presentation.designsystem.R.drawable.run)
             .setContentTitle(getString(R.string.active_run))
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
     }
@@ -108,18 +108,20 @@ class ActiveRunService: Service() {
 
     private fun updateNotification() {
         combine(runningTracker.elapsedTime, runningTracker.isTracking) { elapsedTime, isTracking ->
-            if(isTracking) {
+            val content = if (isTracking) {
                 elapsedTime.formatted()
             } else {
                 elapsedTime.formatted() + getString(R.string.paused)
             }
-        }.onEach { contentText ->
-            val notification = activeRunNotification
-                .setContentText(contentText)
-                .build()
 
+            activeRunNotification
+                .setContentText(content)
+                .build()
+        }
+        .onEach { notification ->
             notificationManager.notify(NOTIFICATION_ID, notification)
-        }.launchIn(serviceScope)
+        }
+        .launchIn(serviceScope)
     }
 
     private fun createNotificationChannel() {
