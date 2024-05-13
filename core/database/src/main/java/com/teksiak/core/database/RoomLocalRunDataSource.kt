@@ -2,8 +2,8 @@ package com.teksiak.core.database
 
 import android.database.sqlite.SQLiteFullException
 import com.teksiak.core.database.dao.RunDao
-import com.teksiak.core.database.mappers.toRun
-import com.teksiak.core.database.mappers.toRunEntity
+import com.teksiak.core.database.mapper.toRun
+import com.teksiak.core.database.mapper.toRunEntity
 import com.teksiak.core.domain.run.LocalRunDataSource
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.domain.run.RunId

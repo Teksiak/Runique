@@ -2,7 +2,7 @@ package com.teksiak.core.data.run
 
 import com.teksiak.core.data.networking.get
 import com.teksiak.core.database.dao.RunSyncDao
-import com.teksiak.core.database.mappers.toRun
+import com.teksiak.core.database.mapper.toRun
 import com.teksiak.core.domain.SessionStorage
 import com.teksiak.core.domain.run.LocalRunDataSource
 import com.teksiak.core.domain.run.RemoteRunDataSource

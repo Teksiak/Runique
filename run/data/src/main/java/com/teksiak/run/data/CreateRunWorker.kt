@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.teksiak.core.database.dao.RunSyncDao
-import com.teksiak.core.database.mappers.toRun
+import com.teksiak.core.database.mapper.toRun
 import com.teksiak.core.domain.run.RemoteRunDataSource
 
 class CreateRunWorker(

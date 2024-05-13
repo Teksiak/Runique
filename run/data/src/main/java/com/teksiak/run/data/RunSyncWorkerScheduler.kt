@@ -12,7 +12,7 @@ import androidx.work.await
 import com.teksiak.core.database.dao.RunSyncDao
 import com.teksiak.core.database.entity.RunDeletedSyncEntity
 import com.teksiak.core.database.entity.RunPendingSyncEntity
-import com.teksiak.core.database.mappers.toRunEntity
+import com.teksiak.core.database.mapper.toRunEntity
 import com.teksiak.core.domain.SessionStorage
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.domain.run.RunId

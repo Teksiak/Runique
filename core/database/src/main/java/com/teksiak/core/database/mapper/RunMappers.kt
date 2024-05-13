@@ -1,4 +1,4 @@
-package com.teksiak.core.database.mappers
+package com.teksiak.core.database.mapper
 
 import com.teksiak.core.database.entity.RunEntity
 import com.teksiak.core.domain.location.Location
