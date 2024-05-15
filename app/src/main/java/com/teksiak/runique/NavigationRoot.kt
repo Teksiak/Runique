@@ -44,6 +44,7 @@ sealed interface Routes {
 fun NavigationRoot(
     navController: NavHostController,
     isLoggedIn: Boolean,
+    onAnalyticsClick: () -> Unit,
 ) {
     NavHost(
         navController = navController,
@@ -59,6 +60,7 @@ fun NavigationRoot(
         )
         runGraph(
             navController = navController,
+            onAnalyticsClick = onAnalyticsClick,
             sharedSnackbarHostState = sharedSnackbarHostState,
         )
     }
@@ -149,6 +151,7 @@ private fun NavGraphBuilder.authGraph(
 
 private fun NavGraphBuilder.runGraph(
     navController: NavHostController,
+    onAnalyticsClick: () -> Unit,
     sharedSnackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
     navigation(
@@ -163,6 +166,7 @@ private fun NavGraphBuilder.runGraph(
                 onStartRunClick = {
                     navController.navigate(Routes.Run.ACTIVE_RUN)
                 },
+                onAnalyticsClick = onAnalyticsClick,
                 onLogoutClick = {
                     navController.navigate(Routes.Auth.NAV_ROUTE) {
                         popUpTo(Routes.Run.NAV_ROUTE) {

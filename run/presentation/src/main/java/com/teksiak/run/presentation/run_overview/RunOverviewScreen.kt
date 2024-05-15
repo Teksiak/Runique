@@ -70,28 +70,26 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun RunOverviewScreenRoot(
     onStartRunClick: () -> Unit,
+    onAnalyticsClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onStopService: () -> Unit,
     viewModel: RunOverviewViewModel = koinViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        RunOverviewScreen(
-            state = viewModel.state,
-            onStopService = onStopService,
-            onAction = { action ->
-                when (action) {
-                    is RunOverviewAction.OnStartRunClick -> onStartRunClick()
-                    is RunOverviewAction.OnLogoutClick -> onLogoutClick()
-                    else -> Unit
-                }
-                viewModel.onAction(action)
-            },
-            snackbarHostState = snackbarHostState
-        )
-    }
+    RunOverviewScreen(
+        state = viewModel.state,
+        onStopService = onStopService,
+        onAction = { action ->
+            when (action) {
+                is RunOverviewAction.OnStartRunClick -> onStartRunClick()
+                is RunOverviewAction.OnAnalyticsClick -> onAnalyticsClick()
+                is RunOverviewAction.OnLogoutClick -> onLogoutClick()
+                else -> Unit
+            }
+            viewModel.onAction(action)
+        },
+        snackbarHostState = snackbarHostState
+    )
 }
 
 @Composable
