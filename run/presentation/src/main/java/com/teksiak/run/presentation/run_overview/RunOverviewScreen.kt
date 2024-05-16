@@ -6,13 +6,6 @@ package com.teksiak.run.presentation.run_overview
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,8 +36,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.teksiak.core.domain.location.Location
-import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.AnalyticsIcon
 import com.teksiak.core.presentation.designsystem.LogoIcon
 import com.teksiak.core.presentation.designsystem.LogoutIcon
@@ -61,16 +52,13 @@ import com.teksiak.core.presentation.designsystem.components.util.ToolbarMenuIte
 import com.teksiak.run.presentation.R
 import com.teksiak.run.presentation.run_overview.components.ActiveRunBar
 import com.teksiak.run.presentation.run_overview.components.RunListItem
-import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import org.koin.androidx.compose.koinViewModel
-import java.time.ZonedDateTime
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun RunOverviewScreenRoot(
     onStartRunClick: () -> Unit,
     onAnalyticsClick: () -> Unit,
+    onCompareRunClick: (String) -> Unit,
     onLogoutClick: () -> Unit,
     onStopService: () -> Unit,
     viewModel: RunOverviewViewModel = koinViewModel(),
@@ -83,6 +71,7 @@ fun RunOverviewScreenRoot(
             when (action) {
                 is RunOverviewAction.OnStartRunClick -> onStartRunClick()
                 is RunOverviewAction.OnAnalyticsClick -> onAnalyticsClick()
+                is RunOverviewAction.OnCompareRunClick -> onCompareRunClick(action.run.id)
                 is RunOverviewAction.OnLogoutClick -> onLogoutClick()
                 else -> Unit
             }
@@ -191,6 +180,9 @@ private fun RunOverviewScreen(
                 ) {
                     RunListItem(
                         runUi = it,
+                        onCompareClick = {
+                            onAction(RunOverviewAction.OnCompareRunClick(it))
+                        },
                         onDeleteClick = {
                             onAction(RunOverviewAction.OnDeleteRunClick(it))
                         },

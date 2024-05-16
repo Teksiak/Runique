@@ -1,4 +1,4 @@
-package com.teksiak.analytics.presentation
+package com.teksiak.analytics.presentation.dashboard
 
 data class AnalyticsDashboardState(
     val totalDistance: String,

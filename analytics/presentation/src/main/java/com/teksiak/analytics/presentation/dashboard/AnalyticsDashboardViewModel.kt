@@ -1,4 +1,4 @@
-package com.teksiak.analytics.presentation
+package com.teksiak.analytics.presentation.dashboard
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

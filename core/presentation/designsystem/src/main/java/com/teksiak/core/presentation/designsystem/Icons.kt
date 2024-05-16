@@ -95,3 +95,7 @@ val StartIcon: ImageVector
 val StopIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.stop)
+
+val CompareIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.compare)

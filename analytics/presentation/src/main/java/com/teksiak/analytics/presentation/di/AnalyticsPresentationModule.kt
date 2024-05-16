@@ -1,6 +1,6 @@
 package com.teksiak.analytics.presentation.di
 
-import com.teksiak.analytics.presentation.AnalyticsDashboardViewModel
+import com.teksiak.analytics.presentation.dashboard.AnalyticsDashboardViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 

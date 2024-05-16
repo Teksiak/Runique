@@ -1,6 +1,7 @@
 package com.teksiak.runique
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -23,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import com.google.android.play.core.splitinstall.SplitInstallManager
@@ -92,8 +94,8 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             isLoggedIn = viewModel.state.isLoggedIn,
                             onAnalyticsClick = {
-                                installOrStartAnalyticsFeature()
-                            }
+                                installOrStartAnalyticsFeature(it)
+                            },
                         )
                     }
 
@@ -131,14 +133,18 @@ class MainActivity : ComponentActivity() {
         splitInstallManager.unregisterListener(splitInstallListener)
     }
 
-    private fun installOrStartAnalyticsFeature() {
+    private fun installOrStartAnalyticsFeature(
+        destination: Uri
+    ) {
         if(splitInstallManager.installedModules.contains("analytics_feature")) {
-            Intent()
-                .setClassName(
+            Intent().apply {
+                setClassName(
                     packageName,
                     "com.teksiak.analytics.analytics_feature.AnalyticsActivity"
                 )
-                .also(::startActivity)
+                setData(destination)
+            }
+            .also(::startActivity)
             return
         }
 

@@ -1,8 +1,7 @@
 package com.teksiak.analytics.presentation.mapper
 
 import com.teksiak.analytics.domain.AnalyticsData
-import com.teksiak.analytics.presentation.AnalyticsDashboardState
-import com.teksiak.core.presentation.ui.formatted
+import com.teksiak.analytics.presentation.dashboard.AnalyticsDashboardState
 import com.teksiak.core.presentation.ui.toFormattedKm
 import com.teksiak.core.presentation.ui.toFormattedKmh
 import kotlin.time.Duration

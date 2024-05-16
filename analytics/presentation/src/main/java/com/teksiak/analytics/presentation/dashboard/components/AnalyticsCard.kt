@@ -1,4 +1,4 @@
-package com.teksiak.analytics.presentation.components
+package com.teksiak.analytics.presentation.dashboard.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

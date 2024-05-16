@@ -3,18 +3,13 @@
 package com.teksiak.run.presentation.run_overview.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -54,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -67,6 +63,7 @@ import coil.compose.SubcomposeAsyncImage
 import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.CalendarIcon
+import com.teksiak.core.presentation.designsystem.CompareIcon
 import com.teksiak.core.presentation.designsystem.RunOutlinedIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
 import com.teksiak.run.presentation.R
@@ -82,6 +79,7 @@ import kotlin.time.Duration.Companion.seconds
 fun RunListItem(
     runUi: RunUi,
     onDeleteClick: () -> Unit,
+    onCompareClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showDeletePopup by remember {
@@ -164,10 +162,11 @@ fun RunListItem(
             }
 
         }
-        DeleteRunPopup(
+        RunActionPopup(
             isVisible = showDeletePopup,
             onDismissRequest = { showDeletePopup = false },
-            onDeleteClick = onDeleteClick
+            onDeleteClick = onDeleteClick,
+            onCompareClick = onCompareClick
         )
     }
 }
@@ -354,12 +353,13 @@ private fun DataGridCell(
 }
 
 @Composable
-fun DeleteRunPopup(
+fun RunActionPopup(
     isVisible: Boolean,
     onDismissRequest: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    onCompareClick: () -> Unit
 ) {
-    val topOffset = with(LocalDensity.current) { 48.dp.toPx() }
+    val topOffset = with(LocalDensity.current) { 92.dp.toPx() }
     Popup(
         alignment = Alignment.BottomCenter,
         offset = IntOffset(0, topOffset.roundToInt()),
@@ -373,32 +373,78 @@ fun DeleteRunPopup(
             enter = fadeIn(),
             exit = fadeOut(),
         ) {
-            Row(
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = 32.dp)
-                    .padding(top = 2.dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.background)
-                    .background(MaterialTheme.colorScheme.errorContainer)
-                    .clickable {
+                    .padding(horizontal = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ){
+                PopupAction(
+                    text = {
+                        Text(
+                            text = stringResource(id = R.string.compare),
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = CompareIcon,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    },
+                    onClick = {
+                        onCompareClick()
+                        onDismissRequest()
+                    },
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.2f)
+                )
+                PopupAction(
+                    text = {
+                        Text(
+                            text = stringResource(id = R.string.delete),
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Delete,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error,
+                        )
+                    },
+                    onClick = {
                         onDeleteClick()
                         onDismissRequest()
-                    }
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Delete,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error,
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(id = R.string.delete),
-                    color = MaterialTheme.colorScheme.error,
+                    },
+                    color = MaterialTheme.colorScheme.errorContainer
                 )
             }
         }
+    }
+}
+
+@Composable
+fun PopupAction(
+    modifier: Modifier = Modifier,
+    text: @Composable () -> Unit,
+    onClick: () -> Unit,
+    color: Color = MaterialTheme.colorScheme.background,
+    leadingIcon: @Composable () -> Unit = {},
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.background)
+            .background(color)
+            .clickable {
+                onClick()
+            }
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        leadingIcon()
+        Spacer(modifier = Modifier.width(8.dp))
+        text()
     }
 }
 
@@ -417,6 +463,7 @@ private fun RunListItemPreview() {
                 totalElevationMeters = 123,
                 mapPictureUrl = null
             ).toRunUi(),
+            onCompareClick = {},
             onDeleteClick = {}
         )
     }

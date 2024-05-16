@@ -1,16 +1,19 @@
 package com.teksiak.runique
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.net.Uri
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.teksiak.auth.presentation.R
@@ -36,7 +39,6 @@ sealed interface Routes {
         const val NAV_ROUTE = "run"
         const val RUN_OVERVIEW = "overview"
         const val ACTIVE_RUN = "active_run"
-
     }
 }
 
@@ -44,7 +46,7 @@ sealed interface Routes {
 fun NavigationRoot(
     navController: NavHostController,
     isLoggedIn: Boolean,
-    onAnalyticsClick: () -> Unit,
+    onAnalyticsClick: (Uri) -> Unit,
 ) {
     NavHost(
         navController = navController,
@@ -151,7 +153,7 @@ private fun NavGraphBuilder.authGraph(
 
 private fun NavGraphBuilder.runGraph(
     navController: NavHostController,
-    onAnalyticsClick: () -> Unit,
+    onAnalyticsClick: (Uri) -> Unit,
     sharedSnackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
     navigation(
@@ -166,7 +168,12 @@ private fun NavGraphBuilder.runGraph(
                 onStartRunClick = {
                     navController.navigate(Routes.Run.ACTIVE_RUN)
                 },
-                onAnalyticsClick = onAnalyticsClick,
+                onAnalyticsClick = {
+                    onAnalyticsClick("runique://analytics_dashboard".toUri())
+                },
+                onCompareRunClick = { runId ->
+                    onAnalyticsClick("runique://analytics_compare_run/$runId".toUri())
+                },
                 onLogoutClick = {
                     navController.navigate(Routes.Auth.NAV_ROUTE) {
                         popUpTo(Routes.Run.NAV_ROUTE) {
