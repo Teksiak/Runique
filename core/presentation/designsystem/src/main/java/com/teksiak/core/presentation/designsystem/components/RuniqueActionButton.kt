@@ -35,10 +35,12 @@ fun RuniqueActionButton(
     isLoading: Boolean,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    onClick: () -> Unit
+    backgroundColor: Color = MaterialTheme.colorScheme.primary,
+    textColor: Color = MaterialTheme.colorScheme.onPrimary,
+    onClick: () -> Unit,
 ) {
     val animatedButtonColor by animateColorAsState(
-        targetValue = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+        targetValue = if (enabled) backgroundColor else MaterialTheme.colorScheme.surfaceVariant,
         animationSpec = tween(100, 0, LinearEasing),
         label = ""
     )
@@ -48,7 +50,7 @@ fun RuniqueActionButton(
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = animatedButtonColor,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
+            contentColor = textColor,
             disabledContainerColor = animatedButtonColor,
             disabledContentColor = RuniqueBlack
         ),
@@ -67,7 +69,7 @@ fun RuniqueActionButton(
                     .size(15.dp)
                     .alpha(if (isLoading) 1f else 0f),
                 strokeWidth = 1.5.dp,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = textColor
             )
             Text(
                 text = text,

@@ -7,6 +7,7 @@ package com.teksiak.run.presentation.run_overview
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -210,11 +211,34 @@ private fun RunOverviewScreen(
             )
         }
 
+        if(state.runToDeleteId != null) {
+            RuniqueDialog(
+                title = stringResource(id = R.string.delete_run),
+                onDismiss = {
+                    onAction(RunOverviewAction.OnDismissDeleteRunDialog)
+                },
+                description = stringResource(id = R.string.delete_run_description),
+                primaryAction = {
+                    RuniqueActionButton(
+                        modifier = Modifier
+                            .weight(1f),
+                        text = stringResource(id = R.string.delete),
+                        isLoading = false,
+                        onClick = {
+                            onAction(RunOverviewAction.OnDeleteRunClick(null))
+                        },
+                        backgroundColor = MaterialTheme.colorScheme.error,
+                        textColor = MaterialTheme.colorScheme.onError
+                    )
+                }
+            )
+        }
+
         if (state.isDiscardRunDialogShown) {
             RuniqueDialog(
                 title = stringResource(id = R.string.discard_run),
                 onDismiss = {
-                    onAction(RunOverviewAction.OnDismissDiscardRunDialogClick)
+                    onAction(RunOverviewAction.OnDismissDiscardRunDialog)
                 },
                 description = stringResource(id = R.string.discard_run_description),
                 primaryAction = {
@@ -234,7 +258,7 @@ private fun RunOverviewScreen(
                         text = stringResource(id = R.string.cancel),
                         isLoading = false,
                         onClick = {
-                            onAction(RunOverviewAction.OnDismissDiscardRunDialogClick)
+                            onAction(RunOverviewAction.OnDismissDiscardRunDialog)
                         }
                     )
                 }

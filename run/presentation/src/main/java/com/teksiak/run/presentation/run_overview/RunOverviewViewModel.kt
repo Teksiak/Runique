@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.teksiak.core.domain.SessionStorage
 import com.teksiak.core.domain.run.RunRepository
 import com.teksiak.core.presentation.ui.formatted
 import com.teksiak.core.domain.run.RunSyncScheduler
@@ -72,9 +71,25 @@ class RunOverviewViewModel(
     fun onAction(action: RunOverviewAction) {
         when (action) {
             is RunOverviewAction.OnDeleteRunClick -> {
-                viewModelScope.launch {
-                    runRepository.deleteRun(action.run.id)
+                state.runToDeleteId?.let { runId ->
+                    viewModelScope.launch {
+                        runRepository.deleteRun(runId)
+                    }
+                    state = state.copy(
+                        runToDeleteId = null
+                    )
+                    return@onAction
                 }
+
+                state = state.copy(
+                    runToDeleteId = action.run?.id
+                )
+            }
+
+            is RunOverviewAction.OnDismissDeleteRunDialog -> {
+                state = state.copy(
+                    runToDeleteId = null
+                )
             }
 
             is RunOverviewAction.OnDiscardRunClick -> {
@@ -90,7 +105,7 @@ class RunOverviewViewModel(
                 }
             }
 
-            is RunOverviewAction.OnDismissDiscardRunDialogClick -> {
+            is RunOverviewAction.OnDismissDiscardRunDialog -> {
                 state = state.copy(
                     isDiscardRunDialogShown = false
                 )

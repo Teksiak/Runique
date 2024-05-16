@@ -35,4 +35,6 @@
     <string name="discard_run_description">Are you sure you want to discard the run in progress?</string>
     <string name="cancel">Cancel</string>
     <string name="compare">Compare</string>
+    <string name="delete_run">Delete run</string>
+    <string name="delete_run_description">Are you sure you want to delete this run?</string>
 </resources>
