@@ -155,7 +155,6 @@ private fun ActiveRunScreen(
     }
 
     RuniqueScaffold(
-        withGradient = false,
         topAppBar = {
             RuniqueToolbar(
                 title = stringResource(id = R.string.active_run),
@@ -165,7 +164,6 @@ private fun ActiveRunScreen(
         },
         floatingActionButton = {
             RuniqueFloatingActionButton(
-//                modifier = Modifier.shadow(6.dp, CircleShape),
                 icon = if (state.shouldTrack) StopIcon else StartIcon,
                 onClick = {
                     onAction(ActiveRunAction.OnToggleRunClick)
@@ -175,7 +173,10 @@ private fun ActiveRunScreen(
                     id = if (state.shouldTrack) R.string.pause_run else R.string.start_run
                 )
             )
-        }
+        },
+        withGradient = false,
+        isBlurred = (!state.shouldTrack && state.hasStartedRunning)
+                || state.showLocationPermissionRationale || state.showNotificationPermissionRationale
     ) { padding ->
         Box(
             modifier = Modifier

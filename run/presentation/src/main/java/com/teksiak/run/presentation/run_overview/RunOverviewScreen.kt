@@ -1,13 +1,11 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class,
+@file:OptIn(ExperimentalMaterial3Api::class,
     ExperimentalFoundationApi::class
 )
 
 package com.teksiak.run.presentation.run_overview
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -162,7 +160,8 @@ private fun RunOverviewScreen(
                     )
                 }
             }
-        }
+        },
+        isBlurred = !state.runToDeleteId.isNullOrBlank() || state.isDiscardRunDialogShown,
     ) { padding ->
         Box(
             modifier = Modifier.fillMaxSize()
@@ -211,7 +210,7 @@ private fun RunOverviewScreen(
             )
         }
 
-        if(state.runToDeleteId != null) {
+        if(!state.runToDeleteId.isNullOrBlank()) {
             RuniqueDialog(
                 title = stringResource(id = R.string.delete_run),
                 onDismiss = {
