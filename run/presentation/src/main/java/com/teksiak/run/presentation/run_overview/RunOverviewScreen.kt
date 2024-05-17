@@ -50,6 +50,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.teksiak.core.presentation.designsystem.AnalyticsIcon
 import com.teksiak.core.presentation.designsystem.LogoIcon
 import com.teksiak.core.presentation.designsystem.LogoutIcon

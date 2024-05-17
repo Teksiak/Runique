@@ -9,12 +9,12 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -52,22 +53,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.focusTarget
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
+import androidx.compose.ui.zIndex
 import coil.compose.SubcomposeAsyncImage
 import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
@@ -79,9 +73,7 @@ import com.teksiak.run.presentation.R
 import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import com.teksiak.run.presentation.run_overview.model.RunDataUi
 import com.teksiak.run.presentation.run_overview.model.RunUi
-import timber.log.Timber
 import java.time.ZonedDateTime
-import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -112,9 +104,12 @@ fun RunListItem(
         showDeletePopup = isFocused
     }
 
-    Box {
+    Box(
+        modifier = if(isFocused) Modifier.zIndex(1f) else Modifier
+    ) {
         Column(
             modifier = modifier
+                .zIndex(2f)
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
                 .pointerInput(isFocused) {
@@ -187,6 +182,7 @@ fun RunListItem(
 
         }
         RunActionPopup(
+            modifier = Modifier.align(Alignment.BottomCenter),
             isVisible = showDeletePopup,
             onDismissRequest = { onFocusChange(false) },
             onDeleteClick = onDeleteClick,
@@ -379,70 +375,74 @@ private fun DataGridCell(
 @Composable
 fun RunActionPopup(
     isVisible: Boolean,
+    modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit,
     onDeleteClick: () -> Unit,
     onCompareClick: () -> Unit
 ) {
-    val topOffset = with(LocalDensity.current) { 92.dp.toPx() }
-    Popup(
-        alignment = Alignment.BottomCenter,
-        offset = IntOffset(0, topOffset.roundToInt()),
-        properties = PopupProperties(
-            clippingEnabled = false,
+    AnimatedVisibility(
+        modifier = modifier
+            .zIndex(1f)
+            .offset(y = 96.dp),
+        visible = isVisible,
+        enter = slideInVertically(
+            initialOffsetY = { -it },
+            animationSpec = tween(300)
+        ) + fadeIn(
+            animationSpec = tween(150)
         ),
-        onDismissRequest = onDismissRequest
+        exit = slideOutVertically(
+            targetOffsetY = { -it },
+            animationSpec = tween(200)
+        ) + fadeOut(
+            animationSpec = tween(50)
+        ),
     ) {
-        AnimatedVisibility(
-            visible = isVisible,
-            enter = fadeIn(),
-            exit = fadeOut(),
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 32.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                PopupAction(
-                    text = {
-                        Text(
-                            text = stringResource(id = R.string.compare),
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = CompareIcon,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    },
-                    onClick = {
-                        onCompareClick()
-                        onDismissRequest()
-                    },
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.2f)
-                )
-                PopupAction(
-                    text = {
-                        Text(
-                            text = stringResource(id = R.string.delete),
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Delete,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.error,
-                        )
-                    },
-                    onClick = {
-                        onDeleteClick()
-                        onDismissRequest()
-                    },
-                    color = MaterialTheme.colorScheme.errorContainer
-                )
-            }
+            PopupAction(
+                text = {
+                    Text(
+                        text = stringResource(id = R.string.compare),
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = CompareIcon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                },
+                onClick = {
+                    onCompareClick()
+                    onDismissRequest()
+                },
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.2f)
+            )
+            PopupAction(
+                text = {
+                    Text(
+                        text = stringResource(id = R.string.delete),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                    )
+                },
+                onClick = {
+                    onDeleteClick()
+                    onDismissRequest()
+                },
+                color = MaterialTheme.colorScheme.errorContainer
+            )
         }
     }
 }
