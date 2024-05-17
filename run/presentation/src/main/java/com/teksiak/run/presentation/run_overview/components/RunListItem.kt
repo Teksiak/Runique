@@ -14,6 +14,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +42,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -49,9 +52,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -70,6 +79,7 @@ import com.teksiak.run.presentation.R
 import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import com.teksiak.run.presentation.run_overview.model.RunDataUi
 import com.teksiak.run.presentation.run_overview.model.RunUi
+import timber.log.Timber
 import java.time.ZonedDateTime
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.minutes
@@ -78,9 +88,11 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun RunListItem(
     runUi: RunUi,
+    modifier: Modifier = Modifier,
+    isFocused: Boolean,
+    onFocusChange: (Boolean) -> Unit,
     onDeleteClick: () -> Unit,
     onCompareClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     var showDeletePopup by remember {
         mutableStateOf(false)
@@ -95,20 +107,32 @@ fun RunListItem(
         label = ""
     )
 
+
+    LaunchedEffect(key1 = isFocused) {
+        showDeletePopup = isFocused
+    }
+
     Box {
         Column(
             modifier = modifier
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
-                .combinedClickable(
-                    onClick = {
-                        expandInfo = !expandInfo
-                    },
-                    onLongClick = {
-                        showDeletePopup = true
-                    }
-                )
-                .padding(16.dp),
+                .pointerInput(isFocused) {
+                    detectTapGestures(
+                        onTap = {
+                            expandInfo = !expandInfo
+                        },
+                        onPress = { _ ->
+                            if (!isFocused) {
+                                onFocusChange(false)
+                            }
+                        },
+                        onLongPress = {
+                            onFocusChange(true)
+                        }
+                    )
+                }
+                .padding(16.dp)
         ) {
             MapImage(
                 imageUrl = runUi.mapPictureUrl,
@@ -164,7 +188,7 @@ fun RunListItem(
         }
         RunActionPopup(
             isVisible = showDeletePopup,
-            onDismissRequest = { showDeletePopup = false },
+            onDismissRequest = { onFocusChange(false) },
             onDeleteClick = onDeleteClick,
             onCompareClick = onCompareClick
         )
@@ -377,7 +401,7 @@ fun RunActionPopup(
                 modifier = Modifier
                     .padding(horizontal = 32.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
-            ){
+            ) {
                 PopupAction(
                     text = {
                         Text(
@@ -463,8 +487,10 @@ private fun RunListItemPreview() {
                 totalElevationMeters = 123,
                 mapPictureUrl = null
             ).toRunUi(),
+            isFocused = false,
             onCompareClick = {},
-            onDeleteClick = {}
+            onDeleteClick = {},
+            onFocusChange = {}
         )
     }
 }

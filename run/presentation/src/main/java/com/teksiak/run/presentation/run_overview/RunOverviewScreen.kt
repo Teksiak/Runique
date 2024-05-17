@@ -5,7 +5,13 @@
 package com.teksiak.run.presentation.run_overview
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -28,10 +34,19 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,6 +67,7 @@ import com.teksiak.run.presentation.R
 import com.teksiak.run.presentation.run_overview.components.ActiveRunBar
 import com.teksiak.run.presentation.run_overview.components.RunListItem
 import org.koin.androidx.compose.koinViewModel
+import timber.log.Timber
 
 @Composable
 fun RunOverviewScreenRoot(
@@ -90,6 +106,16 @@ private fun RunOverviewScreen(
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         state = topAppBarState
+    )
+
+    var focusedRunId by remember {
+        mutableStateOf<String?>(null)
+    }
+
+    val blurEffect by animateFloatAsState(
+        targetValue = if(focusedRunId != null) 6f else 0f,
+        tween(durationMillis = 200),
+        label = ""
     )
 
     RuniqueScaffold(
@@ -164,7 +190,15 @@ private fun RunOverviewScreen(
         isBlurred = !state.runToDeleteId.isNullOrBlank() || state.isDiscardRunDialogShown,
     ) { padding ->
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onPress = {
+                            focusedRunId = null
+                        }
+                    )
+                }
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -177,16 +211,29 @@ private fun RunOverviewScreen(
                 items(
                     items = state.runs,
                     key = { it.id }
-                ) {
+                ) { run ->
                     RunListItem(
-                        runUi = it,
+                        runUi = run,
+                        isFocused = focusedRunId == run.id,
+                        onFocusChange = { isFocused ->
+                            focusedRunId = if(isFocused) run.id else null
+                        },
                         onCompareClick = {
-                            onAction(RunOverviewAction.OnCompareRunClick(it))
+                            onAction(RunOverviewAction.OnCompareRunClick(run))
                         },
                         onDeleteClick = {
-                            onAction(RunOverviewAction.OnDeleteRunClick(it))
+                            onAction(RunOverviewAction.OnDeleteRunClick(run))
                         },
-                        modifier = Modifier.animateItemPlacement()
+                        modifier = Modifier
+                            .animateItemPlacement()
+                            .then(
+                                if (focusedRunId != run.id && focusedRunId != null) {
+                                    Modifier.blur(
+                                        blurEffect.dp,
+                                        edgeTreatment = BlurredEdgeTreatment.Unbounded
+                                    )
+                                } else Modifier
+                            )
                     )
                 }
                 item {
