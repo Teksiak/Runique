@@ -227,7 +227,7 @@ private fun RunOverviewScreen(
                             onAction(RunOverviewAction.OnDeleteRunClick(null))
                         },
                         backgroundColor = MaterialTheme.colorScheme.error,
-                        textColor = MaterialTheme.colorScheme.onError
+                        textColor = MaterialTheme.colorScheme.onSurface
                     )
                 }
             )
@@ -241,18 +241,20 @@ private fun RunOverviewScreen(
                 },
                 description = stringResource(id = R.string.discard_run_description),
                 primaryAction = {
-                    RuniqueOutlinedActionButton(
+                    RuniqueActionButton(
                         modifier = Modifier.weight(1f),
                         text = stringResource(id = R.string.discard),
                         isLoading = false,
                         onClick = {
                             onAction(RunOverviewAction.OnDiscardRunClick)
                             onStopService()
-                        }
+                        },
+                        backgroundColor = MaterialTheme.colorScheme.error,
+                        textColor = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 secondaryAction = {
-                    RuniqueActionButton(
+                    RuniqueOutlinedActionButton(
                         modifier = Modifier.weight(1f),
                         text = stringResource(id = R.string.cancel),
                         isLoading = false,

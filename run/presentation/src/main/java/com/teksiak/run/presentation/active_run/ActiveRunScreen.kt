@@ -20,6 +20,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -220,7 +223,7 @@ private fun ActiveRunScreen(
             },
             description = stringResource(id = R.string.resume_or_finish_run),
             primaryAction = {
-                RuniqueOutlinedActionButton(
+                RuniqueActionButton(
                     modifier = Modifier.weight(1f),
                     text = stringResource(id = R.string.finish),
                     isLoading = state.isSavingRun,
@@ -230,7 +233,7 @@ private fun ActiveRunScreen(
                 )
             },
             secondaryAction = {
-                RuniqueActionButton(
+                RuniqueOutlinedActionButton(
                     modifier = Modifier.weight(1f),
                     text = stringResource(id = R.string.resume),
                     isLoading = false,
