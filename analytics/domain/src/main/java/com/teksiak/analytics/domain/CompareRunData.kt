@@ -14,7 +14,7 @@ data class CompareData<T: Comparable<T>>(
     val isEquals: Boolean
         get() = data.first == data.second
 
-    val isComparedBigger: Boolean
+    val isSecondBigger: Boolean
         get() = data.first < data.second
 }
 

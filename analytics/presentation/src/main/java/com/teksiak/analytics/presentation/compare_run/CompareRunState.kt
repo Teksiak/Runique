@@ -1,10 +1,10 @@
 package com.teksiak.analytics.presentation.compare_run
 
 import com.teksiak.analytics.presentation.compare_run.model.CompareRunDataUi
-import com.teksiak.core.domain.run.Run
+import com.teksiak.analytics.presentation.compare_run.model.RunUi
 
 data class CompareRunState(
-    val comparingRun: Run,
-    val otherRun: Run,
-    val compareRunData: CompareRunDataUi
+    val runs: List<RunUi> = emptyList(),
+    val comparedRun: RunUi? = null,
+    val compareRunData: CompareRunDataUi? = null
 )

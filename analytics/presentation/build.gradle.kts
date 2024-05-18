@@ -7,6 +7,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.coil.compose)
+
     implementation(projects.analytics.domain)
     implementation(projects.core.domain)
 }

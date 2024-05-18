@@ -7,4 +7,8 @@
     <string name="avg_distance">"Avg. distance per run "</string>
     <string name="avg_pace">Avg. pace per run</string>
     <string name="compare_run">Compare run</string>
+    <string name="run_map">Run map</string>
+    <string name="error_loading_map">Error loading image</string>
+    <string name="compare_with">Compare with</string>
+    <string name="no_runs">No runs found</string>
 </resources>

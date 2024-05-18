@@ -23,9 +23,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -36,7 +34,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -62,13 +59,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import coil.compose.SubcomposeAsyncImage
 import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.CalendarIcon
 import com.teksiak.core.presentation.designsystem.CompareIcon
 import com.teksiak.core.presentation.designsystem.RunOutlinedIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
+import com.teksiak.core.presentation.designsystem.components.RuniqueMapImage
 import com.teksiak.run.presentation.R
 import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import com.teksiak.run.presentation.run_overview.model.RunDataUi
@@ -131,7 +128,7 @@ fun RunListItem(
                 }
                 .padding(16.dp)
         ) {
-            MapImage(
+            RuniqueMapImage(
                 imageUrl = runUi.mapPictureUrl,
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -196,47 +193,6 @@ fun RunListItem(
             onCompareClick = onCompareClick
         )
     }
-}
-
-@Composable
-private fun MapImage(
-    imageUrl: String?,
-    modifier: Modifier = Modifier
-) {
-    SubcomposeAsyncImage(
-        model = imageUrl,
-        contentDescription = stringResource(id = R.string.run_map),
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(16 / 9f)
-            .clip(RoundedCornerShape(16.dp)),
-        loading = {
-            Box(
-                modifier = modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        },
-        error = {
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.errorContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(id = R.string.error_loading_image),
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-        }
-    )
 }
 
 @Composable
