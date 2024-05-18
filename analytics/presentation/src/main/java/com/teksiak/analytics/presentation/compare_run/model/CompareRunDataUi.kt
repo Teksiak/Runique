@@ -1,16 +1,11 @@
 package com.teksiak.analytics.presentation.compare_run.model
 
+import com.teksiak.analytics.domain.DataComparison
+
 data class CompareDataUi(
     val data: Pair<String, String>,
-    val isEquals: Boolean,
-    val isComparedBigger: Boolean
-) {
-    val first: String
-        get() = data.first
-
-    val second: String
-        get() = data.second
-}
+    val comparison: DataComparison
+)
 
 data class CompareRunDataUi(
     val duration: CompareDataUi,

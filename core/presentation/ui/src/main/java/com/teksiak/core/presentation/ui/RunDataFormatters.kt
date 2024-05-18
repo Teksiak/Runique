@@ -33,11 +33,13 @@ fun Duration.toFormattedTotalDuration(): String {
     val days = toLong(DurationUnit.DAYS)
     val hours = toLong(DurationUnit.HOURS) % 24
     val minutes = toLong(DurationUnit.MINUTES) % 60
+    val seconds = toLong(DurationUnit.SECONDS) % 60
 
     return when {
         days > 0 -> "${days}d ${hours}h ${minutes}m"
         hours > 0 -> "${hours}h ${minutes}m"
-        else -> "${minutes}m"
+        minutes > 0 -> "${minutes}m ${seconds}s"
+        else -> "${seconds}s"
     }
 }
 

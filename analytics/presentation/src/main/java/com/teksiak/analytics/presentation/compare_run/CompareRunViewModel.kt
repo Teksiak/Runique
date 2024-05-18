@@ -7,6 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.teksiak.analytics.domain.mapper.toCompareRunData
+import com.teksiak.analytics.presentation.compare_run.mapper.toCompareRunDataUi
 import com.teksiak.analytics.presentation.compare_run.mapper.toRunUi
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.domain.run.RunRepository
@@ -41,14 +43,26 @@ class CompareRunViewModel(
             .launchIn(viewModelScope)
 
         runsData.onEach { runs ->
-            state = state.copy(runs = runs.map { it.toRunUi() })
+            state = state.copy(
+                runs = runs
+                    .filter { it.id != runId }
+                    .map { it.toRunUi() }
+            )
         }.launchIn(viewModelScope)
 
         comparedRuns.onEach {
             state = state.copy(
                 comparedRun = it.first?.toRunUi(),
+                otherRun = it.second?.toRunUi()
             )
-            Log.d("CompareRunViewModel", "comparedRuns: $it")
+            it.first?.let { comparedRun ->
+                it.second?.let { otherRun ->
+                    state = state.copy(
+                        compareRunData = (otherRun to comparedRun).toCompareRunData().toCompareRunDataUi()
+                    )
+                }
+            }
+            Log.d("CompareRunViewModel", "state: $it")
         }.launchIn(viewModelScope)
     }
 

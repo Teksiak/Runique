@@ -15,33 +15,27 @@ fun CompareRunData.toCompareRunDataUi(): CompareRunDataUi {
     return CompareRunDataUi(
         duration = CompareDataUi(
             data = Pair(duration.first.toFormattedTotalDuration(), duration.second.toFormattedTotalDuration()),
-            isEquals = duration.isEquals,
-            isComparedBigger = duration.isSecondBigger
+            comparison = duration.comparison
         ),
         distance = CompareDataUi(
             data = Pair(distanceKm.first.toFormattedKm(), distanceKm.second.toFormattedKm()),
-            isEquals = distance.isEquals,
-            isComparedBigger = distance.isSecondBigger
+            comparison = distance.comparison
         ),
         pace = CompareDataUi(
             data = Pair(pace.first.toFormattedPace(distanceKm.first), pace.second.toFormattedPace(distanceKm.second)),
-            isEquals = pace.isEquals,
-            isComparedBigger = pace.isSecondBigger
+            comparison = pace.comparison
         ),
         avgSpeed = CompareDataUi(
             data = Pair(avgSpeed.first.toFormattedKmh(), avgSpeed.second.toFormattedKmh()),
-            isEquals = avgSpeed.isEquals,
-            isComparedBigger = avgSpeed.isSecondBigger
+            comparison = avgSpeed.comparison
         ),
         maxSpeed = CompareDataUi(
             data = Pair(maxSpeed.first.toFormattedKmh(), maxSpeed.second.toFormattedKmh()),
-            isEquals = maxSpeed.isEquals,
-            isComparedBigger = maxSpeed.isSecondBigger
+            comparison = maxSpeed.comparison
         ),
         elevation = CompareDataUi(
             data = Pair(elevation.first.toFormattedMeters(), elevation.second.toFormattedMeters()),
-            isEquals = elevation.isEquals,
-            isComparedBigger = elevation.isSecondBigger
+            comparison = elevation.comparison
         )
     )
 }

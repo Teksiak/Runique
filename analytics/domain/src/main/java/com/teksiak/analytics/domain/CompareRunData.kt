@@ -2,6 +2,12 @@ package com.teksiak.analytics.domain
 
 import kotlin.time.Duration
 
+enum class DataComparison {
+    EQUALS,
+    FIRST_BIGGER,
+    SECOND_BIGGER
+}
+
 data class CompareData<T: Comparable<T>>(
     val data: Pair<T, T>
 ) {
@@ -11,11 +17,12 @@ data class CompareData<T: Comparable<T>>(
     val second: T
         get() = data.second
 
-    val isEquals: Boolean
-        get() = data.first == data.second
-
-    val isSecondBigger: Boolean
-        get() = data.first < data.second
+    val comparison: DataComparison
+        get() = when {
+            data.first == data.second -> DataComparison.EQUALS
+            data.first > data.second -> DataComparison.FIRST_BIGGER
+            else -> DataComparison.SECOND_BIGGER
+        }
 }
 
 data class CompareRunData(

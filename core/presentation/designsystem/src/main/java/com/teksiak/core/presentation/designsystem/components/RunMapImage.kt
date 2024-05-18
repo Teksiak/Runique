@@ -21,7 +21,7 @@ import coil.compose.SubcomposeAsyncImage
 import com.teksiak.core.presentation.designsystem.R
 
 @Composable
-fun RuniqueMapImage(
+fun RunMapImage(
     imageUrl: String?,
     modifier: Modifier = Modifier
 ) {

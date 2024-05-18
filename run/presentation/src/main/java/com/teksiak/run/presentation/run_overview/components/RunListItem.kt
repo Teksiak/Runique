@@ -65,7 +65,7 @@ import com.teksiak.core.presentation.designsystem.CalendarIcon
 import com.teksiak.core.presentation.designsystem.CompareIcon
 import com.teksiak.core.presentation.designsystem.RunOutlinedIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
-import com.teksiak.core.presentation.designsystem.components.RuniqueMapImage
+import com.teksiak.core.presentation.designsystem.components.RunMapImage
 import com.teksiak.run.presentation.R
 import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import com.teksiak.run.presentation.run_overview.model.RunDataUi
@@ -128,7 +128,7 @@ fun RunListItem(
                 }
                 .padding(16.dp)
         ) {
-            RuniqueMapImage(
+            RunMapImage(
                 imageUrl = runUi.mapPictureUrl,
             )
             Spacer(modifier = Modifier.height(16.dp))

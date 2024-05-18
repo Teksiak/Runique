@@ -11,4 +11,9 @@
     <string name="error_loading_map">Error loading image</string>
     <string name="compare_with">Compare with</string>
     <string name="no_runs">No runs found</string>
+    <string name="duration">Duration</string>
+    <string name="distance">Distance</string>
+    <string name="pace">Pace</string>
+    <string name="avg_speed">Avg. speed</string>
+    <string name="elevation">Elevation</string>
 </resources>

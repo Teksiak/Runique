@@ -26,7 +26,7 @@ import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.CalendarIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
-import com.teksiak.core.presentation.designsystem.components.RuniqueMapImage
+import com.teksiak.core.presentation.designsystem.components.RunMapImage
 import java.time.ZonedDateTime
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -35,6 +35,7 @@ import kotlin.time.Duration.Companion.seconds
 fun RunCard(
     runUi: RunUi,
     modifier: Modifier = Modifier,
+    showDuration: Boolean = true,
     onClick: () -> Unit = {}
 ) {
     Column(
@@ -46,7 +47,7 @@ fun RunCard(
             }
             .padding(16.dp)
     ) {
-        RuniqueMapImage(
+        RunMapImage(
             imageUrl = runUi.mapPictureUrl
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -60,12 +61,15 @@ fun RunCard(
             RunningDateSection(
                 dateTime = runUi.dateTime
             )
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = runUi.duration,
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 14.sp
-            )
+            if (showDuration) {
+
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = runUi.duration,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 14.sp
+                )
+            }
         }
     }
 }
