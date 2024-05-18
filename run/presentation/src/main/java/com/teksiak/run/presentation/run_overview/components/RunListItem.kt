@@ -81,7 +81,7 @@ import kotlin.time.Duration.Companion.seconds
 fun RunListItem(
     runUi: RunUi,
     modifier: Modifier = Modifier,
-    isFocused: Boolean,
+    focusedRunId: String?,
     onFocusChange: (Boolean) -> Unit,
     onDeleteClick: () -> Unit,
     onCompareClick: () -> Unit,
@@ -99,7 +99,7 @@ fun RunListItem(
         label = ""
     )
 
-
+    val isFocused = runUi.id == focusedRunId
     LaunchedEffect(key1 = isFocused) {
         showDeletePopup = isFocused
     }
@@ -112,14 +112,16 @@ fun RunListItem(
                 .zIndex(2f)
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
-                .pointerInput(isFocused) {
+                .pointerInput(isFocused, focusedRunId) {
                     detectTapGestures(
-                        onTap = {
-                            expandInfo = !expandInfo
-                        },
                         onPress = { _ ->
                             if (!isFocused) {
                                 onFocusChange(false)
+                            }
+                        },
+                        onTap = {
+                            if(focusedRunId == null || isFocused) {
+                                expandInfo = !expandInfo
                             }
                         },
                         onLongPress = {
@@ -153,7 +155,12 @@ fun RunListItem(
                     dateTime = runUi.dateTime
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = { expandInfo = !expandInfo }) {
+                IconButton(onClick = {
+                    expandInfo = !expandInfo
+                    if(!isFocused) {
+                        onFocusChange(false)
+                    }
+                }) {
                     Icon(
                         imageVector = Icons.Rounded.KeyboardArrowUp,
                         contentDescription = null,
@@ -487,7 +494,7 @@ private fun RunListItemPreview() {
                 totalElevationMeters = 123,
                 mapPictureUrl = null
             ).toRunUi(),
-            isFocused = false,
+            focusedRunId = "",
             onCompareClick = {},
             onDeleteClick = {},
             onFocusChange = {}

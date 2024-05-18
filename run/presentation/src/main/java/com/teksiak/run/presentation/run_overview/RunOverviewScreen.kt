@@ -215,7 +215,7 @@ private fun RunOverviewScreen(
                 ) { run ->
                     RunListItem(
                         runUi = run,
-                        isFocused = focusedRunId == run.id,
+                        focusedRunId = focusedRunId,
                         onFocusChange = { isFocused ->
                             focusedRunId = if(isFocused) run.id else null
                         },
@@ -276,6 +276,16 @@ private fun RunOverviewScreen(
                         },
                         backgroundColor = MaterialTheme.colorScheme.error,
                         textColor = MaterialTheme.colorScheme.onSurface
+                    )
+                },
+                secondaryAction = {
+                    RuniqueOutlinedActionButton(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(id = R.string.cancel),
+                        isLoading = false,
+                        onClick = {
+                            onAction(RunOverviewAction.OnDismissDeleteRunDialog)
+                        }
                     )
                 }
             )
