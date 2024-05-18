@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.teksiak.analytics.domain.AnalyticsRepository
-import com.teksiak.analytics.presentation.mapper.toAnalyticsDashboardState
+import com.teksiak.analytics.presentation.dashboard.mapper.toAnalyticsDashboardState
 import kotlinx.coroutines.launch
 
 class AnalyticsDashboardViewModel(

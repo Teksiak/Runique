@@ -6,4 +6,5 @@
     <string name="max_speed">Max speed</string>
     <string name="avg_distance">"Avg. distance per run "</string>
     <string name="avg_pace">Avg. pace per run</string>
+    <string name="compare_run">Compare run</string>
 </resources>

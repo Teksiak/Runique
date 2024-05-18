@@ -8,4 +8,5 @@ android {
 
 dependencies {
     implementation(projects.analytics.domain)
+    implementation(projects.core.domain)
 }

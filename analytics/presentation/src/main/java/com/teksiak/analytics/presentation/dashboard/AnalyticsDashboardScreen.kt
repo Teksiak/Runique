@@ -26,7 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.teksiak.analytics.presentation.R
 import com.teksiak.analytics.presentation.dashboard.components.AnalyticsCard
-import com.teksiak.analytics.presentation.model.AnalyticsDataUi
+import com.teksiak.analytics.presentation.dashboard.model.AnalyticsDataUi
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
 import com.teksiak.core.presentation.designsystem.components.GradientBackground
 import com.teksiak.core.presentation.designsystem.components.RuniqueScaffold

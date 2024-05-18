@@ -1,9 +1,24 @@
 package com.teksiak.core.presentation.ui
 
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import kotlin.math.pow
 import kotlin.math.round
 import kotlin.math.roundToInt
 import kotlin.time.Duration
+import kotlin.time.DurationUnit
+
+fun ZonedDateTime.toFormattedDateTime(): String {
+    val dateTimeInLocalTime = this
+        .withZoneSameInstant(ZoneId.systemDefault())
+    val formattedDateTime = DateTimeFormatter.ofPattern("MMM dd, yyyy - hh:mm a")
+        .format(dateTimeInLocalTime)
+        .replaceFirstChar { it.uppercase(Locale.getDefault()) }
+
+    return formattedDateTime
+}
 
 fun Duration.formatted(): String {
     val totalSeconds = inWholeSeconds
@@ -12,6 +27,30 @@ fun Duration.formatted(): String {
     val seconds = String.format("%02d", totalSeconds % 60)
 
     return "$hours:$minutes:$seconds"
+}
+
+fun Duration.toFormattedTotalDuration(): String {
+    val days = toLong(DurationUnit.DAYS)
+    val hours = toLong(DurationUnit.HOURS) % 24
+    val minutes = toLong(DurationUnit.MINUTES) % 60
+
+    return when {
+        days > 0 -> "${days}d ${hours}h ${minutes}m"
+        hours > 0 -> "${hours}h ${minutes}m"
+        else -> "${minutes}m"
+    }
+}
+
+fun Duration.toFormattedPace(): String {
+    if (this == Duration.ZERO) {
+        return "-"
+    }
+
+    val totalSeconds = inWholeSeconds
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+
+    return "${minutes}:${String.format("%02d", seconds)} / km"
 }
 
 fun Duration.toFormattedPace(distanceKm: Double): String {

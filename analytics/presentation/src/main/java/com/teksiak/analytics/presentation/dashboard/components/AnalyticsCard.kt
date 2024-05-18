@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.teksiak.analytics.presentation.model.AnalyticsDataUi
+import com.teksiak.analytics.presentation.dashboard.model.AnalyticsDataUi
 
 @Composable
 fun AnalyticsCard(
