@@ -20,5 +20,5 @@ data class Run(
         get() = (distanceMeters / 1000.0) / duration.toDouble(DurationUnit.HOURS)
 
     val pace: Double
-        get() = (duration.inWholeSeconds / 60.0 / (distanceMeters / 1000.0))
+        get() = (duration.inWholeSeconds / (distanceMeters / 1000.0))
 }

@@ -191,7 +191,13 @@ fun CompareRunDataList(
         Spacer(modifier = Modifier.height(8.dp))
         CompareRunData(
             name = stringResource(id = R.string.pace),
-            compareData = comparedRunData.pace,
+            compareData = comparedRunData.pace.copy(
+                comparison = when(comparedRunData.pace.comparison) {
+                    DataComparison.FIRST_BIGGER -> DataComparison.SECOND_BIGGER
+                    DataComparison.SECOND_BIGGER -> DataComparison.FIRST_BIGGER
+                    DataComparison.EQUALS -> DataComparison.EQUALS
+                }
+            ),
             modifier = modifier
         )
         Spacer(modifier = Modifier.height(8.dp))

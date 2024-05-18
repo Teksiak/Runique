@@ -22,7 +22,7 @@ fun CompareRunData.toCompareRunDataUi(): CompareRunDataUi {
             comparison = distance.comparison
         ),
         pace = CompareDataUi(
-            data = Pair(pace.first.toFormattedPace(distanceKm.first), pace.second.toFormattedPace(distanceKm.second)),
+            data = Pair(pace.first.toFormattedPace(), pace.second.toFormattedPace()),
             comparison = pace.comparison
         ),
         avgSpeed = CompareDataUi(
