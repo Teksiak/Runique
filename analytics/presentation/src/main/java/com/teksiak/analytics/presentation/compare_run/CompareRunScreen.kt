@@ -2,6 +2,7 @@
 
 package com.teksiak.analytics.presentation.compare_run
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -52,11 +53,23 @@ fun CompareRunScreenRoot(
     onBackClick: () -> Unit,
     viewModel: CompareRunViewModel = koinViewModel(),
 ) {
+    BackHandler {
+        if(viewModel.state.compareRunData == null) {
+            onBackClick()
+        } else {
+            viewModel.onAction(CompareRunAction.OnBackClick)
+        }
+    }
+
     CompareRunScreen(
         state = viewModel.state,
         onAction = { action ->
             when (action) {
-                is CompareRunAction.OnBackClick -> onBackClick()
+                is CompareRunAction.OnBackClick ->  {
+                    if(viewModel.state.compareRunData == null) {
+                        onBackClick()
+                    }
+                }
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -67,8 +80,7 @@ fun CompareRunScreenRoot(
 @Composable
 fun CompareRunScreen(
     state: CompareRunState,
-    onAction: (CompareRunAction) -> Unit,
-    modifier: Modifier = Modifier,
+    onAction: (CompareRunAction) -> Unit
 ) {
     RuniqueScaffold(
         topAppBar = {

@@ -1,6 +1,5 @@
 package com.teksiak.analytics.presentation.compare_run
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -60,9 +59,12 @@ class CompareRunViewModel(
                     state = state.copy(
                         compareRunData = (otherRun to comparedRun).toCompareRunData().toCompareRunDataUi()
                     )
+                    return@onEach
                 }
             }
-            Log.d("CompareRunViewModel", "state: $it")
+            state = state.copy(
+                compareRunData = null
+            )
         }.launchIn(viewModelScope)
     }
 
@@ -72,7 +74,9 @@ class CompareRunViewModel(
                 val otherRun = runsData.value.find { it.id == action.runId }
                 comparedRuns.update { it.first to otherRun }
             }
-            else -> Unit
+            is CompareRunAction.OnBackClick -> {
+                comparedRuns.update { it.first to null }
+            }
         }
     }
 }
