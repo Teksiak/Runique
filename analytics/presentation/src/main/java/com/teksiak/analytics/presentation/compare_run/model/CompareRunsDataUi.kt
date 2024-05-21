@@ -7,7 +7,7 @@ data class CompareDataUi(
     val comparison: DataComparison
 )
 
-data class CompareRunDataUi(
+data class CompareRunsDataUi(
     val duration: CompareDataUi,
     val distance: CompareDataUi,
     val pace: CompareDataUi,

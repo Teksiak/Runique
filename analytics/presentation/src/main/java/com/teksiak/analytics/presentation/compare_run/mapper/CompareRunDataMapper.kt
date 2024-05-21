@@ -1,18 +1,18 @@
 package com.teksiak.analytics.presentation.compare_run.mapper
 
-import com.teksiak.analytics.domain.CompareRunData
+import com.teksiak.analytics.domain.CompareRunsData
 import com.teksiak.analytics.presentation.compare_run.model.CompareDataUi
-import com.teksiak.analytics.presentation.compare_run.model.CompareRunDataUi
+import com.teksiak.analytics.presentation.compare_run.model.CompareRunsDataUi
 import com.teksiak.core.presentation.ui.toFormattedKm
 import com.teksiak.core.presentation.ui.toFormattedKmh
 import com.teksiak.core.presentation.ui.toFormattedMeters
 import com.teksiak.core.presentation.ui.toFormattedPace
 import com.teksiak.core.presentation.ui.toFormattedTotalDuration
 
-fun CompareRunData.toCompareRunDataUi(): CompareRunDataUi {
+fun CompareRunsData.toCompareRunDataUi(): CompareRunsDataUi {
     val distanceKm = Pair((distance.first / 1000.0), (distance.second / 1000.0))
 
-    return CompareRunDataUi(
+    return CompareRunsDataUi(
         duration = CompareDataUi(
             data = Pair(duration.first.toFormattedTotalDuration(), duration.second.toFormattedTotalDuration()),
             comparison = duration.comparison

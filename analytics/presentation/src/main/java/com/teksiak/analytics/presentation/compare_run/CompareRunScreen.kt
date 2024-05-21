@@ -1,15 +1,10 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
 package com.teksiak.analytics.presentation.compare_run
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,21 +25,25 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.teksiak.analytics.domain.DataComparison
 import com.teksiak.analytics.presentation.R
 import com.teksiak.analytics.presentation.compare_run.components.RunCard
 import com.teksiak.analytics.presentation.compare_run.model.CompareDataUi
-import com.teksiak.analytics.presentation.compare_run.model.CompareRunDataUi
+import com.teksiak.analytics.presentation.compare_run.model.CompareRunsDataUi
 import com.teksiak.analytics.presentation.compare_run.model.RunUi
 import com.teksiak.core.presentation.designsystem.KeyboardArrowDownIcon
 import com.teksiak.core.presentation.designsystem.KeyboardArrowUpIcon
@@ -90,26 +89,36 @@ fun CompareRunScreen(
     state: CompareRunState,
     onAction: (CompareRunAction) -> Unit
 ) {
+
+    val topAppBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        state = topAppBarState
+    )
+
     RuniqueScaffold(
         topAppBar = {
             RuniqueToolbar(
                 title = stringResource(id = R.string.compare_run),
+                scrollBehavior = scrollBehavior,
                 showBackButton = true,
                 onBackClick = { onAction(CompareRunAction.OnBackClick) }
             )
-        }
+        },
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        withGradient = true
     ) { padding ->
         AnimatedContent(
             targetState = state,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 16.dp),
+                .fillMaxSize(),
             label = ""
         ) { state ->
             if (state.compareRunData == null || state.otherRun == null) {
                 Column(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .padding(padding)
+                        .padding(top = 8.dp)
+                        .padding(horizontal = 16.dp),
                 ) {
                     state.comparedRun?.let { comparedRun ->
                         RunCard(
@@ -117,7 +126,8 @@ fun CompareRunScreen(
                             modifier = Modifier
                         )
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Spacer(modifier = Modifier.height(8.dp))
                     TextDivider {
                         Text(
                             text = stringResource(id = R.string.compare_with),
@@ -125,41 +135,59 @@ fun CompareRunScreen(
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    RunList(
-                        runs = state.runs,
-                        onChoose = { runId ->
-                            onAction(CompareRunAction.OnOtherRunChoose(runId))
-                        },
-                        modifier = Modifier.fillMaxSize()
-                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .nestedScroll(scrollBehavior.nestedScrollConnection),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        if (state.runs.isEmpty()) {
+                            item {
+                                Column(
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(text = stringResource(id = R.string.no_runs))
+                                }
+                            }
+                        } else {
+                            items(state.runs) { run ->
+                                RunCard(
+                                    runUi = run,
+                                    isClickable = true,
+                                    onClick = { onAction(CompareRunAction.OnOtherRunChoose(run.id)) }
+                                )
+                            }
+                            item {
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
+                    }
                 }
             } else {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
+                        .padding(padding)
                         .padding(bottom = 16.dp)
+                        .padding(horizontal = 16.dp)
                 ) {
-                    Row {
+                    state.comparedRun?.let { comparedRun ->
                         RunCard(
-                            runUi = state.otherRun,
-                            modifier = Modifier.weight(1f),
-                            showDuration = false
+                            runUi = comparedRun
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        state.comparedRun?.let {
-                            RunCard(
-                                runUi = it,
-                                modifier = Modifier.weight(1f),
-                                showDuration = false
-                            )
-                        }
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    CompareRunDataList(
+                    Spacer(modifier = Modifier.height(16.dp))
+                    CompareDataList(
                         compareRunData = state.compareRunData,
                         modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    RunCard(
+                        runUi = state.otherRun
                     )
                 }
             }
@@ -168,55 +196,24 @@ fun CompareRunScreen(
 }
 
 @Composable
-fun RunList(
-    runs: List<RunUi>,
-    onChoose: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    if (runs.isEmpty()) {
-        Column(
-            modifier = modifier,
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = stringResource(id = R.string.no_runs))
-        }
-    }
-    LazyColumn(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(runs) { run ->
-            RunCard(
-                runUi = run,
-                onClick = { onChoose(run.id) }
-            )
-        }
-        item {
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-    }
-}
-
-@Composable
-fun CompareRunDataList(
-    compareRunData: CompareRunDataUi,
+fun CompareDataList(
+    compareRunData: CompareRunsDataUi,
     modifier: Modifier = Modifier
 ) {
     Column {
-        CompareRunData(
+        CompareDataRow(
             name = stringResource(id = R.string.duration),
             compareData = compareRunData.duration,
             modifier = modifier
         )
         Spacer(modifier = Modifier.height(8.dp))
-        CompareRunData(
+        CompareDataRow(
             name = stringResource(id = R.string.distance),
             compareData = compareRunData.distance,
             modifier = modifier
         )
         Spacer(modifier = Modifier.height(8.dp))
-        CompareRunData(
+        CompareDataRow(
             name = stringResource(id = R.string.pace),
             compareData = compareRunData.pace.copy(
                 comparison = when (compareRunData.pace.comparison) {
@@ -228,19 +225,19 @@ fun CompareRunDataList(
             modifier = modifier
         )
         Spacer(modifier = Modifier.height(8.dp))
-        CompareRunData(
+        CompareDataRow(
             name = stringResource(id = R.string.avg_speed),
             compareData = compareRunData.avgSpeed,
             modifier = modifier
         )
         Spacer(modifier = Modifier.height(8.dp))
-        CompareRunData(
+        CompareDataRow(
             name = stringResource(id = R.string.max_speed),
             compareData = compareRunData.maxSpeed,
             modifier = modifier
         )
         Spacer(modifier = Modifier.height(8.dp))
-        CompareRunData(
+        CompareDataRow(
             name = stringResource(id = R.string.elevation),
             compareData = compareRunData.elevation,
             modifier = modifier
@@ -249,7 +246,7 @@ fun CompareRunDataList(
 }
 
 @Composable
-fun CompareRunData(
+fun CompareDataRow(
     name: String,
     compareData: CompareDataUi,
     modifier: Modifier = Modifier
@@ -264,7 +261,7 @@ fun CompareRunData(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
-            .padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
+            .padding(top = 4.dp, start = 16.dp, end = 8.dp, bottom = 16.dp)
             .height(IntrinsicSize.Min),
     ) {
         Text(
@@ -274,7 +271,7 @@ fun CompareRunData(
             fontSize = 12.sp,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -386,7 +383,7 @@ private fun CompareRunScreenPreview2() {
                     duration = "1h 20m",
                     mapPictureUrl = ""
                 ),
-                compareRunData = CompareRunDataUi(
+                compareRunData = CompareRunsDataUi(
                     duration = CompareDataUi(
                         data = "1h 30m" to "1h 20m",
                         comparison = DataComparison.FIRST_BIGGER

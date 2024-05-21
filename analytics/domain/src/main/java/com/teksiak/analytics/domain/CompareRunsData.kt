@@ -9,23 +9,19 @@ enum class DataComparison {
 }
 
 data class CompareData<T: Comparable<T>>(
-    val data: Pair<T, T>
-) {
-    val first: T
-        get() = data.first
-
+    val first: T,
     val second: T
-        get() = data.second
+) {
 
     val comparison: DataComparison
         get() = when {
-            data.first == data.second -> DataComparison.EQUALS
-            data.first > data.second -> DataComparison.FIRST_BIGGER
+            first == second -> DataComparison.EQUALS
+            first > second -> DataComparison.FIRST_BIGGER
             else -> DataComparison.SECOND_BIGGER
         }
 }
 
-data class CompareRunData(
+data class CompareRunsData(
     val duration: CompareData<Duration>,
     val distance: CompareData<Int>,
     val pace: CompareData<Duration>,

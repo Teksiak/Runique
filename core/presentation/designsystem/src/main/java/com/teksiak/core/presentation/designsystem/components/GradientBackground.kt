@@ -23,7 +23,7 @@ import com.teksiak.core.presentation.designsystem.RuniqueTheme
 @Composable
 fun GradientBackground(
     modifier: Modifier = Modifier,
-    hasToolbar: Boolean = false,
+    hasToolbar: Boolean = true,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val configuration = LocalConfiguration.current

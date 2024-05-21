@@ -76,7 +76,8 @@ fun RuniqueToolbar(
         modifier = modifier,
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent
+            containerColor = Color.Transparent,
+            scrolledContainerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.9f),
         ),
         navigationIcon = {
             if (showBackButton) {
