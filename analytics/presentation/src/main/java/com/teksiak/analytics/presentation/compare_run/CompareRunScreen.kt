@@ -45,6 +45,8 @@ import com.teksiak.analytics.presentation.compare_run.components.RunCard
 import com.teksiak.analytics.presentation.compare_run.model.CompareDataUi
 import com.teksiak.analytics.presentation.compare_run.model.CompareRunsDataUi
 import com.teksiak.analytics.presentation.compare_run.model.RunUi
+import com.teksiak.core.domain.location.Location
+import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.KeyboardArrowDownIcon
 import com.teksiak.core.presentation.designsystem.KeyboardArrowUpIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
@@ -52,6 +54,9 @@ import com.teksiak.core.presentation.designsystem.components.RuniqueScaffold
 import com.teksiak.core.presentation.designsystem.components.RuniqueToolbar
 import com.teksiak.core.presentation.designsystem.components.TextDivider
 import org.koin.androidx.compose.koinViewModel
+import java.time.ZonedDateTime
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 
 @Composable
@@ -122,7 +127,7 @@ fun CompareRunScreen(
                 ) {
                     state.comparedRun?.let { comparedRun ->
                         RunCard(
-                            runUi = comparedRun,
+                            run = comparedRun,
                             modifier = Modifier
                         )
                     }
@@ -155,9 +160,9 @@ fun CompareRunScreen(
                         } else {
                             items(state.runs) { run ->
                                 RunCard(
-                                    runUi = run,
+                                    run = run,
                                     isClickable = true,
-                                    onClick = { onAction(CompareRunAction.OnOtherRunChoose(run.id)) }
+                                    onClick = { onAction(CompareRunAction.OnOtherRunChoose(run.id!!)) }
                                 )
                             }
                             item {
@@ -177,7 +182,7 @@ fun CompareRunScreen(
                 ) {
                     state.comparedRun?.let { comparedRun ->
                         RunCard(
-                            runUi = comparedRun
+                            run = comparedRun
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -187,7 +192,7 @@ fun CompareRunScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     RunCard(
-                        runUi = state.otherRun
+                        run = state.otherRun
                     )
                 }
             }
@@ -314,31 +319,37 @@ private fun CompareRunScreenPreview() {
         CompareRunScreen(
             state = CompareRunState(
                 runs = listOf(
-                    RunUi(
-                        id = "1",
-                        dateTime = "2021-10-10",
-                        duration = "1h 30m",
-                        mapPictureUrl = ""
+                    Run(
+                        id = "123",
+                        duration = 10.minutes + 30.seconds,
+                        dateTimeUtc = ZonedDateTime.now(),
+                        distanceMeters = 5500,
+                        location = Location(0.0, 0.0),
+                        maxSpeedKmh = 15.0,
+                        totalElevationMeters = 123,
+                        mapPictureUrl = null
                     ),
-                    RunUi(
-                        id = "2",
-                        dateTime = "2021-10-11",
-                        duration = "1h 20m",
-                        mapPictureUrl = ""
-                    ),
-                    RunUi(
-                        id = "3",
-                        dateTime = "2021-10-12",
-                        duration = "1h 10m",
-                        mapPictureUrl = ""
+                    Run(
+                        id = "123",
+                        duration = 10.minutes + 30.seconds,
+                        dateTimeUtc = ZonedDateTime.now(),
+                        distanceMeters = 5500,
+                        location = Location(0.0, 0.0),
+                        maxSpeedKmh = 15.0,
+                        totalElevationMeters = 123,
+                        mapPictureUrl = null
                     ),
                 ),
-                comparedRun = RunUi(
-                    id = "1",
-                    dateTime = "2021-10-10",
-                    duration = "1h 30m",
-                    mapPictureUrl = ""
-                )
+                comparedRun = Run(
+                    id = "123",
+                    duration = 10.minutes + 30.seconds,
+                    dateTimeUtc = ZonedDateTime.now(),
+                    distanceMeters = 5500,
+                    location = Location(0.0, 0.0),
+                    maxSpeedKmh = 15.0,
+                    totalElevationMeters = 123,
+                    mapPictureUrl = null
+                ),
             ),
             onAction = {}
         )
@@ -351,37 +362,26 @@ private fun CompareRunScreenPreview2() {
     RuniqueTheme {
         CompareRunScreen(
             state = CompareRunState(
-                runs = listOf(
-                    RunUi(
-                        id = "1",
-                        dateTime = "2021-10-10",
-                        duration = "1h 30m",
-                        mapPictureUrl = ""
-                    ),
-                    RunUi(
-                        id = "2",
-                        dateTime = "2021-10-11",
-                        duration = "1h 20m",
-                        mapPictureUrl = ""
-                    ),
-                    RunUi(
-                        id = "3",
-                        dateTime = "2021-10-12",
-                        duration = "1h 10m",
-                        mapPictureUrl = ""
-                    ),
+                runs = listOf(),
+                comparedRun = Run(
+                    id = "123",
+                    duration = 10.minutes + 30.seconds,
+                    dateTimeUtc = ZonedDateTime.now(),
+                    distanceMeters = 5500,
+                    location = Location(0.0, 0.0),
+                    maxSpeedKmh = 15.0,
+                    totalElevationMeters = 123,
+                    mapPictureUrl = null
                 ),
-                comparedRun = RunUi(
-                    id = "1",
-                    dateTime = "2021-10-10",
-                    duration = "1h 30m",
-                    mapPictureUrl = ""
-                ),
-                otherRun = RunUi(
-                    id = "2",
-                    dateTime = "2021-10-11",
-                    duration = "1h 20m",
-                    mapPictureUrl = ""
+                otherRun = Run(
+                    id = "123",
+                    duration = 10.minutes + 30.seconds,
+                    dateTimeUtc = ZonedDateTime.now(),
+                    distanceMeters = 5500,
+                    location = Location(0.0, 0.0),
+                    maxSpeedKmh = 15.0,
+                    totalElevationMeters = 123,
+                    mapPictureUrl = null
                 ),
                 compareRunData = CompareRunsDataUi(
                     duration = CompareDataUi(

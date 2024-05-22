@@ -91,10 +91,6 @@ fun RunListItem(
         run.toRunUi()
     }
 
-    var locationName by remember {
-        mutableStateOf<String?>(null)
-    }
-
     var showDeletePopup by remember {
         mutableStateOf(false)
     }
@@ -112,6 +108,10 @@ fun RunListItem(
         animationSpec = tween(300),
         label = ""
     )
+
+    var locationName by remember {
+        mutableStateOf<String?>(null)
+    }
 
     LaunchedEffect(key1 = true) {
         run.getLocationName(
@@ -208,21 +208,10 @@ fun RunListItem(
             }
 
             locationName?.let { location ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    Icon(
-                        imageVector = LocationIcon,
-                        contentDescription = "",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = location,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 12.sp,
-                    )
-                }
+                LocationNameSection(
+                    locationName = location,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
         }
@@ -372,6 +361,29 @@ private fun DataGridCell(
         Text(
             text = runData.value,
             color = MaterialTheme.colorScheme.onSurface,
+        )
+    }
+}
+
+@Composable
+fun LocationNameSection(
+    locationName: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Icon(
+            imageVector = LocationIcon,
+            contentDescription = "",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = locationName,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 12.sp,
         )
     }
 }

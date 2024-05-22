@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.teksiak.analytics.domain.mapper.toCompareRunsData
 import com.teksiak.analytics.presentation.compare_run.mapper.toCompareRunDataUi
-import com.teksiak.analytics.presentation.compare_run.mapper.toRunUi
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.domain.run.RunRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +17,7 @@ import kotlinx.coroutines.flow.update
 
 class CompareRunViewModel(
     savedStateHandle: SavedStateHandle,
-    private val runRepository: RunRepository
+    runRepository: RunRepository
 ): ViewModel() {
 
     private val runId = savedStateHandle.get<String>("runId")!!
@@ -45,14 +44,13 @@ class CompareRunViewModel(
             state = state.copy(
                 runs = runs
                     .filter { it.id != runId }
-                    .map { it.toRunUi() }
             )
         }.launchIn(viewModelScope)
 
         comparedRuns.onEach {
             state = state.copy(
-                comparedRun = it.first?.toRunUi(),
-                otherRun = it.second?.toRunUi()
+                comparedRun = it.first,
+                otherRun = it.second
             )
             it.first?.let { comparedRun ->
                 it.second?.let { otherRun ->
