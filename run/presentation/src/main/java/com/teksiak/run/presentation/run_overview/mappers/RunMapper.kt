@@ -11,23 +11,8 @@ import com.teksiak.core.presentation.ui.toFormattedMeters
 import com.teksiak.core.presentation.ui.toFormattedPace
 import com.teksiak.run.presentation.run_overview.model.RunUi
 
-fun Run.toRunUi(context: Context): RunUi {
+fun Run.toRunUi(): RunUi {
     val distanceKm = distanceMeters / 1000.0
-
-    val geocoder = Geocoder(context)
-
-    val address = geocoder.getFromLocation(
-        location.lat,
-        location.long,
-        1,
-    )
-
-    val locationName = address?.firstOrNull()?.run {
-        subLocality?.let {
-            return@run "${subLocality}, $locality"
-        }
-        "$locality, $countryName"
-    }
 
     return RunUi(
         id = id!!,
@@ -39,6 +24,5 @@ fun Run.toRunUi(context: Context): RunUi {
         pace = duration.toFormattedPace(distanceKm),
         totalElevation = totalElevationMeters.toFormattedMeters(),
         mapPictureUrl = mapPictureUrl,
-        location = locationName
     )
 }

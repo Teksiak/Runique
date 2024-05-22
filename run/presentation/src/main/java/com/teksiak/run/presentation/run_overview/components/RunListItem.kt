@@ -1,7 +1,9 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
+@file:OptIn(ExperimentalLayoutApi::class)
 
 package com.teksiak.run.presentation.run_overview.components
 
+import android.location.Geocoder
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -11,7 +13,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -56,7 +57,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -79,15 +79,30 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun RunListItem(
-    runUi: RunUi,
+    run: Run,
     modifier: Modifier = Modifier,
     focusedRunId: String?,
     onFocusChange: (Boolean) -> Unit,
     onDeleteClick: () -> Unit,
     onCompareClick: () -> Unit,
 ) {
+    val context = LocalContext.current
+
+    val runUi = remember {
+        run.toRunUi()
+    }
+
+    var locationName by remember {
+        mutableStateOf<String?>(null)
+    }
+
     var showDeletePopup by remember {
         mutableStateOf(false)
+    }
+
+    val isFocused = run.id == focusedRunId
+    LaunchedEffect(key1 = isFocused) {
+        showDeletePopup = isFocused
     }
 
     var expandInfo by remember {
@@ -99,9 +114,34 @@ fun RunListItem(
         label = ""
     )
 
-    val isFocused = runUi.id == focusedRunId
-    LaunchedEffect(key1 = isFocused) {
-        showDeletePopup = isFocused
+    LaunchedEffect(key1 = true) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Geocoder(context).getFromLocation(
+                run.location.lat,
+                run.location.long,
+                1,
+            ) { addresses ->
+                locationName = addresses.firstOrNull()?.run {
+                    subLocality?.let {
+                        return@run "${subLocality}, $locality"
+                    }
+                    "$locality, $countryName"
+                }
+            }
+        } else {
+            val addresses = Geocoder(context).getFromLocation(
+                run.location.lat,
+                run.location.long,
+                1,
+            )
+
+            locationName = addresses?.firstOrNull()?.run {
+                subLocality?.let {
+                    return@run "${subLocality}, $locality"
+                }
+                "$locality, $countryName"
+            }
+        }
     }
 
     Box(
@@ -186,11 +226,11 @@ fun RunListItem(
                         run = runUi,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
 
-            runUi.location?.let {
+            locationName?.let { location ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -201,7 +241,7 @@ fun RunListItem(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = runUi.location,
+                        text = location,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp,
                     )
@@ -464,17 +504,15 @@ fun PopupAction(
 private fun RunListItemPreview() {
     RuniqueTheme {
         RunListItem(
-            runUi = RunUi(
-                id = "1",
-                duration = "1:30:00",
-                dateTime = "May 20, 2024 - 11.14 am",
-                distance = "10 km",
-                avgSpeed = "10 km/h",
-                maxSpeed = "15 km/h",
-                pace = "5:00 min/km",
-                totalElevation = "100 m",
-                mapPictureUrl = null,
-                location = "Warsaw"
+            run = Run(
+                id = "123",
+                duration = 10.minutes + 30.seconds,
+                dateTimeUtc = ZonedDateTime.now(),
+                distanceMeters = 5500,
+                location = Location(0.0, 0.0),
+                maxSpeedKmh = 15.0,
+                totalElevationMeters = 123,
+                mapPictureUrl = null
             ),
             focusedRunId = "",
             onCompareClick = {},

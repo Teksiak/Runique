@@ -89,7 +89,7 @@ fun RunOverviewScreenRoot(
             when (action) {
                 is RunOverviewAction.OnStartRunClick -> onStartRunClick()
                 is RunOverviewAction.OnAnalyticsClick -> onAnalyticsClick()
-                is RunOverviewAction.OnCompareRunClick -> onCompareRunClick(action.run.id)
+                is RunOverviewAction.OnCompareRunClick -> onCompareRunClick(action.run.id!!)
                 is RunOverviewAction.OnLogoutClick -> onLogoutClick()
                 else -> Unit
             }
@@ -214,11 +214,11 @@ private fun RunOverviewScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(
-                    items = state.runs.map { it.toRunUi(context) },
-                    key = { it.id }
+                    items = state.runs,
+                    key = { it.id!! }
                 ) { run ->
                     RunListItem(
-                        runUi = run,
+                        run = run,
                         focusedRunId = focusedRunId,
                         onFocusChange = { isFocused ->
                             focusedRunId = if(isFocused) run.id else null
