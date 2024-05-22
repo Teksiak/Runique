@@ -53,8 +53,10 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,6 +65,7 @@ import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.CalendarIcon
 import com.teksiak.core.presentation.designsystem.CompareIcon
+import com.teksiak.core.presentation.designsystem.LocationIcon
 import com.teksiak.core.presentation.designsystem.RunOutlinedIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
 import com.teksiak.core.presentation.designsystem.components.RunMapImage
@@ -117,7 +120,7 @@ fun RunListItem(
                             }
                         },
                         onTap = {
-                            if(focusedRunId == null || isFocused) {
+                            if (focusedRunId == null || isFocused) {
                                 expandInfo = !expandInfo
                             }
                         },
@@ -178,10 +181,31 @@ fun RunListItem(
                     animationSpec = tween(300)
                 )
             ) {
-                DataGrid(
-                    run = runUi,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Column {
+                    DataGrid(
+                        run = runUi,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+
+            runUi.location?.let {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Icon(
+                        imageVector = LocationIcon,
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = runUi.location,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 12.sp,
+                    )
+                }
             }
 
         }
@@ -440,16 +464,18 @@ fun PopupAction(
 private fun RunListItemPreview() {
     RuniqueTheme {
         RunListItem(
-            runUi = Run(
-                id = "123",
-                duration = 10.minutes + 30.seconds,
-                dateTimeUtc = ZonedDateTime.now(),
-                distanceMeters = 5500,
-                location = Location(0.0, 0.0),
-                maxSpeedKmh = 15.0,
-                totalElevationMeters = 123,
-                mapPictureUrl = null
-            ).toRunUi(),
+            runUi = RunUi(
+                id = "1",
+                duration = "1:30:00",
+                dateTime = "May 20, 2024 - 11.14 am",
+                distance = "10 km",
+                avgSpeed = "10 km/h",
+                maxSpeed = "15 km/h",
+                pace = "5:00 min/km",
+                totalElevation = "100 m",
+                mapPictureUrl = null,
+                location = "Warsaw"
+            ),
             focusedRunId = "",
             onCompareClick = {},
             onDeleteClick = {},

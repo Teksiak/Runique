@@ -38,6 +38,7 @@ kotlinx-serialization = "1.6.3"
 secretsPlugin = "2.0.1"
 playServicesMaps = "18.2.0"
 annotation = "1.7.1"
+mapsServices = "2.2.0"
 
 # Project versions
 projectApplicationId = "com.teksiak.runique"
@@ -93,6 +94,7 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 google-maps-android-compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps" }
+google-maps-services = { module = "com.google.maps:google-maps-services", version.ref = "mapsServices" }
 google-android-gms-play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "gmsLocation"}
 org-mongodb-bson = { module = "org.mongodb:bson", version.ref = "bson" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }

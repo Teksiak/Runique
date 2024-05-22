@@ -4,6 +4,7 @@ package com.teksiak.run.presentation.active_run
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.location.Geocoder
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -20,9 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview

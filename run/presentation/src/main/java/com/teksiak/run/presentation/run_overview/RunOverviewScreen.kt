@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,6 +68,7 @@ import com.teksiak.core.presentation.designsystem.components.util.ToolbarMenuIte
 import com.teksiak.run.presentation.R
 import com.teksiak.run.presentation.run_overview.components.ActiveRunBar
 import com.teksiak.run.presentation.run_overview.components.RunListItem
+import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import org.koin.androidx.compose.koinViewModel
 import timber.log.Timber
 
@@ -104,6 +106,8 @@ private fun RunOverviewScreen(
     onAction: (RunOverviewAction) -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
+    val context = LocalContext.current
+
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         state = topAppBarState
@@ -210,7 +214,7 @@ private fun RunOverviewScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(
-                    items = state.runs,
+                    items = state.runs.map { it.toRunUi(context) },
                     key = { it.id }
                 ) { run ->
                     RunListItem(

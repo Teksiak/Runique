@@ -133,14 +133,15 @@ class ActiveRunViewModel(
                 )
             }
             is ActiveRunAction.OnRunProcessed -> {
-                finishRun(action.mapPictureBytes)
+                finishRun(action.mapPictureBytes,)
             }
             else -> Unit
         }
     }
 
-    private fun finishRun(mapPictureBytes: ByteArray) {
+    private fun finishRun(mapPictureBytes: ByteArray ) {
         val locations = state.runData.locations
+
 
         viewModelScope.launch {
             val run = Run(

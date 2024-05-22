@@ -33,9 +33,8 @@ class RunOverviewViewModel(
     init {
         runRepository.getRuns()
             .onEach { runs ->
-                val runsUi = runs.map { it.toRunUi() }
                 state = state.copy(
-                    runs = runsUi
+                    runs = runs
                 )
             }
             .launchIn(viewModelScope)

@@ -1,9 +1,9 @@
 package com.teksiak.run.presentation.run_overview
 
-import com.teksiak.run.presentation.run_overview.model.RunUi
+import com.teksiak.core.domain.run.Run
 
 data class RunOverviewState(
-    val runs: List<RunUi> = emptyList(),
+    val runs: List<Run> = emptyList(),
     val isRunActive: Boolean = false,
     val activeRunDuration: String = "",
     val runToDeleteId: String? = null,
