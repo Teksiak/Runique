@@ -2,8 +2,6 @@
 
 package com.teksiak.run.presentation.run_overview.components
 
-import android.location.Geocoder
-import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -69,6 +67,7 @@ import com.teksiak.core.presentation.designsystem.LocationIcon
 import com.teksiak.core.presentation.designsystem.RunOutlinedIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
 import com.teksiak.core.presentation.designsystem.components.RunMapImage
+import com.teksiak.core.presentation.ui.getLocationName
 import com.teksiak.run.presentation.R
 import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import com.teksiak.run.presentation.run_overview.model.RunDataUi
@@ -115,32 +114,10 @@ fun RunListItem(
     )
 
     LaunchedEffect(key1 = true) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Geocoder(context).getFromLocation(
-                run.location.lat,
-                run.location.long,
-                1,
-            ) { addresses ->
-                locationName = addresses.firstOrNull()?.run {
-                    subLocality?.let {
-                        return@run "${subLocality}, $locality"
-                    }
-                    "$locality, $countryName"
-                }
-            }
-        } else {
-            val addresses = Geocoder(context).getFromLocation(
-                run.location.lat,
-                run.location.long,
-                1,
-            )
-
-            locationName = addresses?.firstOrNull()?.run {
-                subLocality?.let {
-                    return@run "${subLocality}, $locality"
-                }
-                "$locality, $countryName"
-            }
+        run.getLocationName(
+            context = context,
+        ) { name ->
+            locationName = name
         }
     }
 
