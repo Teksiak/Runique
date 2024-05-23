@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalLayoutApi::class)
 
-package com.teksiak.run.presentation.run_overview.components
+package com.teksiak.core.presentation.designsystem.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -33,6 +35,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,6 +54,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -59,31 +63,94 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import coil.compose.SubcomposeAsyncImage
 import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.CalendarIcon
 import com.teksiak.core.presentation.designsystem.CompareIcon
 import com.teksiak.core.presentation.designsystem.LocationIcon
+import com.teksiak.core.presentation.designsystem.R
 import com.teksiak.core.presentation.designsystem.RunOutlinedIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
-import com.teksiak.core.presentation.designsystem.components.RunMapImage
 import com.teksiak.core.presentation.ui.getLocationName
-import com.teksiak.run.presentation.R
-import com.teksiak.run.presentation.run_overview.mappers.toRunUi
-import com.teksiak.run.presentation.run_overview.model.RunDataUi
-import com.teksiak.run.presentation.run_overview.model.RunUi
+import com.teksiak.core.presentation.ui.mapper.toRunUi
 import java.time.ZonedDateTime
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun RunListItem(
+fun RunCard(
     run: Run,
     modifier: Modifier = Modifier,
-    focusedRunId: String?,
+    onClick: (() -> Unit)? = null
+) {
+    val context = LocalContext.current
+
+    val runUi = remember {
+        run.toRunUi()
+    }
+
+    var locationName by remember {
+        mutableStateOf<String?>(null)
+    }
+
+    LaunchedEffect(key1 = true) {
+        run.getLocationName(
+            context = context,
+        ) { name ->
+            locationName = name
+        }
+    }
+
+    Column(
+        modifier = modifier
+            .zIndex(2f)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
+            .then(
+                if(onClick != null) Modifier.clickable { onClick() }
+                else Modifier
+            )
+            .padding(16.dp)
+    ) {
+        RunMapImage(
+            imageUrl = runUi.mapPictureUrl,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        RunningTimeSection(
+            duration = runUi.duration,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        RunningDateSection(
+            dateTime = runUi.dateTime
+        )
+
+        locationName?.let { location ->
+            Spacer(modifier = Modifier.height(12.dp))
+            LocationNameSection(
+                locationName = location,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+fun FocusableRunCard(
+    run: Run,
+    modifier: Modifier = Modifier,
+    focusedRunId: String? = null,
     onFocusChange: (Boolean) -> Unit,
     onDeleteClick: () -> Unit,
-    onCompareClick: () -> Unit,
+    onCompareClick: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -226,6 +293,49 @@ fun RunListItem(
 }
 
 @Composable
+fun RunMapImage(
+    imageUrl: String?,
+    modifier: Modifier = Modifier
+) {
+    SubcomposeAsyncImage(
+        model = imageUrl,
+        contentDescription = stringResource(id = R.string.run_map),
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(16 / 9f)
+            .clip(RoundedCornerShape(16.dp)),
+        loading = {
+            Box(
+                modifier = modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        },
+        error = {
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.errorContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(id = R.string.error_loading_map),
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        },
+        contentScale = ContentScale.Crop,
+
+        )
+}
+
+@Composable
 private fun RunningTimeSection(
     duration: String,
     modifier: Modifier = Modifier
@@ -294,27 +404,27 @@ private fun RunningDateSection(
 
 @Composable
 private fun DataGrid(
-    run: RunUi,
+    run: com.teksiak.core.presentation.ui.model.RunUi,
     modifier: Modifier = Modifier
 ) {
     val runDataUiList = listOf(
-        RunDataUi(
+        com.teksiak.core.presentation.ui.model.RunDataUi(
             name = stringResource(id = R.string.distance),
             value = run.distance
         ),
-        RunDataUi(
+        com.teksiak.core.presentation.ui.model.RunDataUi(
             name = stringResource(id = R.string.pace),
             value = run.pace
         ),
-        RunDataUi(
+        com.teksiak.core.presentation.ui.model.RunDataUi(
             name = stringResource(id = R.string.avg_speed),
             value = run.avgSpeed
         ),
-        RunDataUi(
+        com.teksiak.core.presentation.ui.model.RunDataUi(
             name = stringResource(id = R.string.max_speed),
             value = run.maxSpeed
         ),
-        RunDataUi(
+        com.teksiak.core.presentation.ui.model.RunDataUi(
             name = stringResource(id = R.string.total_elevation),
             value = run.totalElevation
         ),
@@ -346,7 +456,7 @@ private fun DataGrid(
 
 @Composable
 private fun DataGridCell(
-    runData: RunDataUi,
+    runData: com.teksiak.core.presentation.ui.model.RunDataUi,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -490,9 +600,28 @@ fun PopupAction(
 
 @Preview
 @Composable
-private fun RunListItemPreview() {
+private fun RunCardPreview() {
     RuniqueTheme {
-        RunListItem(
+        RunCard(
+            run = Run(
+                id = "123",
+                duration = 10.minutes + 30.seconds,
+                dateTimeUtc = ZonedDateTime.now(),
+                distanceMeters = 5500,
+                location = Location(0.0, 0.0),
+                maxSpeedKmh = 15.0,
+                totalElevationMeters = 123,
+                mapPictureUrl = null
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun FocusableRunCardPreview() {
+    RuniqueTheme {
+        FocusableRunCard(
             run = Run(
                 id = "123",
                 duration = 10.minutes + 30.seconds,
@@ -504,9 +633,9 @@ private fun RunListItemPreview() {
                 mapPictureUrl = null
             ),
             focusedRunId = "",
-            onCompareClick = {},
             onDeleteClick = {},
-            onFocusChange = {}
+            onFocusChange = {},
+            onCompareClick = {}
         )
     }
 }

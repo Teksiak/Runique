@@ -41,7 +41,7 @@ import com.teksiak.core.presentation.designsystem.LogoutIcon
 import com.teksiak.core.presentation.designsystem.Poppins
 import com.teksiak.core.presentation.designsystem.R
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
-import com.teksiak.core.presentation.designsystem.components.util.ToolbarMenuItem
+import com.teksiak.core.presentation.ui.model.ToolbarMenuItem
 
 @Composable
 fun RuniqueToolbar(
@@ -50,7 +50,7 @@ fun RuniqueToolbar(
     startContent: @Composable () -> Unit = {},
     showBackButton: Boolean = false,
     actions: @Composable RowScope.() -> Unit = {},
-    menuItems: List<ToolbarMenuItem> = emptyList(),
+    menuItems: List<com.teksiak.core.presentation.ui.model.ToolbarMenuItem> = emptyList(),
     onBackClick: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
 ) {
@@ -164,12 +164,12 @@ fun RuniqueToolbarPreview() {
                 }
             },
             menuItems = listOf(
-                ToolbarMenuItem(
+                com.teksiak.core.presentation.ui.model.ToolbarMenuItem(
                     icon = Icons.Outlined.Info,
                     title = "Help",
                     onClick = {}
                 ),
-                ToolbarMenuItem(
+                com.teksiak.core.presentation.ui.model.ToolbarMenuItem(
                     icon = LogoutIcon,
                     title = "Logout",
                     onClick = {}

@@ -38,18 +38,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import com.teksiak.analytics.domain.DataComparison
 import com.teksiak.analytics.presentation.R
-import com.teksiak.analytics.presentation.compare_run.components.RunCard
 import com.teksiak.analytics.presentation.compare_run.model.CompareDataUi
 import com.teksiak.analytics.presentation.compare_run.model.CompareRunsDataUi
-import com.teksiak.analytics.presentation.compare_run.model.RunUi
 import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.KeyboardArrowDownIcon
 import com.teksiak.core.presentation.designsystem.KeyboardArrowUpIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
+import com.teksiak.core.presentation.designsystem.components.RunCard
 import com.teksiak.core.presentation.designsystem.components.RuniqueScaffold
 import com.teksiak.core.presentation.designsystem.components.RuniqueToolbar
 import com.teksiak.core.presentation.designsystem.components.TextDivider
@@ -161,7 +159,6 @@ fun CompareRunScreen(
                             items(state.runs) { run ->
                                 RunCard(
                                     run = run,
-                                    isClickable = true,
                                     onClick = { onAction(CompareRunAction.OnOtherRunChoose(run.id!!)) }
                                 )
                             }

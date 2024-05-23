@@ -1,15 +1,13 @@
-package com.teksiak.run.presentation.run_overview.mappers
+package com.teksiak.core.presentation.ui.mapper
 
-import android.content.Context
-import android.location.Geocoder
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.ui.formatted
+import com.teksiak.core.presentation.ui.model.RunUi
 import com.teksiak.core.presentation.ui.toFormattedDateTime
 import com.teksiak.core.presentation.ui.toFormattedKm
 import com.teksiak.core.presentation.ui.toFormattedKmh
 import com.teksiak.core.presentation.ui.toFormattedMeters
 import com.teksiak.core.presentation.ui.toFormattedPace
-import com.teksiak.run.presentation.run_overview.model.RunUi
 
 fun Run.toRunUi(): RunUi {
     val distanceKm = distanceMeters / 1000.0

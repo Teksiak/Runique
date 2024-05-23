@@ -1,4 +1,4 @@
-package com.teksiak.run.presentation.run_overview.model
+package com.teksiak.core.presentation.ui.model
 
 data class RunDataUi(
     val name: String,

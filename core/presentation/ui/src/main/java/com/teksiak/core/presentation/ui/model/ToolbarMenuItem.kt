@@ -1,4 +1,4 @@
-package com.teksiak.core.presentation.designsystem.components.util
+package com.teksiak.core.presentation.ui.model
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

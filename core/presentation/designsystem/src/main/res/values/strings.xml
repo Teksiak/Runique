@@ -6,4 +6,12 @@
     <string name="toggle_menu">Toggle dropdown menu</string>
     <string name="run_map">Run map</string>
     <string name="error_loading_map">Error loading map</string>
+    <string name="running_time">Running time</string>
+    <string name="distance">Distance</string>
+    <string name="pace">Pace</string>
+    <string name="avg_speed">Avg. speed</string>
+    <string name="max_speed">Max speed</string>
+    <string name="total_elevation">Total elevation</string>
+    <string name="compare">Compare</string>
+    <string name="delete">Delete</string>
 </resources>

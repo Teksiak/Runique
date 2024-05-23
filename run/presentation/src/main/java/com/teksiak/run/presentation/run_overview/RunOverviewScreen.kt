@@ -8,10 +8,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -34,7 +31,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,20 +39,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.teksiak.core.presentation.designsystem.AnalyticsIcon
 import com.teksiak.core.presentation.designsystem.LogoIcon
 import com.teksiak.core.presentation.designsystem.LogoutIcon
 import com.teksiak.core.presentation.designsystem.RunIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
+import com.teksiak.core.presentation.designsystem.components.FocusableRunCard
 import com.teksiak.core.presentation.designsystem.components.RuniqueActionButton
 import com.teksiak.core.presentation.designsystem.components.RuniqueDialog
 import com.teksiak.core.presentation.designsystem.components.RuniqueFloatingActionButton
@@ -64,13 +57,10 @@ import com.teksiak.core.presentation.designsystem.components.RuniqueMessageSnack
 import com.teksiak.core.presentation.designsystem.components.RuniqueOutlinedActionButton
 import com.teksiak.core.presentation.designsystem.components.RuniqueScaffold
 import com.teksiak.core.presentation.designsystem.components.RuniqueToolbar
-import com.teksiak.core.presentation.designsystem.components.util.ToolbarMenuItem
+import com.teksiak.core.presentation.ui.model.ToolbarMenuItem
 import com.teksiak.run.presentation.R
 import com.teksiak.run.presentation.run_overview.components.ActiveRunBar
-import com.teksiak.run.presentation.run_overview.components.RunListItem
-import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import org.koin.androidx.compose.koinViewModel
-import timber.log.Timber
 
 @Composable
 fun RunOverviewScreenRoot(
@@ -106,8 +96,6 @@ private fun RunOverviewScreen(
     onAction: (RunOverviewAction) -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-    val context = LocalContext.current
-
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         state = topAppBarState
@@ -217,7 +205,7 @@ private fun RunOverviewScreen(
                     items = state.runs,
                     key = { it.id!! }
                 ) { run ->
-                    RunListItem(
+                    FocusableRunCard(
                         run = run,
                         focusedRunId = focusedRunId,
                         onFocusChange = { isFocused ->

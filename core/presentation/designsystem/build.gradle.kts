@@ -8,6 +8,9 @@ android {
 
 dependencies {
 
+    implementation(projects.core.presentation.ui)
+    implementation(projects.core.domain)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)

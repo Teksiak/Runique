@@ -16,5 +16,4 @@ dependencies {
     implementation(libs.androidx.compose.material3)
 
     implementation(projects.core.domain)
-    implementation(projects.core.presentation.designsystem)
 }

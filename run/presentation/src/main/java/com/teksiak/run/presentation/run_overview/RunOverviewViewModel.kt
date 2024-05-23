@@ -9,7 +9,6 @@ import com.teksiak.core.domain.run.RunRepository
 import com.teksiak.core.presentation.ui.formatted
 import com.teksiak.core.domain.run.RunSyncScheduler
 import com.teksiak.run.domain.RunningTracker
-import com.teksiak.run.presentation.run_overview.mappers.toRunUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
