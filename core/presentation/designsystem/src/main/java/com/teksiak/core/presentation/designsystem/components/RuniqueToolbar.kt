@@ -50,7 +50,7 @@ fun RuniqueToolbar(
     startContent: @Composable () -> Unit = {},
     showBackButton: Boolean = false,
     actions: @Composable RowScope.() -> Unit = {},
-    menuItems: List<com.teksiak.core.presentation.ui.model.ToolbarMenuItem> = emptyList(),
+    menuItems: List<ToolbarMenuItem> = emptyList(),
     onBackClick: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
 ) {
@@ -164,12 +164,12 @@ fun RuniqueToolbarPreview() {
                 }
             },
             menuItems = listOf(
-                com.teksiak.core.presentation.ui.model.ToolbarMenuItem(
+                ToolbarMenuItem(
                     icon = Icons.Outlined.Info,
                     title = "Help",
                     onClick = {}
                 ),
-                com.teksiak.core.presentation.ui.model.ToolbarMenuItem(
+                ToolbarMenuItem(
                     icon = LogoutIcon,
                     title = "Logout",
                     onClick = {}

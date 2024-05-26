@@ -4,7 +4,6 @@ package com.teksiak.run.presentation.active_run
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.location.Geocoder
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -16,7 +15,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.teksiak.core.presentation.designsystem.CrossIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
 import com.teksiak.core.presentation.designsystem.StartIcon
 import com.teksiak.core.presentation.designsystem.StopIcon
@@ -48,8 +51,7 @@ import java.io.ByteArrayOutputStream
 
 @Composable
 fun ActiveRunScreenRoot(
-    onBackClick: () -> Unit,
-    onFinishRun: () -> Unit,
+    onNavigateBack: () -> Unit,
     onServiceToggle: (shouldServiceRun: Boolean) -> Unit,
     viewModel: ActiveRunViewModel = koinViewModel()
 ) {
@@ -64,7 +66,7 @@ fun ActiveRunScreenRoot(
                 ).show()
             }
             ActiveRunEvent.RunSaved -> {
-                onFinishRun()
+                onNavigateBack()
             }
         }
     }
@@ -74,7 +76,13 @@ fun ActiveRunScreenRoot(
         onServiceToggle = onServiceToggle,
         onAction = { action ->
             when (action) {
-                is ActiveRunAction.OnBackClick -> onBackClick()
+                is ActiveRunAction.OnBackClick -> onNavigateBack()
+                is ActiveRunAction.OnDiscardRunClick -> {
+                    if (!viewModel.state.hasStartedRunning) {
+                        onNavigateBack()
+                    }
+                }
+                is ActiveRunAction.OnDiscardRunConfirm -> onNavigateBack()
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -160,7 +168,19 @@ private fun ActiveRunScreen(
             RuniqueToolbar(
                 title = stringResource(id = R.string.active_run),
                 showBackButton = true,
-                onBackClick = { onAction(ActiveRunAction.OnBackClick) }
+                onBackClick = { onAction(ActiveRunAction.OnBackClick) },
+                actions = {
+                    IconButton(onClick = {
+                        onAction(ActiveRunAction.OnDiscardRunClick)
+                    }) {
+                        Icon(
+                            imageVector = CrossIcon,
+                            contentDescription = stringResource(id = R.string.discard_run),
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -177,7 +197,7 @@ private fun ActiveRunScreen(
         },
         withGradient = false,
         isBlurred = (!state.shouldTrack && state.hasStartedRunning)
-                || state.showLocationPermissionRationale || state.showNotificationPermissionRationale
+                || state.showLocationPermissionRationale || state.showNotificationPermissionRationale || state.showDiscardRunDialog
     ) { padding ->
         Box(
             modifier = Modifier
@@ -237,6 +257,39 @@ private fun ActiveRunScreen(
                     isLoading = false,
                     onClick = {
                         onAction(ActiveRunAction.OnResumeRunClick)
+                    }
+                )
+            }
+        )
+    }
+
+    if (state.showDiscardRunDialog) {
+        RuniqueDialog(
+            title = stringResource(id = R.string.discard_run),
+            onDismiss = {
+                onAction(ActiveRunAction.DismissDiscardRunDialog)
+            },
+            description = stringResource(id = R.string.discard_run_description),
+            primaryAction = {
+                RuniqueActionButton(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(id = R.string.discard),
+                    isLoading = false,
+                    onClick = {
+                        onServiceToggle(false)
+                        onAction(ActiveRunAction.OnDiscardRunConfirm)
+                    },
+                    backgroundColor = MaterialTheme.colorScheme.error,
+                    textColor = MaterialTheme.colorScheme.onSurface
+                )
+            },
+            secondaryAction = {
+                RuniqueOutlinedActionButton(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(id = R.string.cancel),
+                    isLoading = false,
+                    onClick = {
+                        onAction(ActiveRunAction.DismissDiscardRunDialog)
                     }
                 )
             }

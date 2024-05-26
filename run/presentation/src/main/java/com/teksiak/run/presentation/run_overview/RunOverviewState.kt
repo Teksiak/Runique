@@ -7,5 +7,5 @@ data class RunOverviewState(
     val isRunActive: Boolean = false,
     val activeRunDuration: String = "",
     val runToDeleteId: String? = null,
-    val isDiscardRunDialogShown: Boolean = false,
+    val showDiscardRunDialog: Boolean = false,
 )

@@ -11,9 +11,11 @@ import com.teksiak.core.presentation.ui.formatted
 import com.teksiak.run.domain.RunningTracker
 import com.teksiak.run.presentation.active_run.service.ActiveRunService
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.minutes
 
 class RunOverviewViewModel(
@@ -50,10 +52,21 @@ class RunOverviewViewModel(
             )
         }
 
+        combine(runningTracker.isTracking, runningTracker.elapsedTime) { isTracking, elapsedTime ->
+            isTracking to elapsedTime
+        }
+            .onEach { (isTracking, elapsedTime) ->
+                state = state.copy(
+                    isRunActive = isTracking || elapsedTime != ZERO,
+                    activeRunDuration = elapsedTime.formatted()
+                )
+            }
+            .launchIn(viewModelScope)
+
         runningTracker.isTracking
             .onEach { isTracking ->
                 state = state.copy(
-                    isRunActive = isTracking || ActiveRunService.isServiceActive
+                    isRunActive = isTracking
                 )
             }
             .launchIn(viewModelScope)
@@ -92,22 +105,22 @@ class RunOverviewViewModel(
             }
 
             is RunOverviewAction.OnDiscardRunClick -> {
-                if (state.isDiscardRunDialogShown) {
+                if (state.showDiscardRunDialog) {
                     runningTracker.finishRun()
                     state = state.copy(
-                        isDiscardRunDialogShown = false,
+                        showDiscardRunDialog = false,
                         isRunActive = false
                     )
                 } else {
                     state = state.copy(
-                        isDiscardRunDialogShown = true
+                        showDiscardRunDialog = true
                     )
                 }
             }
 
             is RunOverviewAction.OnDismissDiscardRunDialog -> {
                 state = state.copy(
-                    isDiscardRunDialogShown = false
+                    showDiscardRunDialog = false
                 )
             }
 

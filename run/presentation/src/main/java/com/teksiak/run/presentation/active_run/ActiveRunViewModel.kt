@@ -3,7 +3,6 @@ package com.teksiak.run.presentation.active_run
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.teksiak.core.domain.location.Location
@@ -16,11 +15,9 @@ import com.teksiak.run.domain.RunningTracker
 import com.teksiak.run.presentation.active_run.service.ActiveRunService
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.ZoneId
@@ -40,8 +37,6 @@ class ActiveRunViewModel(
     private val eventChannel = Channel<ActiveRunEvent>()
     val events = eventChannel.receiveAsFlow()
 
-    private val shouldTrack = snapshotFlow { state.shouldTrack }
-        .stateIn(viewModelScope, SharingStarted.Lazily, false)
     private val hasLocationPermission = MutableStateFlow(false)
 
     init {
@@ -107,6 +102,25 @@ class ActiveRunViewModel(
                 runningTracker.setIsTracking(!state.shouldTrack)
                 state = state.copy(
                     hasStartedRunning = true
+                )
+            }
+            ActiveRunAction.OnDiscardRunClick -> {
+                if(state.hasStartedRunning) {
+                    state = state.copy(
+                        showDiscardRunDialog = true
+                    )
+                }
+            }
+            ActiveRunAction.OnDiscardRunConfirm -> {
+                state = state.copy(
+                    hasStartedRunning = false,
+                    showDiscardRunDialog = false,
+                )
+                runningTracker.finishRun()
+            }
+            ActiveRunAction.DismissDiscardRunDialog -> {
+                state = state.copy(
+                    showDiscardRunDialog = false
                 )
             }
             is ActiveRunAction.SubmitLocationPermissionInfo -> {

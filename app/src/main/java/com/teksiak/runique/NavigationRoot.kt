@@ -1,19 +1,15 @@
 package com.teksiak.runique
 
 import android.net.Uri
-import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.teksiak.auth.presentation.R
@@ -202,10 +198,7 @@ private fun NavGraphBuilder.runGraph(
         ) {
             val context = LocalContext.current
             ActiveRunScreenRoot(
-                onBackClick = {
-                    navController.navigateUp()
-                },
-                onFinishRun = {
+                onNavigateBack = {
                     navController.navigateUp()
                 },
                 onServiceToggle = { shouldServiceRun ->

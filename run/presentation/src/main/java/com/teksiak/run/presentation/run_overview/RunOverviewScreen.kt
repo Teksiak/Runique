@@ -180,7 +180,7 @@ private fun RunOverviewScreen(
                 }
             }
         },
-        isBlurred = !state.runToDeleteId.isNullOrBlank() || state.isDiscardRunDialogShown,
+        isBlurred = !state.runToDeleteId.isNullOrBlank() || state.showDiscardRunDialog,
     ) { padding ->
         Box(
             modifier = Modifier
@@ -283,7 +283,7 @@ private fun RunOverviewScreen(
             )
         }
 
-        if (state.isDiscardRunDialogShown) {
+        if (state.showDiscardRunDialog) {
             RuniqueDialog(
                 title = stringResource(id = R.string.discard_run),
                 onDismiss = {

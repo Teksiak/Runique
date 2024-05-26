@@ -23,7 +23,6 @@
     <string name="finish">Finish</string>
     <string name="discard">Discard</string>
     <string name="paused">" - Paused"</string>
-    <string name="run_in_progress">Run in Progress</string>
     <string name="run_map">Run map</string>
     <string name="error_loading_map">Couldn\'t load image.</string>
     <string name="running_time">Running time</string>
@@ -32,7 +31,7 @@
     <string name="total_elevation">Total elevation</string>
     <string name="delete">Delete</string>
     <string name="discard_run">Discard run</string>
-    <string name="discard_run_description">Are you sure you want to discard the run in progress?</string>
+    <string name="discard_run_description">Are you sure you want to discard active run?</string>
     <string name="cancel">Cancel</string>
     <string name="compare">Compare</string>
     <string name="delete_run">Delete run</string>
