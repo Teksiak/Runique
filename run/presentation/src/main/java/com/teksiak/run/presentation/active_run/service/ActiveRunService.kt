@@ -1,5 +1,6 @@
 package com.teksiak.run.presentation.active_run.service
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -7,8 +8,8 @@ import android.app.Service
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -46,6 +47,8 @@ class ActiveRunService: Service() {
 
     private val runningTracker by inject<RunningTracker>()
 
+    private val broadcastReceiver = ActiveRunBroadcastReceiver(runningTracker)
+
     private var serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -65,6 +68,7 @@ class ActiveRunService: Service() {
         return START_STICKY
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private fun start(activityClass: Class<*>) {
         if(!isServiceActive) {
             isServiceActive = true
@@ -95,12 +99,32 @@ class ActiveRunService: Service() {
                 }
             )
 
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(
+                    broadcastReceiver,
+                    IntentFilter().apply {
+                        addAction(ActiveRunBroadcastReceiver.ACTION_PAUSE)
+                        addAction(ActiveRunBroadcastReceiver.ACTION_RESUME)
+                    },
+                    RECEIVER_EXPORTED,
+                )
+            } else {
+                registerReceiver(
+                    broadcastReceiver,
+                    IntentFilter().apply {
+                        addAction(ActiveRunBroadcastReceiver.ACTION_PAUSE)
+                        addAction(ActiveRunBroadcastReceiver.ACTION_RESUME)
+                    }
+                )
+            }
+
             updateNotification()
         }
     }
 
     private fun stop() {
         stopSelf()
+        unregisterReceiver(broadcastReceiver)
         isServiceActive = false
         serviceScope.cancel()
         serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -116,6 +140,17 @@ class ActiveRunService: Service() {
 
             activeRunNotification
                 .setContentText(content)
+                .clearActions()
+                .addAction(
+                    0,
+                    if(isTracking) "Pause" else "Resume",
+                    PendingIntent.getBroadcast(
+                        applicationContext,
+                        1,
+                        Intent(if(isTracking) ActiveRunBroadcastReceiver.ACTION_PAUSE else ActiveRunBroadcastReceiver.ACTION_RESUME),
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                )
                 .build()
         }
         .onEach { notification ->

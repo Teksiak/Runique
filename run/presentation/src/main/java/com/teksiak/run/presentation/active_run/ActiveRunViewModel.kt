@@ -17,7 +17,6 @@ import com.teksiak.run.presentation.active_run.service.ActiveRunService
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -45,13 +44,6 @@ class ActiveRunViewModel(
         .stateIn(viewModelScope, SharingStarted.Lazily, false)
     private val hasLocationPermission = MutableStateFlow(false)
 
-    private val isTracking = combine(
-        shouldTrack,
-        hasLocationPermission
-    ) { shouldTrack, isTracking ->
-        shouldTrack && isTracking
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
-
     init {
         hasLocationPermission
             .onEach { hasPermission ->
@@ -63,9 +55,13 @@ class ActiveRunViewModel(
             }
             .launchIn(viewModelScope)
 
-        isTracking
+
+        runningTracker
+            .isTracking
             .onEach { isTracking ->
-                runningTracker.setIsTracking(isTracking)
+                state = state.copy(
+                    shouldTrack = isTracking
+                )
             }
             .launchIn(viewModelScope)
 
@@ -105,14 +101,12 @@ class ActiveRunViewModel(
                 )
             }
             ActiveRunAction.OnResumeRunClick -> {
-                state = state.copy(
-                    shouldTrack = true
-                )
+                runningTracker.setIsTracking(true)
             }
             ActiveRunAction.OnToggleRunClick -> {
+                runningTracker.setIsTracking(!state.shouldTrack)
                 state = state.copy(
-                    hasStartedRunning = true,
-                    shouldTrack = !state.shouldTrack
+                    hasStartedRunning = true
                 )
             }
             is ActiveRunAction.SubmitLocationPermissionInfo -> {
@@ -133,7 +127,7 @@ class ActiveRunViewModel(
                 )
             }
             is ActiveRunAction.OnRunProcessed -> {
-                finishRun(action.mapPictureBytes,)
+                finishRun(action.mapPictureBytes)
             }
             else -> Unit
         }

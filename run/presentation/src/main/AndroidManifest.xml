@@ -13,6 +13,15 @@
         <service android:name=".active_run.service.ActiveRunService"
             android:foregroundServiceType="location"
             />
+
+        <receiver android:name=".active_run.service.ActiveRunBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.teksiak.run.PAUSE_RUN" />
+                <action android:name="com.teksiak.run.RESUME_RUN" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

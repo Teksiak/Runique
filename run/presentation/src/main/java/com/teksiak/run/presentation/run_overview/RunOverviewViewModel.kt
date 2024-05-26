@@ -6,9 +6,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.teksiak.core.domain.run.RunRepository
-import com.teksiak.core.presentation.ui.formatted
 import com.teksiak.core.domain.run.RunSyncScheduler
+import com.teksiak.core.presentation.ui.formatted
 import com.teksiak.run.domain.RunningTracker
+import com.teksiak.run.presentation.active_run.service.ActiveRunService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -24,7 +25,7 @@ class RunOverviewViewModel(
 
     var state by mutableStateOf(
         RunOverviewState(
-            isRunActive = runningTracker.isTracking.value,
+            isRunActive = runningTracker.isTracking.value || ActiveRunService.isServiceActive,
         )
     )
         private set
@@ -52,7 +53,7 @@ class RunOverviewViewModel(
         runningTracker.isTracking
             .onEach { isTracking ->
                 state = state.copy(
-                    isRunActive = isTracking
+                    isRunActive = isTracking || ActiveRunService.isServiceActive
                 )
             }
             .launchIn(viewModelScope)
@@ -94,7 +95,8 @@ class RunOverviewViewModel(
                 if (state.isDiscardRunDialogShown) {
                     runningTracker.finishRun()
                     state = state.copy(
-                        isDiscardRunDialogShown = false
+                        isDiscardRunDialogShown = false,
+                        isRunActive = false
                     )
                 } else {
                     state = state.copy(

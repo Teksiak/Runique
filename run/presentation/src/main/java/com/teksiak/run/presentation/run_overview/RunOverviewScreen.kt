@@ -296,8 +296,8 @@ private fun RunOverviewScreen(
                         text = stringResource(id = R.string.discard),
                         isLoading = false,
                         onClick = {
-                            onAction(RunOverviewAction.OnDiscardRunClick)
                             onStopService()
+                            onAction(RunOverviewAction.OnDiscardRunClick)
                         },
                         backgroundColor = MaterialTheme.colorScheme.error,
                         textColor = MaterialTheme.colorScheme.onSurface
