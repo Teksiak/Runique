@@ -83,6 +83,11 @@ class RunOverviewViewModel(
     fun onAction(action: RunOverviewAction) {
         when (action) {
             is RunOverviewAction.OnDeleteRunClick -> {
+                state = state.copy(
+                    runToDeleteId = action.run.id
+                )
+            }
+            is RunOverviewAction.OnDeleteRunConfirm -> {
                 state.runToDeleteId?.let { runId ->
                     viewModelScope.launch {
                         runRepository.deleteRun(runId)
@@ -90,42 +95,31 @@ class RunOverviewViewModel(
                     state = state.copy(
                         runToDeleteId = null
                     )
-                    return@onAction
                 }
-
-                state = state.copy(
-                    runToDeleteId = action.run?.id
-                )
             }
-
             is RunOverviewAction.OnDismissDeleteRunDialog -> {
                 state = state.copy(
                     runToDeleteId = null
                 )
             }
-
             is RunOverviewAction.OnDiscardRunClick -> {
-                if (state.showDiscardRunDialog) {
-                    runningTracker.finishRun()
-                    state = state.copy(
-                        showDiscardRunDialog = false,
-                        isRunActive = false
-                    )
-                } else {
-                    state = state.copy(
-                        showDiscardRunDialog = true
-                    )
-                }
+                state = state.copy(
+                    showDiscardRunDialog = true
+                )
             }
-
-            is RunOverviewAction.OnDismissDiscardRunDialog -> {
+            is RunOverviewAction.OnDiscardRunConfirm -> {
+                runningTracker.finishRun()
+                state = state.copy(
+                    showDiscardRunDialog = false,
+                    isRunActive = false
+                )
+            }
+            is RunOverviewAction.DismissDiscardRunDialog -> {
                 state = state.copy(
                     showDiscardRunDialog = false
                 )
             }
-
             is RunOverviewAction.OnLogoutClick -> logout()
-
             else -> Unit
         }
     }

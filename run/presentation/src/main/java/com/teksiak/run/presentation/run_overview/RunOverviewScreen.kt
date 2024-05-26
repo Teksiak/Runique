@@ -264,7 +264,7 @@ private fun RunOverviewScreen(
                         text = stringResource(id = R.string.delete),
                         isLoading = false,
                         onClick = {
-                            onAction(RunOverviewAction.OnDeleteRunClick(null))
+                            onAction(RunOverviewAction.OnDeleteRunConfirm)
                         },
                         backgroundColor = MaterialTheme.colorScheme.error,
                         textColor = MaterialTheme.colorScheme.onSurface
@@ -287,7 +287,7 @@ private fun RunOverviewScreen(
             RuniqueDialog(
                 title = stringResource(id = R.string.discard_run),
                 onDismiss = {
-                    onAction(RunOverviewAction.OnDismissDiscardRunDialog)
+                    onAction(RunOverviewAction.DismissDiscardRunDialog)
                 },
                 description = stringResource(id = R.string.discard_run_description),
                 primaryAction = {
@@ -297,7 +297,7 @@ private fun RunOverviewScreen(
                         isLoading = false,
                         onClick = {
                             onStopService()
-                            onAction(RunOverviewAction.OnDiscardRunClick)
+                            onAction(RunOverviewAction.OnDiscardRunConfirm)
                         },
                         backgroundColor = MaterialTheme.colorScheme.error,
                         textColor = MaterialTheme.colorScheme.onSurface
@@ -309,7 +309,7 @@ private fun RunOverviewScreen(
                         text = stringResource(id = R.string.cancel),
                         isLoading = false,
                         onClick = {
-                            onAction(RunOverviewAction.OnDismissDiscardRunDialog)
+                            onAction(RunOverviewAction.DismissDiscardRunDialog)
                         }
                     )
                 }
