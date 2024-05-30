@@ -20,19 +20,25 @@ data class AnalyticsGraphData(
             it.dateTimeUtc.toFormattedMonth() == selectedMonth
         }
 
-    val maxValue: Number
+    private val maxValue: Number
         get() = when (dataType) {
             AnalyticsGraphType.DISTANCE -> runsForSelectedMonth.maxOf { it.distanceMeters }
             AnalyticsGraphType.SPEED -> runsForSelectedMonth.maxOf { it.avgSpeedKmh }
             AnalyticsGraphType.PACE -> runsForSelectedMonth.minOf { it.pace }
         }
 
-    val minValue: Number
+    private val minValue: Number
         get() = when (dataType) {
             AnalyticsGraphType.DISTANCE -> runsForSelectedMonth.minOf { it.distanceMeters }
             AnalyticsGraphType.SPEED -> runsForSelectedMonth.minOf { it.avgSpeedKmh }
             AnalyticsGraphType.PACE -> runsForSelectedMonth.maxOf { it.pace }
         }
+
+    val yAxisValues: List<Number>
+        get() = listOf(
+            minValue,
+            maxValue
+        ).distinct()
 
     private val firstDay: Int
         get() = runsForSelectedMonth.firstOrNull()?.dateTimeUtc?.dayOfMonth ?: 1
@@ -41,7 +47,7 @@ data class AnalyticsGraphData(
         get() = runsForSelectedMonth.lastOrNull()?.dateTimeUtc?.dayOfMonth ?: 1
 
     val runByDay: Map<Int, Run?>
-        get() = (firstDay..lastDay).associateWith { day ->
+        get() = (firstDay..lastDay step 2).associateWith { day ->
             runsForSelectedMonth.find { it.dateTimeUtc.dayOfMonth == day }
         }
 }

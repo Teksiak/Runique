@@ -9,14 +9,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,8 +29,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.teksiak.analytics.domain.AnalyticsGraphData
 import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
@@ -58,6 +65,7 @@ fun AnalyticsGraphCard(
             graphData = graphData,
             modifier = Modifier.fillMaxWidth()
         )
+        Spacer(modifier = Modifier.height(12.dp))
         if (graphData.runs.isNotEmpty()) {
             MonthChooser(
                 months = graphData.distinctMonths,
@@ -73,10 +81,52 @@ fun AnalyticsGraph(
     graphData: AnalyticsGraphData,
     modifier: Modifier = Modifier
 ) {
+    val textMeasurer = rememberTextMeasurer()
+
+    val axisTextStyle = TextStyle(
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        fontSize = 12.sp
+    )
+
+    val backgroundLinesColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+    val dashedPathEffect = PathEffect.dashPathEffect(
+        intervals = floatArrayOf(10f, 10f),
+        phase = 0f
+    )
+
     Canvas(
         modifier = modifier.height(200.dp)
     ) {
-        
+        val xAxisSpace = size.width / (graphData.runByDay.size + 1)
+
+        graphData.runByDay.keys.toList().forEachIndexed { index, day ->
+            drawText(
+                textMeasurer = textMeasurer,
+                text = day.toString(),
+                style = axisTextStyle,
+                topLeft = Offset(
+                    x = (index + 1) * xAxisSpace,
+                    y = size.height - 12.sp.toPx()
+                )
+            )
+        }
+
+        (0..4).forEach {
+            drawLine(
+                start = Offset(x = size.width/4 * it, y = 0f),
+                end = Offset(x = size.width/4 * it, y = size.height - 16.sp.toPx()),
+                color = backgroundLinesColor,
+                strokeWidth = 2f,
+                pathEffect = dashedPathEffect
+            )
+        }
+
+        drawLine(
+            start = Offset(x = 0f, y = size.height - 16.sp.toPx()),
+            end = Offset(x = size.width, y = size.height - 16.sp.toPx()),
+            color = backgroundLinesColor,
+            strokeWidth = 2f
+        )
     }
 }
 
@@ -103,7 +153,7 @@ fun MonthChooser(
                 .clickable {
                     expandMonths = !expandMonths
                 }
-                .padding(horizontal = 8.dp),
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -111,23 +161,22 @@ fun MonthChooser(
                 text = selectedMonth,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            IconButton(onClick = { expandMonths = !expandMonths }) {
-                Icon(
-                    modifier = Modifier.rotate(expandIconRotate),
-                    imageVector = KeyboardArrowDownIcon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(
+                modifier = Modifier.rotate(expandIconRotate),
+                imageVector = KeyboardArrowDownIcon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
         DropdownMenu(expanded = expandMonths, onDismissRequest = { expandMonths = false }) {
             months.forEach { month ->
                 DropdownMenuItem(
                     text = {
-                       Text(
-                           text = month,
-                           color = MaterialTheme.colorScheme.onSurfaceVariant
-                       )
+                        Text(
+                            text = month,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     },
                     onClick = { onMonthChoose(month) }
                 )
