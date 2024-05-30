@@ -43,8 +43,8 @@ data class AnalyticsGraphData(
     val lastDay: Int
         get() = runsForSelectedMonth.lastOrNull()?.dateTimeUtc?.dayOfMonth ?: 1
 
-    val daysRange: Int
-        get() = lastDay - firstDay
+    val daysRange: Float
+        get() = (lastDay - firstDay).toFloat()
 
     val days: List<Int>
         get() = (firstDay..lastDay step if(daysRange > 15) 2 else 1).toList()
@@ -58,6 +58,9 @@ data class AnalyticsGraphData(
             }
         }
             .distinctBy {
+                it.dateTimeUtc.dayOfMonth
+            }
+            .sortedBy {
                 it.dateTimeUtc.dayOfMonth
             }
             .associateBy { it.dateTimeUtc.dayOfMonth }
