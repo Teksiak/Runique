@@ -17,4 +17,5 @@
     <string name="avg_speed">Avg. speed</string>
     <string name="elevation">Elevation</string>
     <string name="running_time">Running time</string>
+    <string name="highest_heart_rate">Highest heart rate</string>
 </resources>

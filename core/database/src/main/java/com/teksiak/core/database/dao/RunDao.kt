@@ -1,7 +1,6 @@
 package com.teksiak.core.database.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import com.teksiak.core.database.entity.RunEntity
@@ -18,6 +17,9 @@ interface RunDao {
 
     @Query("SELECT * FROM Run ORDER BY dateTimeUtc DESC")
     fun getRuns(): Flow<List<RunEntity>>
+
+    @Query("SELECT * FROM Run ORDER BY dateTimeUtc ASC")
+    suspend fun getUnsortedRuns(): List<RunEntity>
 
     @Query("DELETE FROM Run WHERE id = :id")
     suspend fun deleteRun(id: String)

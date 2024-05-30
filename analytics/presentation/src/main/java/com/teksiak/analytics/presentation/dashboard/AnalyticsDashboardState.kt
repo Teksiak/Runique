@@ -1,9 +1,10 @@
 package com.teksiak.analytics.presentation.dashboard
 
+import com.teksiak.analytics.domain.AnalyticsGraphData
+
 data class AnalyticsDashboardState(
-    val totalDistance: String,
-    val totalDuration: String,
-    val maxSpeed: String,
-    val avgDistance: String,
-    val avgPace: String
+    val totalDistance: String = "-",
+    val totalDuration: String = "-",
+    val maxSpeed: String = "-",
+    val graphData: AnalyticsGraphData = AnalyticsGraphData()
 )

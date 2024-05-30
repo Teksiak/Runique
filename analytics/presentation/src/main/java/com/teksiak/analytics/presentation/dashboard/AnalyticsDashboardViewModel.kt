@@ -10,7 +10,7 @@ import com.teksiak.analytics.presentation.dashboard.mapper.toAnalyticsDashboardS
 import kotlinx.coroutines.launch
 
 class AnalyticsDashboardViewModel(
-    private val analyticsRepository: AnalyticsRepository
+    private val analyticsRepository: AnalyticsRepository,
 ): ViewModel() {
 
     var state by mutableStateOf<AnalyticsDashboardState?>(null)
@@ -19,6 +19,13 @@ class AnalyticsDashboardViewModel(
     init {
         viewModelScope.launch {
             state = analyticsRepository.getAnalyticsData().toAnalyticsDashboardState()
+        }
+    }
+
+    fun onAction(action: AnalyticsDashboardAction) {
+        when(action) {
+            is AnalyticsDashboardAction.OnMonthChoose -> { }
+            else -> Unit
         }
     }
 
