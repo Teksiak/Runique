@@ -15,12 +15,12 @@ data class AnalyticsGraphData(
     val selectedMonth: String? = distinctMonths.firstOrNull(),
     val dataType: AnalyticsGraphType = AnalyticsGraphType.DISTANCE,
 ) {
-    val runsForSelectedMonth: List<Run>
+    private val runsForSelectedMonth: List<Run>
         get() = runs.filter {
             it.dateTimeUtc.toFormattedMonth() == selectedMonth
         }
 
-    private val maxValue: Number
+    val maxValue: Number
         get() = when (dataType) {
             AnalyticsGraphType.DISTANCE -> runsForSelectedMonth.maxOf { it.distanceMeters }
             AnalyticsGraphType.SPEED -> runsForSelectedMonth.maxOf { it.avgSpeedKmh }
@@ -34,20 +34,40 @@ data class AnalyticsGraphData(
             AnalyticsGraphType.PACE -> runsForSelectedMonth.maxOf { it.pace }
         }
 
-    val yAxisValues: List<Number>
-        get() = listOf(
-            minValue,
-            maxValue
-        ).distinct()
+    val valuesRange: Float
+        get() = maxValue.toFloat() - minValue.toFloat()
 
-    private val firstDay: Int
+    val firstDay: Int
         get() = runsForSelectedMonth.firstOrNull()?.dateTimeUtc?.dayOfMonth ?: 1
 
-    private val lastDay: Int
+    val lastDay: Int
         get() = runsForSelectedMonth.lastOrNull()?.dateTimeUtc?.dayOfMonth ?: 1
 
-    val runByDay: Map<Int, Run?>
-        get() = (firstDay..lastDay step 2).associateWith { day ->
-            runsForSelectedMonth.find { it.dateTimeUtc.dayOfMonth == day }
+    val daysRange: Int
+        get() = lastDay - firstDay
+
+    val days: List<Int>
+        get() = (firstDay..lastDay step if(daysRange > 15) 2 else 1).toList()
+
+    val runByDay: Map<Int, Run>
+        get() = runsForSelectedMonth.run {
+            when (dataType) {
+                AnalyticsGraphType.DISTANCE -> sortedByDescending { it.distanceMeters }
+                AnalyticsGraphType.SPEED -> sortedByDescending { it.avgSpeedKmh }
+                AnalyticsGraphType.PACE -> sortedByDescending { it.pace }
+            }
+        }
+            .distinctBy {
+                it.dateTimeUtc.dayOfMonth
+            }
+            .associateBy { it.dateTimeUtc.dayOfMonth }
+
+    val valueByDay: Map<Int, Number>
+        get() = runByDay.mapValues { (_, run) ->
+            when (dataType) {
+                AnalyticsGraphType.DISTANCE -> run.distanceMeters
+                AnalyticsGraphType.SPEED -> run.avgSpeedKmh
+                AnalyticsGraphType.PACE -> run.pace
+            }
         }
 }
