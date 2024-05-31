@@ -128,6 +128,10 @@ fun AnalyticsDashboardScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     AnalyticsGraphCard(
                         graphData = state.graphData,
+                        chosenDay = state.selectedDay,
+                        onDayChoose = { day ->
+                            onAction(AnalyticsDashboardAction.OnDayChoose(day))
+                        },
                         onMonthChoose = { month ->
                             onAction(AnalyticsDashboardAction.OnMonthChoose(month))
                         }

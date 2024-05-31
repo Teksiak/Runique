@@ -37,7 +37,7 @@ data class AnalyticsGraphData(
     val valuesRange: Float
         get() = maxValue.toFloat() - minValue.toFloat()
 
-    val firstDay: Int
+    private val firstDay: Int
         get() = runsForSelectedMonth.firstOrNull()?.dateTimeUtc?.dayOfMonth ?: 1
 
     val lastDay: Int

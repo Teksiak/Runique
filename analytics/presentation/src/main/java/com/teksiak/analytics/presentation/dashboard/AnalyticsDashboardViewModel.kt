@@ -25,6 +25,13 @@ class AnalyticsDashboardViewModel(
     fun onAction(action: AnalyticsDashboardAction) {
         when(action) {
             is AnalyticsDashboardAction.OnMonthChoose -> { }
+            is AnalyticsDashboardAction.OnDayChoose -> {
+                state?.let {
+                    state = it.copy(
+                        selectedDay = action.day
+                    )
+                }
+            }
             else -> Unit
         }
     }
