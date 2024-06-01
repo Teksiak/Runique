@@ -34,7 +34,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -53,7 +55,10 @@ import com.teksiak.analytics.domain.AnalyticsGraphType
 import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.KeyboardArrowDownIcon
+import com.teksiak.core.presentation.designsystem.RuniqueBlack
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
+import com.teksiak.core.presentation.ui.toFormattedKmh
+import com.teksiak.core.presentation.ui.toFormattedPace
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.time.Duration.Companion.minutes
@@ -86,8 +91,8 @@ fun AnalyticsGraphCard(
         AnalyticsGraph(
             graphData = graphData,
             modifier = Modifier.fillMaxWidth(),
-            onDayChoose = onDayChoose,
-            chosenDay = chosenDay
+            onSelectDay = onDayChoose,
+            selectedDay = chosenDay
         )
         Spacer(modifier = Modifier.height(12.dp))
         if (graphData.runs.isNotEmpty()) {
@@ -132,8 +137,8 @@ fun GraphTypeSelect(
 fun AnalyticsGraph(
     graphData: AnalyticsGraphData,
     modifier: Modifier = Modifier,
-    chosenDay: Int? = null,
-    onDayChoose: (Int) -> Unit = {},
+    selectedDay: Int? = null,
+    onSelectDay: (Int) -> Unit = {},
 ) {
     val pointByDay: MutableMap<Int, PointF> = mutableMapOf()
 
@@ -141,6 +146,10 @@ fun AnalyticsGraph(
 
     val axisTextStyle = TextStyle(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
+        fontSize = 12.sp
+    )
+    val valueTextStyle = TextStyle(
+        color = RuniqueBlack,
         fontSize = 12.sp
     )
 
@@ -160,7 +169,7 @@ fun AnalyticsGraph(
                                 it.value.x - 24f <= x && x <= it.value.x + 24f
                             }
                             ?.also {
-                                onDayChoose(it.key)
+                                onSelectDay(it.key)
                             }
                     }
                 )
@@ -174,7 +183,7 @@ fun AnalyticsGraph(
                                 it.value.x - 24f <= x && x <= it.value.x + 24f
                             }
                             ?.also {
-                                onDayChoose(it.key)
+                                onSelectDay(it.key)
                             }
                     }
                 )
@@ -182,12 +191,12 @@ fun AnalyticsGraph(
     ) {
 
         val graphHeight = size.height - 16.dp.toPx()
-        val graphWidth = size.width - 48.dp.toPx()
+        val graphWidth = size.width - 60.dp.toPx()
 
         graphData.days.forEach { day ->
             val doubleDigitMargin = if (day >= 10) 4.sp.toPx() else 0f
             val x = if (graphData.days.size > 1) {
-                graphWidth - ((graphData.lastDay - day) / graphData.daysRange * graphWidth) + 22.dp.toPx() - doubleDigitMargin
+                graphWidth - ((graphData.lastDay - day) / graphData.daysRange * graphWidth) + 28.dp.toPx() - doubleDigitMargin
             } else {
                 size.width / 2 - doubleDigitMargin - 2.sp.toPx()
             }
@@ -225,7 +234,7 @@ fun AnalyticsGraph(
 
         graphData.valueByDay.forEach { (day, value) ->
             val x = if (graphData.days.size > 1) {
-                graphWidth - ((graphData.lastDay - day) / graphData.daysRange * graphWidth) + 24.dp.toPx()
+                graphWidth - ((graphData.lastDay - day) / graphData.daysRange * graphWidth) + 30.dp.toPx()
             } else {
                 size.width / 2
             }
@@ -295,7 +304,7 @@ fun AnalyticsGraph(
             )
         )
 
-        chosenDay?.let { day ->
+        selectedDay?.let { day ->
             val point = pointByDay[day]
             point?.let {
                 drawLine(
@@ -312,7 +321,7 @@ fun AnalyticsGraph(
         }
 
         pointByDay.forEach { (day, point) ->
-            val (smallRadius, bigRadius) = if (day == chosenDay) {
+            val (smallRadius, bigRadius) = if (day == selectedDay) {
                 10f to 16f
             } else {
                 10f to 14f
@@ -322,7 +331,6 @@ fun AnalyticsGraph(
                 radius = bigRadius,
                 center = Offset(point.x, point.y)
             )
-
             drawCircle(
                 color = primaryColor,
                 radius = smallRadius,
@@ -330,6 +338,59 @@ fun AnalyticsGraph(
             )
         }
 
+        selectedDay?.let { day ->
+            val formattedValue = when(graphData.dataType) {
+                AnalyticsGraphType.SPEED -> (graphData.valueByDay[day] as Double).toFormattedKmh()
+                AnalyticsGraphType.PACE -> (graphData.valueByDay[day] as Double).seconds.toFormattedPace()
+            }
+
+            val valueSize = textMeasurer.measure(
+                formattedValue,
+                valueTextStyle
+            ).size
+
+            val point = pointByDay[day]!!
+
+            drawRoundRect(
+                color = whiteColor,
+                topLeft = Offset(
+                    x = point.x - valueSize.width / 2 - 16f,
+                    y = point.y - 62f - valueSize.height
+                ),
+                size = Size(
+                    width = valueSize.width + 32f,
+                    height = valueSize.height + 16f
+                ),
+                cornerRadius = CornerRadius(
+                    16f, 16f
+                )
+            )
+
+            val path = Path().apply {
+                moveTo(point.x + 16f, point.y - 48f)
+                lineTo(point.x + 3f, point.y - 34f)
+                quadraticBezierTo(
+                    point.x, point.y - 30f,
+                    point.x - 3f, point.y - 34f
+                )
+                lineTo(point.x - 16f, point.y - 48f)
+                close()
+            }
+            drawPath(
+                path = path,
+                color = whiteColor,
+            )
+
+            drawText(
+                textMeasurer = textMeasurer,
+                text = formattedValue,
+                style = valueTextStyle,
+                topLeft = Offset(
+                    x = point.x - valueSize.width / 2,
+                    y = point.y - 54f - valueSize.height
+                )
+            )
+        }
     }
 }
 
@@ -499,7 +560,7 @@ private fun AnalyticsGraphCardPreview3() {
                     )
                 )
             ),
-            chosenDay = 3,
+            chosenDay = 2,
             onDayChoose = {},
             onMonthSelect = {},
             onTypeSelect = {}
