@@ -70,8 +70,8 @@ fun AnalyticsGraphCard(
     onMonthSelect: (String) -> Unit,
     modifier: Modifier = Modifier,
     onTypeSelect: (AnalyticsGraphType) -> Unit,
-    chosenDay: Int? = null,
-    onDayChoose: (Int) -> Unit = {},
+    selectedDay: Int? = null,
+    onDaySelect: (Int) -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -91,8 +91,8 @@ fun AnalyticsGraphCard(
         AnalyticsGraph(
             graphData = graphData,
             modifier = Modifier.fillMaxWidth(),
-            onSelectDay = onDayChoose,
-            selectedDay = chosenDay
+            onDaySelect = onDaySelect,
+            selectedDay = selectedDay
         )
         Spacer(modifier = Modifier.height(12.dp))
         if (graphData.runs.isNotEmpty()) {
@@ -138,7 +138,7 @@ fun AnalyticsGraph(
     graphData: AnalyticsGraphData,
     modifier: Modifier = Modifier,
     selectedDay: Int? = null,
-    onSelectDay: (Int) -> Unit = {},
+    onDaySelect: (Int) -> Unit = {},
 ) {
     val pointByDay: MutableMap<Int, PointF> = mutableMapOf()
 
@@ -169,7 +169,7 @@ fun AnalyticsGraph(
                                 it.value.x - 24f <= x && x <= it.value.x + 24f
                             }
                             ?.also {
-                                onSelectDay(it.key)
+                                onDaySelect(it.key)
                             }
                     }
                 )
@@ -183,7 +183,7 @@ fun AnalyticsGraph(
                                 it.value.x - 24f <= x && x <= it.value.x + 24f
                             }
                             ?.also {
-                                onSelectDay(it.key)
+                                onDaySelect(it.key)
                             }
                     }
                 )
@@ -468,7 +468,7 @@ private fun AnalyticsGraphCardPreview() {
                     )
                 )
             ),
-            onDayChoose = {},
+            onDaySelect = {},
             onMonthSelect = {},
             onTypeSelect = {}
         )
@@ -508,7 +508,7 @@ private fun AnalyticsGraphCardPreview2() {
                     )
                 )
             ),
-            onDayChoose = {},
+            onDaySelect = {},
             onMonthSelect = {},
             onTypeSelect = {}
         )
@@ -560,8 +560,8 @@ private fun AnalyticsGraphCardPreview3() {
                     )
                 )
             ),
-            chosenDay = 2,
-            onDayChoose = {},
+            selectedDay = 2,
+            onDaySelect = {},
             onMonthSelect = {},
             onTypeSelect = {}
         )
