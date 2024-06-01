@@ -49,7 +49,7 @@ import com.teksiak.core.presentation.designsystem.LogoIcon
 import com.teksiak.core.presentation.designsystem.LogoutIcon
 import com.teksiak.core.presentation.designsystem.RunIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
-import com.teksiak.core.presentation.designsystem.components.FocusableRunCard
+import com.teksiak.core.presentation.designsystem.components.InteractiveRunCard
 import com.teksiak.core.presentation.designsystem.components.RuniqueActionButton
 import com.teksiak.core.presentation.designsystem.components.RuniqueDialog
 import com.teksiak.core.presentation.designsystem.components.RuniqueFloatingActionButton
@@ -205,7 +205,7 @@ private fun RunOverviewScreen(
                     items = state.runs,
                     key = { it.id!! }
                 ) { run ->
-                    FocusableRunCard(
+                    InteractiveRunCard(
                         run = run,
                         focusedRunId = focusedRunId,
                         onFocusChange = { isFocused ->

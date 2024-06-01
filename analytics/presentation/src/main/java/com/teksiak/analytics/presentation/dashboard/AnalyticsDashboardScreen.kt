@@ -2,6 +2,7 @@
 
 package com.teksiak.analytics.presentation.dashboard
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,9 +13,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,6 +40,7 @@ import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
 import com.teksiak.core.presentation.designsystem.components.GradientBackground
+import com.teksiak.core.presentation.designsystem.components.InteractiveRunCard
 import com.teksiak.core.presentation.designsystem.components.RuniqueScaffold
 import com.teksiak.core.presentation.designsystem.components.RuniqueToolbar
 import org.koin.androidx.compose.koinViewModel
@@ -58,6 +70,22 @@ fun AnalyticsDashboardScreen(
     state: AnalyticsDashboardState?,
     onAction: (AnalyticsDashboardAction) -> Unit,
 ) {
+    val topAppBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        state = topAppBarState
+    )
+    
+    var selectedRun by remember {
+        mutableStateOf<Run?>(null)
+    }
+
+    LaunchedEffect(key1 = state?.selectedDay) {
+        state?.selectedDay?.let {
+            selectedRun = state.graphData.runByDay[it]
+            Log.d("AnalyticsDashboardScreen", "selectedDay: $selectedRun")
+        }
+    }
+
     GradientBackground {
         RuniqueScaffold(
             topAppBar = {
@@ -66,7 +94,8 @@ fun AnalyticsDashboardScreen(
                     showBackButton = true,
                     onBackClick = { onAction(AnalyticsDashboardAction.OnBackClick) }
                 )
-            }
+            },
+//            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
         ) { padding ->
             if (state == null) {
                 Box(
@@ -78,10 +107,10 @@ fun AnalyticsDashboardScreen(
                     CircularProgressIndicator()
                 }
             } else {
-
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
                         .padding(padding)
                         .padding(horizontal = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -136,6 +165,15 @@ fun AnalyticsDashboardScreen(
                             onAction(AnalyticsDashboardAction.OnMonthChoose(month))
                         }
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    key(selectedRun?.id) {
+                        selectedRun?.let {
+                            InteractiveRunCard(
+                                run = it,
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
@@ -164,7 +202,8 @@ private fun AnalyticsDashboardScreenPreview() {
                             mapPictureUrl = null
                         )
                     )
-                )
+                ),
+                selectedDay = ZonedDateTime.now().dayOfMonth
             ),
             onAction = {}
         )

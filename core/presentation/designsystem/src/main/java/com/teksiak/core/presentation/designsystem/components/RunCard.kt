@@ -108,7 +108,7 @@ fun RunCard(
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
             .then(
-                if(onClick != null) Modifier.clickable { onClick() }
+                if (onClick != null) Modifier.clickable { onClick() }
                 else Modifier
             )
             .padding(16.dp)
@@ -144,13 +144,13 @@ fun RunCard(
 }
 
 @Composable
-fun FocusableRunCard(
+fun InteractiveRunCard(
     run: Run,
     modifier: Modifier = Modifier,
     focusedRunId: String? = null,
-    onFocusChange: (Boolean) -> Unit,
-    onDeleteClick: () -> Unit,
-    onCompareClick: () -> Unit
+    onFocusChange: (Boolean) -> Unit = {},
+    onDeleteClick: () -> Unit = {},
+    onCompareClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -621,7 +621,7 @@ private fun RunCardPreview() {
 @Composable
 private fun FocusableRunCardPreview() {
     RuniqueTheme {
-        FocusableRunCard(
+        InteractiveRunCard(
             run = Run(
                 id = "123",
                 duration = 10.minutes + 30.seconds,
