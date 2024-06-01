@@ -2,7 +2,6 @@
 
 package com.teksiak.analytics.presentation.dashboard
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -82,7 +81,6 @@ fun AnalyticsDashboardScreen(
     LaunchedEffect(key1 = state?.selectedDay) {
         state?.selectedDay?.let {
             selectedRun = state.graphData.runByDay[it]
-            Log.d("AnalyticsDashboardScreen", "selectedDay: $selectedRun")
         }
     }
 
