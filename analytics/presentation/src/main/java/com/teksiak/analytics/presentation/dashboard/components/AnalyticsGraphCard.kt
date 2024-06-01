@@ -120,8 +120,7 @@ fun AnalyticsGraph(
                         val point = pointByDay.entries.find {
                             val point = it.value
 
-                            point.x - 24f <= x && x <= point.x + 24f &&
-                                    point.y - 24f <= y && y <= point.y + 24f
+                            point.x - 24f <= x && x <= point.x + 24f
                         }
                         point?.let {
                             val day = it.key
@@ -135,12 +134,12 @@ fun AnalyticsGraph(
         val graphHeight = size.height - 16.dp.toPx()
         val graphWidth = size.width - 48.dp.toPx()
 
-        graphData.days.forEachIndexed { index, day ->
-            val doubleDigitMargin = if (day >= 10) 6.sp.toPx() else 0f
+        graphData.days.forEach { day ->
+            val doubleDigitMargin = if (day >= 10) 4.sp.toPx() else 0f
             val x = if (graphData.days.size > 1) {
                 graphWidth - ((graphData.lastDay - day) / graphData.daysRange * graphWidth) + 22.dp.toPx() - doubleDigitMargin
             } else {
-                size.width / 2 - doubleDigitMargin
+                size.width / 2 - doubleDigitMargin - 2.sp.toPx()
             }
 
             drawText(
