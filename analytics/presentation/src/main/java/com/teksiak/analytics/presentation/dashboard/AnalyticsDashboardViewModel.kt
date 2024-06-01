@@ -24,8 +24,25 @@ class AnalyticsDashboardViewModel(
 
     fun onAction(action: AnalyticsDashboardAction) {
         when(action) {
-            is AnalyticsDashboardAction.OnMonthChoose -> { }
-            is AnalyticsDashboardAction.OnDayChoose -> {
+            is AnalyticsDashboardAction.OnGraphTypeSelect -> {
+                state?.let {
+                    state = it.copy(
+                        graphData = it.graphData.copy(
+                            dataType = action.type
+                        )
+                    )
+                }
+            }
+            is AnalyticsDashboardAction.OnMonthSelect -> {
+                state?.let {
+                    state = it.copy(
+                        graphData = it.graphData.copy(
+                            selectedMonth = action.month
+                        )
+                    )
+                }
+            }
+            is AnalyticsDashboardAction.OnDaySelect -> {
                 state?.let {
                     state = it.copy(
                         selectedDay = action.day
