@@ -2,6 +2,10 @@
 
 package com.teksiak.analytics.presentation.dashboard
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,8 +24,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -76,6 +82,21 @@ fun AnalyticsDashboardScreen(
     
     var selectedRun by remember {
         mutableStateOf<Run?>(null)
+    }
+
+    var previousSelectedDay by remember {
+        mutableStateOf(state?.selectedDay)
+    }
+
+    var dayChangeDifference by remember {
+        mutableIntStateOf((state?.selectedDay ?: 0) - (previousSelectedDay ?: 0))
+    }
+
+    SideEffect {
+        if (previousSelectedDay != state?.selectedDay) {
+            dayChangeDifference = (state?.selectedDay ?: 0) - (previousSelectedDay ?: 0)
+            previousSelectedDay = state?.selectedDay
+        }
     }
 
     LaunchedEffect(key1 = state?.selectedDay) {
@@ -157,6 +178,7 @@ fun AnalyticsDashboardScreen(
                         graphData = state.graphData,
                         chosenDay = state.selectedDay,
                         onDayChoose = { day ->
+                            dayChangeDifference = (state.selectedDay ?: 0) - (day)
                             onAction(AnalyticsDashboardAction.OnDayChoose(day))
                         },
                         onMonthChoose = { month ->
@@ -164,11 +186,29 @@ fun AnalyticsDashboardScreen(
                         }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    key(selectedRun?.id) {
-                        selectedRun?.let {
-                            InteractiveRunCard(
-                                run = it,
+                    AnimatedContent(
+                        targetState = selectedRun,
+                        transitionSpec = {
+                            slideInHorizontally(
+                                initialOffsetX = {
+                                    if(dayChangeDifference > 0) it else -it
+                                }
+                            ).togetherWith(
+                                slideOutHorizontally(
+                                    targetOffsetX = {
+                                        if(dayChangeDifference > 0) -it else it
+                                    }
+                                )
                             )
+                        },
+                        label = ""
+                    ) { selectedRun ->
+                        key(selectedRun?.id) {
+                            selectedRun?.let {
+                                InteractiveRunCard(
+                                    run = it,
+                                )
+                            }
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
