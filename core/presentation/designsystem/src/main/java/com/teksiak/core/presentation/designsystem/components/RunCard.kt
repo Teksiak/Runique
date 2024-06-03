@@ -34,7 +34,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -144,6 +144,115 @@ fun RunCard(
 }
 
 @Composable
+fun ExpandableRunCard(
+    run: Run,
+    modifier: Modifier = Modifier,
+    isExpanded: Boolean = false,
+    onClick: () -> Unit = {}
+) {
+    val context = LocalContext.current
+
+    val runUi = remember {
+        run.toRunUi()
+    }
+
+    val expandIconRotate by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        animationSpec = tween(300),
+        label = ""
+    )
+
+    var locationName by remember {
+        mutableStateOf<String?>(null)
+    }
+
+    LaunchedEffect(key1 = true) {
+        run.getLocationName(
+            context = context,
+        ) { name ->
+            locationName = name
+        }
+    }
+
+    Column(
+        modifier = modifier
+            .zIndex(2f)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = {
+                        onClick()
+                    },
+                )
+            }
+            .padding(16.dp)
+    ) {
+        RunMapImage(
+            imageUrl = runUi.mapPictureUrl,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        RunningTimeSection(
+            duration = runUi.duration,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RunningDateSection(
+                dateTime = runUi.dateTime
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(onClick = onClick) {
+                Icon(
+                    imageVector = Icons.Rounded.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.rotate(expandIconRotate)
+                )
+            }
+        }
+
+        AnimatedVisibility(
+            visible = isExpanded,
+            enter = expandVertically(
+                expandFrom = Alignment.Top,
+                animationSpec = tween(300)
+            ),
+            exit = shrinkVertically(
+                shrinkTowards = Alignment.Top,
+                animationSpec = tween(300)
+            )
+        ) {
+            Column {
+                DataGrid(
+                    run = runUi,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+        }
+
+        locationName?.let { location ->
+            LocationNameSection(
+                locationName = location,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+    }
+}
+
+@Composable
 fun InteractiveRunCard(
     run: Run,
     modifier: Modifier = Modifier,
@@ -167,11 +276,11 @@ fun InteractiveRunCard(
         showDeletePopup = isFocused
     }
 
-    var expandInfo by remember {
+    var isExpanded by remember {
         mutableStateOf(false)
     }
     val expandIconRotate by animateFloatAsState(
-        targetValue = if (expandInfo) 180f else 0f,
+        targetValue = if (isExpanded) 180f else 0f,
         animationSpec = tween(300),
         label = ""
     )
@@ -189,7 +298,7 @@ fun InteractiveRunCard(
     }
 
     Box(
-        modifier = if(isFocused) Modifier.zIndex(1f) else Modifier
+        modifier = if (isFocused) Modifier.zIndex(1f) else Modifier
     ) {
         Column(
             modifier = modifier
@@ -205,7 +314,7 @@ fun InteractiveRunCard(
                         },
                         onTap = {
                             if (focusedRunId == null || isFocused) {
-                                expandInfo = !expandInfo
+                                isExpanded = !isExpanded
                             }
                         },
                         onLongPress = {
@@ -240,13 +349,13 @@ fun InteractiveRunCard(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = {
-                    expandInfo = !expandInfo
-                    if(!isFocused) {
+                    isExpanded = !isExpanded
+                    if (!isFocused) {
                         onFocusChange(false)
                     }
                 }) {
                     Icon(
-                        imageVector = Icons.Rounded.KeyboardArrowUp,
+                        imageVector = Icons.Rounded.KeyboardArrowDown,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.rotate(expandIconRotate)
@@ -255,7 +364,7 @@ fun InteractiveRunCard(
             }
 
             AnimatedVisibility(
-                visible = expandInfo,
+                visible = isExpanded,
                 enter = expandVertically(
                     expandFrom = Alignment.Top,
                     animationSpec = tween(300)

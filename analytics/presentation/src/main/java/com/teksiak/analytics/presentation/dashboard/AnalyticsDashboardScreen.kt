@@ -44,8 +44,8 @@ import com.teksiak.analytics.presentation.dashboard.model.AnalyticsDataUi
 import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
+import com.teksiak.core.presentation.designsystem.components.ExpandableRunCard
 import com.teksiak.core.presentation.designsystem.components.GradientBackground
-import com.teksiak.core.presentation.designsystem.components.InteractiveRunCard
 import com.teksiak.core.presentation.designsystem.components.RuniqueScaffold
 import com.teksiak.core.presentation.designsystem.components.RuniqueToolbar
 import org.koin.androidx.compose.koinViewModel
@@ -82,6 +82,10 @@ fun AnalyticsDashboardScreen(
     
     var selectedRun by remember {
         mutableStateOf<Run?>(null)
+    }
+
+    var isRunExpanded by remember {
+        mutableStateOf(false)
     }
 
     var previousSelectedDay by remember {
@@ -208,8 +212,12 @@ fun AnalyticsDashboardScreen(
                     ) { selectedRun ->
                         key(selectedRun?.id) {
                             selectedRun?.let {
-                                InteractiveRunCard(
+                                ExpandableRunCard(
                                     run = it,
+                                    isExpanded = isRunExpanded,
+                                    onClick = {
+                                        isRunExpanded = !isRunExpanded
+                                    }
                                 )
                             }
                         }
