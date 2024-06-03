@@ -8,11 +8,13 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
@@ -115,6 +117,7 @@ fun AnalyticsDashboardScreen(
                     onBackClick = { onAction(AnalyticsDashboardAction.OnBackClick) }
                 )
             },
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
         ) { padding ->
             if (state == null) {
                 Box(
@@ -126,17 +129,16 @@ fun AnalyticsDashboardScreen(
                     CircularProgressIndicator()
                 }
             } else {
-                LazyColumn(
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .nestedScroll(scrollBehavior.nestedScrollConnection)
+                        .verticalScroll(rememberScrollState())
                         .padding(padding)
                         .padding(horizontal = 16.dp)
                         .padding(bottom = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    item {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -156,8 +158,6 @@ fun AnalyticsDashboardScreen(
                                 modifier = Modifier.weight(1f)
                             )
                         }
-                    }
-                    item {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -177,8 +177,6 @@ fun AnalyticsDashboardScreen(
                                 modifier = Modifier.weight(1f)
                             )
                         }
-                    }
-                    item {
                         AnalyticsGraphCard(
                             graphData = state.graphData,
                             selectedDay = state.selectedDay,
@@ -193,8 +191,6 @@ fun AnalyticsDashboardScreen(
                                 onAction(AnalyticsDashboardAction.OnMonthSelect(month))
                             }
                         )
-                    }
-                    item {
                         AnimatedContent(
                             targetState = selectedRun,
                             transitionSpec = {
@@ -223,7 +219,6 @@ fun AnalyticsDashboardScreen(
                                     )
                                 }
                             }
-                        }
                     }
                 }
             }
