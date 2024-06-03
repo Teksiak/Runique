@@ -11,7 +11,7 @@ suspend fun Run.getLocationName(
     context: Context,
     callback: (String?) -> Unit
 ) {
-    return withContext(Dispatchers.IO) {
+    withContext(Dispatchers.IO) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Geocoder(context).getFromLocation(
                 location.lat,
