@@ -9,4 +9,5 @@ plugins {
     alias(libs.plugins.kotlinSerialization) apply false
     alias(libs.plugins.androidDynamicFeature) apply false
     alias(libs.plugins.mapsplatformSescretsPlugin) apply false
+    alias(libs.plugins.compose.compiler) apply false
 }
