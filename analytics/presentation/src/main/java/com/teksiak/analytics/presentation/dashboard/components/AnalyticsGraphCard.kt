@@ -176,7 +176,7 @@ fun AnalyticsGraph(
             }
             .pointerInput(Unit) {
                 detectDragGestures(
-                    onDrag = { change, dragAmount ->
+                    onDrag = { change, _ ->
                         val x = change.position.x
                         pointByDay.entries
                             .find {
