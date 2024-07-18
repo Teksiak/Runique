@@ -16,4 +16,6 @@ dependencies {
 
     implementation(projects.wear.run.domain)
     implementation(projects.core.domain)
+    implementation(projects.core.connectivity.domain)
+
 }
