@@ -3,6 +3,7 @@ package com.teksiak.wear.run.presentation
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -39,6 +40,7 @@ import com.teksiak.core.presentation.designsystem.FinishIcon
 import com.teksiak.core.presentation.designsystem.PauseIcon
 import com.teksiak.core.presentation.designsystem.StartIcon
 import com.teksiak.core.presentation.designsystem_wear.RuniqueTheme
+import com.teksiak.core.presentation.ui.ObserveAsEvents
 import com.teksiak.core.presentation.ui.formatted
 import com.teksiak.core.presentation.ui.toFormattedHeartRate
 import com.teksiak.core.presentation.ui.toFormattedKm
@@ -49,6 +51,18 @@ import org.koin.androidx.compose.koinViewModel
 fun TrackerScreenRoot(
     viewModel: TrackerViewModel = koinViewModel()
 ) {
+    val context = LocalContext.current
+
+    ObserveAsEvents(flow = viewModel.events) { event ->
+        when(event) {
+            is TrackerEvent.Error -> {
+                Toast.makeText(context, event.message.asString(context), Toast.LENGTH_SHORT).show()
+            }
+            TrackerEvent.RunFinished -> Unit
+        }
+
+    }
+
     TrackerScreen(
         state = viewModel.state,
         onAction = viewModel::onAction
