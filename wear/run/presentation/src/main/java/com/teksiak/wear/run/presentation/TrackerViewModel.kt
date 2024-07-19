@@ -89,7 +89,7 @@ class TrackerViewModel(
                     else -> Result.Success(Unit)
                 }
 
-                if(result is Result.Failure) {
+                if(result is Result.Error) {
                     result.error.toUiText()?.let {
                         eventChannel.send(TrackerEvent.Error(it))
                     }
@@ -191,7 +191,7 @@ class TrackerViewModel(
 
             messagingAction?.let {
                 val result = phoneConnector.sendActionToPhone(it)
-                if(result is Result.Failure) {
+                if(result is Result.Error) {
                     println("Tracker error: ${result.error}")
                 }
             }

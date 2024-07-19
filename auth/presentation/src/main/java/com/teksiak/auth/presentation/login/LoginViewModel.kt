@@ -62,7 +62,7 @@ class LoginViewModel(
             )
             state = state.copy(isLoggingIn = false)
             when(result) {
-                is Result.Failure -> {
+                is Result.Error -> {
                     if(result.error == DataError.Network.UNAUTHORIZED) {
                         eventChannel.send(LoginEvent.Error(
                             UiText.StringResource(R.string.invalid_credentials)

@@ -20,7 +20,6 @@ import com.teksiak.core.presentation.ui.asUiText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
@@ -69,7 +68,7 @@ class RegisterViewModel(
             state = state.copy(isRegistering = false)
 
             when (result) {
-                is Result.Failure -> {
+                is Result.Error -> {
                     if (result.error == DataError.Network.CONFLICT) {
                         eventChannel.send(
                             RegisterEvent.Error(

@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.teksiak.core.domain.run.RunRepository
-import com.teksiak.core.domain.util.DataError
-import com.teksiak.core.domain.util.Result
 
 class FetchRunsWorker(
     context: Context,
@@ -18,7 +16,7 @@ class FetchRunsWorker(
             return Result.failure()
         }
         return when(val result = runRepository.fetchRuns()) {
-            is com.teksiak.core.domain.util.Result.Failure -> {
+            is com.teksiak.core.domain.util.Result.Error -> {
                 result.error.toWorkerResult()
             }
             is com.teksiak.core.domain.util.Result.Success -> Result.success()

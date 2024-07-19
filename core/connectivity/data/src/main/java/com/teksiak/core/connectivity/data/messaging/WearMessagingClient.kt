@@ -56,7 +56,7 @@ class WearMessagingClient(
                 client.sendMessage(id, BASE_PATH_MESSAGING_ACTION, json.toByteArray()).await()
                 Result.Success(Unit)
             } catch (e: ApiException) {
-                Result.Failure(
+                Result.Error(
                     if(e.status.isInterrupted) {
                         MessagingError.CONNECTION_INTERRUPTED
                     } else MessagingError.UNKNOWN
@@ -64,7 +64,7 @@ class WearMessagingClient(
             }
         } ?: run {
             messageQueue.add(action)
-            Result.Failure(MessagingError.DISCONNECTED)
+            Result.Error(MessagingError.DISCONNECTED)
         }
     }
 

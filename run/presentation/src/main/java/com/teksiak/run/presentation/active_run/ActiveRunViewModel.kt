@@ -179,7 +179,7 @@ class ActiveRunViewModel(
             runningTracker.finishRun()
 
             when(val result = runRepository.upsertRun(run, mapPictureBytes)) {
-                is Result.Failure -> {
+                is Result.Error -> {
                     eventChannel.send(ActiveRunEvent.Error(result.error.asUiText()))
                 }
                 is Result.Success -> {

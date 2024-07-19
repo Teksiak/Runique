@@ -42,7 +42,7 @@ class OfflineFirstRunRepository(
 
     override suspend fun fetchRuns(): EmptyResult<DataError> {
         return when (val result = remoteRunDataSource.getRuns()) {
-            is Result.Failure -> result.asEmptyDataResult()
+            is Result.Error -> result.asEmptyDataResult()
             is Result.Success -> {
                 applicationScope.async {
                     localRunDataSource.upsertRuns(result.data).asEmptyDataResult()
@@ -64,7 +64,7 @@ class OfflineFirstRunRepository(
         )
 
         return when (remoteResult) {
-            is Result.Failure -> {
+            is Result.Error -> {
                 applicationScope.launch {
                     runSyncScheduler.scheduleSync(
                         type = RunSyncScheduler.SyncType.CreateRun(runWithId, mapPicture)
@@ -94,7 +94,7 @@ class OfflineFirstRunRepository(
             remoteRunDataSource.deleteRun(id)
         }.await()
 
-        if(remoteResult is Result.Failure) {
+        if(remoteResult is Result.Error) {
             applicationScope.launch {
                 runSyncScheduler.scheduleSync(
                     type = RunSyncScheduler.SyncType.DeleteRun(id)
@@ -128,7 +128,7 @@ class OfflineFirstRunRepository(
             launch {
                 val run = it.run.toRun()
                 when (remoteRunDataSource.postRun(run, it.mapPictureBytes)) {
-                    is Result.Failure -> Unit
+                    is Result.Error -> Unit
                     is Result.Success -> {
                         applicationScope.launch {
                             runSyncDao.deleteRunPendingSyncEntity(it.runId)
@@ -145,7 +145,7 @@ class OfflineFirstRunRepository(
         deletedRuns.map {
             launch {
                 when (remoteRunDataSource.deleteRun(it.runId)) {
-                    is Result.Failure -> Unit
+                    is Result.Error -> Unit
                     is Result.Success -> {
                         applicationScope.launch {
                             runSyncDao.deleteRunDeletedSyncEntity(it.runId)

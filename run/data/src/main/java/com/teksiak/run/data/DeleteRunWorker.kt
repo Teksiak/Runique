@@ -20,7 +20,7 @@ class DeleteRunWorker(
 
         val runId = params.inputData.getString(RUN_ID) ?: return Result.failure()
         return when(val result = remoteRunDataSource.deleteRun(runId)) {
-            is com.teksiak.core.domain.util.Result.Failure -> {
+            is com.teksiak.core.domain.util.Result.Error -> {
                 result.error.toWorkerResult()
             }
             is com.teksiak.core.domain.util.Result.Success -> {

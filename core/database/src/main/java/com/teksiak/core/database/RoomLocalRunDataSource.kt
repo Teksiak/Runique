@@ -32,7 +32,7 @@ class RoomLocalRunDataSource(
             runDao.upsertRun(entity)
             Result.Success(entity.id)
         } catch (e: SQLiteFullException) {
-            Result.Failure(DataError.Local.DISK_FULL)
+            Result.Error(DataError.Local.DISK_FULL)
         }
     }
 
@@ -42,7 +42,7 @@ class RoomLocalRunDataSource(
             runDao.upsertRuns(entities)
             Result.Success(entities.map { it.id })
         } catch (e: SQLiteFullException) {
-            Result.Failure(DataError.Local.DISK_FULL)
+            Result.Error(DataError.Local.DISK_FULL)
         }
     }
 

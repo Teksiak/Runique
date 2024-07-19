@@ -90,11 +90,11 @@ class HealthServicesExerciseTracker(
 
     override suspend fun prepareExercise(): EmptyResult<ExerciseError> {
         if(!isHeartRateTrackingSupported()) {
-            return Result.Failure(ExerciseError.TRACKING_NOT_SUPPORTED)
+            return Result.Error(ExerciseError.TRACKING_NOT_SUPPORTED)
         }
 
         val result = getActiveExerciseInfo()
-        if(result is Result.Failure) {
+        if(result is Result.Error) {
             return result
         }
 
@@ -109,11 +109,11 @@ class HealthServicesExerciseTracker(
 
     override suspend fun startExercise(): EmptyResult<ExerciseError> {
         if(!isHeartRateTrackingSupported()) {
-            return Result.Failure(ExerciseError.TRACKING_NOT_SUPPORTED)
+            return Result.Error(ExerciseError.TRACKING_NOT_SUPPORTED)
         }
 
         val result = getActiveExerciseInfo()
-        if(result is Result.Failure) {
+        if(result is Result.Error) {
             return result
         }
 
@@ -129,11 +129,11 @@ class HealthServicesExerciseTracker(
 
     override suspend fun resumeExercise(): EmptyResult<ExerciseError> {
         if(!isHeartRateTrackingSupported()) {
-            return Result.Failure(ExerciseError.TRACKING_NOT_SUPPORTED)
+            return Result.Error(ExerciseError.TRACKING_NOT_SUPPORTED)
         }
 
         val result = getActiveExerciseInfo()
-        if(result is Result.Failure && result.error == ExerciseError.ONGOING_OTHER_EXERCISE ) {
+        if(result is Result.Error && result.error == ExerciseError.ONGOING_OTHER_EXERCISE ) {
             return result
         }
 
@@ -141,17 +141,17 @@ class HealthServicesExerciseTracker(
             client.resumeExercise()
             Result.Success(Unit)
         } catch (e: HealthServicesException) {
-            Result.Failure(ExerciseError.EXERCISE_ALREADY_ENDED)
+            Result.Error(ExerciseError.EXERCISE_ALREADY_ENDED)
         }
     }
 
     override suspend fun pauseExercise(): EmptyResult<ExerciseError> {
         if(!isHeartRateTrackingSupported()) {
-            return Result.Failure(ExerciseError.TRACKING_NOT_SUPPORTED)
+            return Result.Error(ExerciseError.TRACKING_NOT_SUPPORTED)
         }
 
         val result = getActiveExerciseInfo()
-        if(result is Result.Failure && result.error == ExerciseError.ONGOING_OTHER_EXERCISE ) {
+        if(result is Result.Error && result.error == ExerciseError.ONGOING_OTHER_EXERCISE ) {
             return result
         }
 
@@ -159,17 +159,17 @@ class HealthServicesExerciseTracker(
             client.pauseExercise()
             Result.Success(Unit)
         } catch (e: HealthServicesException) {
-            Result.Failure(ExerciseError.EXERCISE_ALREADY_ENDED)
+            Result.Error(ExerciseError.EXERCISE_ALREADY_ENDED)
         }
     }
 
     override suspend fun stopExercise(): EmptyResult<ExerciseError> {
         if(!isHeartRateTrackingSupported()) {
-            return Result.Failure(ExerciseError.TRACKING_NOT_SUPPORTED)
+            return Result.Error(ExerciseError.TRACKING_NOT_SUPPORTED)
         }
 
         val result = getActiveExerciseInfo()
-        if(result is Result.Failure && result.error == ExerciseError.ONGOING_OTHER_EXERCISE ) {
+        if(result is Result.Error && result.error == ExerciseError.ONGOING_OTHER_EXERCISE ) {
             return result
         }
 
@@ -177,7 +177,7 @@ class HealthServicesExerciseTracker(
             client.endExercise()
             Result.Success(Unit)
         } catch (e: HealthServicesException) {
-            Result.Failure(ExerciseError.EXERCISE_ALREADY_ENDED)
+            Result.Error(ExerciseError.EXERCISE_ALREADY_ENDED)
         }
     }
 
@@ -185,9 +185,9 @@ class HealthServicesExerciseTracker(
         val info = client.getCurrentExerciseInfo()
         return when(info.exerciseTrackedStatus) {
             ExerciseTrackedStatus.NO_EXERCISE_IN_PROGRESS -> Result.Success(Unit)
-            ExerciseTrackedStatus.OWNED_EXERCISE_IN_PROGRESS -> Result.Failure(ExerciseError.ONGOING_OWN_EXERCISE)
-            ExerciseTrackedStatus.OTHER_APP_IN_PROGRESS -> Result.Failure(ExerciseError.ONGOING_OTHER_EXERCISE)
-            else -> Result.Failure(ExerciseError.UNKNOWN)
+            ExerciseTrackedStatus.OWNED_EXERCISE_IN_PROGRESS -> Result.Error(ExerciseError.ONGOING_OWN_EXERCISE)
+            ExerciseTrackedStatus.OTHER_APP_IN_PROGRESS -> Result.Error(ExerciseError.ONGOING_OTHER_EXERCISE)
+            else -> Result.Error(ExerciseError.UNKNOWN)
         }
     }
 
