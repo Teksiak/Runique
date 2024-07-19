@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.runique.android.library.compose)
+    alias(libs.plugins.mapsplatformSescretsPlugin)
 }
 
 android {
@@ -24,6 +25,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.bundles.koin.compose)
+    implementation(libs.google.maps.android.compose)
 
     implementation(projects.core.presentation.designsystemWear)
     implementation(projects.core.presentation.ui)

@@ -8,6 +8,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -45,6 +46,7 @@ import com.teksiak.core.presentation.ui.formatted
 import com.teksiak.core.presentation.ui.toFormattedHeartRate
 import com.teksiak.core.presentation.ui.toFormattedKm
 import com.teksiak.wear.run.presentation.components.RunDataCard
+import com.teksiak.wear.run.presentation.components.TrackerMap
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -108,89 +110,93 @@ fun TrackerScreen(
     }
 
     if (state.isConnectedPhoneNearby) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                RunDataCard(
-                    title = stringResource(id = R.string.heart_rate),
-                    value = if (state.canTrackHeartRate) {
-                        state.heartRate.toFormattedHeartRate()
-                    } else {
-                        stringResource(id = R.string.unsupported)
-                    },
-                    valueTextColor = if (state.canTrackHeartRate) {
-                        MaterialTheme.colorScheme.onSurface
-                    } else {
-                        MaterialTheme.colorScheme.error
-                    },
-                    modifier = Modifier.weight(1f)
-
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                RunDataCard(
-                    title = stringResource(id = R.string.heart_rate),
-                    value = (state.distanceMeters / 1000.0).toFormattedKm(),
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = state.elapsedDuration.formatted(),
-                fontSize = 24.sp,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.primary)
+        Box(modifier = Modifier.fillMaxSize()) {
+            TrackerMap(
+                modifier = Modifier.fillMaxSize()
             )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if(state.isTrackable) {
-                    ToggleRunButton(
-                        isRunActive = state.isRunActive,
-                        onClick = {
-                            onAction(TrackerAction.OnToggleRunClick)
-                        }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    RunDataCard(
+                        title = stringResource(id = R.string.heart_rate),
+                        value = if (state.canTrackHeartRate) {
+                            state.heartRate.toFormattedHeartRate()
+                        } else {
+                            stringResource(id = R.string.unsupported)
+                        },
+                        valueTextColor = if (state.canTrackHeartRate) {
+                            MaterialTheme.colorScheme.onSurface
+                        } else {
+                            MaterialTheme.colorScheme.error
+                        },
+                        modifier = Modifier.weight(1f)
+
                     )
-                    if(!state.isRunActive && state.hasStartedRunning) {
-                        FilledTonalIconButton(
+                    Spacer(modifier = Modifier.width(8.dp))
+                    RunDataCard(
+                        title = stringResource(id = R.string.heart_rate),
+                        value = (state.distanceMeters / 1000.0).toFormattedKm(),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = state.elapsedDuration.formatted(),
+                    fontSize = 24.sp,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.primary)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (state.isTrackable) {
+                        ToggleRunButton(
+                            isRunActive = state.isRunActive,
                             onClick = {
-                                onAction(TrackerAction.OnFinishRunClick)
-                            },
-                            colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                contentColor = MaterialTheme.colorScheme.onBackground
-                            )
-                        ) {
-                            Icon(
-                                imageVector = FinishIcon,
-                                contentDescription = stringResource(id = R.string.finish_run),
-                            )
+                                onAction(TrackerAction.OnToggleRunClick)
+                            }
+                        )
+                        if (!state.isRunActive && state.hasStartedRunning) {
+                            FilledTonalIconButton(
+                                onClick = {
+                                    onAction(TrackerAction.OnFinishRunClick)
+                                },
+                                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.onBackground
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = FinishIcon,
+                                    contentDescription = stringResource(id = R.string.finish_run),
+                                )
+                            }
                         }
+                    } else {
+                        Text(
+                            text = stringResource(id = R.string.open_active_run_screen),
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        )
                     }
-                } else {
-                    Text(
-                        text = stringResource(id = R.string.open_active_run_screen),
-                        fontSize = 12.sp,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    )
                 }
             }
         }
