@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.teksiak.core.domain.run.RunRepository
 import com.teksiak.core.domain.run.RunSyncScheduler
+import com.teksiak.core.notification.ActiveRunService
 import com.teksiak.core.presentation.ui.formatted
 import com.teksiak.run.domain.RunningTracker
-import com.teksiak.run.presentation.active_run.service.ActiveRunService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -27,7 +27,7 @@ class RunOverviewViewModel(
 
     var state by mutableStateOf(
         RunOverviewState(
-            isRunActive = runningTracker.isTracking.value || ActiveRunService.isServiceActive,
+            isRunActive = runningTracker.isTracking.value || ActiveRunService.isServiceActive.value,
         )
     )
         private set

@@ -22,11 +22,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.teksiak.core.notification.ActiveRunService
 import com.teksiak.core.presentation.designsystem.CrossIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
 import com.teksiak.core.presentation.designsystem.StartIcon
@@ -41,7 +44,6 @@ import com.teksiak.core.presentation.ui.ObserveAsEvents
 import com.teksiak.run.presentation.R
 import com.teksiak.run.presentation.active_run.components.RunDataCard
 import com.teksiak.run.presentation.active_run.maps.TrackerMap
-import com.teksiak.run.presentation.active_run.service.ActiveRunService
 import com.teksiak.run.presentation.util.hasLocationPermission
 import com.teksiak.run.presentation.util.hasNotificationPermission
 import com.teksiak.run.presentation.util.shouldShowLocationPermissionRationale
@@ -157,8 +159,9 @@ private fun ActiveRunScreen(
         }
     }
 
+    val isServiceActive by ActiveRunService.isServiceActive.collectAsStateWithLifecycle()
     LaunchedEffect(state.shouldTrack) {
-        if (context.hasLocationPermission() && state.shouldTrack && !ActiveRunService.isServiceActive) {
+        if (context.hasLocationPermission() && state.shouldTrack && !isServiceActive) {
             onServiceToggle(true)
         }
     }

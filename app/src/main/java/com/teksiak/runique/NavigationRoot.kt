@@ -16,8 +16,8 @@ import com.teksiak.auth.presentation.R
 import com.teksiak.auth.presentation.intro.IntroScreenRoot
 import com.teksiak.auth.presentation.login.LoginScreenRoot
 import com.teksiak.auth.presentation.register.RegisterScreenRoot
+import com.teksiak.core.notification.ActiveRunService
 import com.teksiak.run.presentation.active_run.ActiveRunScreenRoot
-import com.teksiak.run.presentation.active_run.service.ActiveRunService
 import com.teksiak.run.presentation.run_overview.RunOverviewScreenRoot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

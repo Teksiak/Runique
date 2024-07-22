@@ -1,4 +1,4 @@
-package com.teksiak.run.presentation.active_run.service
+package com.teksiak.core.notification
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -8,8 +8,6 @@ import android.app.Service
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -17,16 +15,18 @@ import androidx.core.app.ServiceCompat
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import com.teksiak.core.presentation.ui.formatted
-import com.teksiak.run.domain.RunningTracker
-import com.teksiak.run.presentation.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
+import kotlin.time.Duration
 
 class ActiveRunService: Service() {
 
@@ -45,9 +45,9 @@ class ActiveRunService: Service() {
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
     }
 
-    private val runningTracker by inject<RunningTracker>()
+    private val elapsedTime by inject<StateFlow<Duration>>(qualifier = named("elapsedTime"))
 
-    private val broadcastReceiver = ActiveRunBroadcastReceiver(runningTracker)
+    private val isTracking by inject<StateFlow<Boolean>>(qualifier = named("isTracking"))
 
     private var serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
@@ -70,8 +70,8 @@ class ActiveRunService: Service() {
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private fun start(activityClass: Class<*>) {
-        if(!isServiceActive) {
-            isServiceActive = true
+        if(!_isServiceActive.value) {
+            _isServiceActive.value = true
             createNotificationChannel()
 
             val activityIntent = Intent(applicationContext, activityClass).apply {
@@ -92,31 +92,8 @@ class ActiveRunService: Service() {
                 this,
                 NOTIFICATION_ID,
                 notification,
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    FOREGROUND_SERVICE_TYPE_LOCATION
-                } else {
-                    0
-                }
+                0
             )
-
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                registerReceiver(
-                    broadcastReceiver,
-                    IntentFilter().apply {
-                        addAction(ActiveRunBroadcastReceiver.ACTION_PAUSE)
-                        addAction(ActiveRunBroadcastReceiver.ACTION_RESUME)
-                    },
-                    RECEIVER_EXPORTED,
-                )
-            } else {
-                registerReceiver(
-                    broadcastReceiver,
-                    IntentFilter().apply {
-                        addAction(ActiveRunBroadcastReceiver.ACTION_PAUSE)
-                        addAction(ActiveRunBroadcastReceiver.ACTION_RESUME)
-                    }
-                )
-            }
 
             updateNotification()
         }
@@ -124,36 +101,23 @@ class ActiveRunService: Service() {
 
     private fun stop() {
         stopSelf()
-        unregisterReceiver(broadcastReceiver)
-        isServiceActive = false
+        _isServiceActive.value = false
         serviceScope.cancel()
         serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     }
 
     private fun updateNotification() {
-        combine(runningTracker.elapsedTime, runningTracker.isTracking) { elapsedTime, isTracking ->
+        combine(elapsedTime, isTracking) { elapsedTime, isTracking ->
             val content = if (isTracking) {
                 elapsedTime.formatted()
             } else {
                 elapsedTime.formatted() + getString(R.string.paused)
             }
 
-            activeRunNotification
+            val notification = activeRunNotification
                 .setContentText(content)
-                .clearActions()
-                .addAction(
-                    0,
-                    if(isTracking) "Pause" else "Resume",
-                    PendingIntent.getBroadcast(
-                        applicationContext,
-                        1,
-                        Intent(if(isTracking) ActiveRunBroadcastReceiver.ACTION_PAUSE else ActiveRunBroadcastReceiver.ACTION_RESUME),
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
-                )
                 .build()
-        }
-        .onEach { notification ->
+
             notificationManager.notify(NOTIFICATION_ID, notification)
         }
         .launchIn(serviceScope)
@@ -171,7 +135,8 @@ class ActiveRunService: Service() {
     }
 
     companion object {
-        var isServiceActive = false
+        private val _isServiceActive = MutableStateFlow(false)
+        val isServiceActive = _isServiceActive.asStateFlow()
 
         private const val CHANNEL_ID = "active_run"
         private const val NOTIFICATION_ID = 1

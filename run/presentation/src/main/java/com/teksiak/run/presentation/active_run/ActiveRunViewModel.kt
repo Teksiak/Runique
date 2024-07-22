@@ -10,11 +10,11 @@ import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.run.Run
 import com.teksiak.core.domain.run.RunRepository
 import com.teksiak.core.domain.util.Result
+import com.teksiak.core.notification.ActiveRunService
 import com.teksiak.core.presentation.ui.asUiText
 import com.teksiak.run.domain.LocationDataCalculator
 import com.teksiak.run.domain.RunningTracker
 import com.teksiak.run.domain.WatchConnector
-import com.teksiak.run.presentation.active_run.service.ActiveRunService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,8 +38,8 @@ class ActiveRunViewModel(
 
     var state by mutableStateOf(
         ActiveRunState(
-            shouldTrack = ActiveRunService.isServiceActive && runningTracker.isTracking.value,
-            hasStartedRunning = ActiveRunService.isServiceActive,
+            shouldTrack = ActiveRunService.isServiceActive.value && runningTracker.isTracking.value,
+            hasStartedRunning = ActiveRunService.isServiceActive.value,
         )
     )
         private set
@@ -284,7 +284,7 @@ class ActiveRunViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        if (!ActiveRunService.isServiceActive) {
+        if (!ActiveRunService.isServiceActive.value) {
             applicationScope.launch {
                 watchConnector.sendActionToWatch(MessagingAction.Untrackable)
             }

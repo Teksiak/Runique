@@ -42,7 +42,7 @@ class RunningTracker(
             0
         )
 
-    val elapsedDuration = watchToPhoneConnector
+    val elapsedTime = watchToPhoneConnector
         .messagingActions
         .filterIsInstance<MessagingAction.TimeUpdate>()
         .map { it.elapsedDuration }
