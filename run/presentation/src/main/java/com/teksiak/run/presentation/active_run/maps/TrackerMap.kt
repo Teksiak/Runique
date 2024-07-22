@@ -43,7 +43,6 @@ import com.google.maps.android.ktx.awaitSnapshot
 import com.teksiak.core.domain.location.Location
 import com.teksiak.core.domain.location.LocationTimestamp
 import com.teksiak.core.presentation.designsystem.RunIcon
-import com.teksiak.run.presentation.R
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -62,7 +61,7 @@ fun TrackerMap(
     val context = LocalContext.current
 
     val mapStyle = remember {
-        MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)
+        MapStyleOptions.loadRawResourceStyle(context, com.teksiak.core.presentation.designsystem.R.raw.map_style)
     }
     val cameraPositionState = rememberCameraPositionState()
     val markerState = rememberMarkerState()

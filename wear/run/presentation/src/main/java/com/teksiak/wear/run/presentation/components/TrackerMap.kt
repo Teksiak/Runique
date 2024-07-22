@@ -9,14 +9,13 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.teksiak.wear.run.presentation.R
 
 @Composable
 fun TrackerMap(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     val mapStyle = remember {
-        MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)
+        MapStyleOptions.loadRawResourceStyle(context, com.teksiak.core.presentation.designsystem.R.raw.map_style)
     }
     val cameraPositionState = rememberCameraPositionState()
 
