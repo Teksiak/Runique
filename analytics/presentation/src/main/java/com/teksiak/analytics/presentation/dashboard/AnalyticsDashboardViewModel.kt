@@ -38,7 +38,8 @@ class AnalyticsDashboardViewModel(
                     state = it.copy(
                         graphData = it.graphData.copy(
                             selectedMonth = action.month
-                        )
+                        ),
+                        selectedDay = null
                     )
                 }
             }

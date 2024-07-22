@@ -11,7 +11,7 @@ enum class AnalyticsGraphType(val title: String) {
 data class AnalyticsGraphData(
     val runs: List<Run> = emptyList(),
     val distinctMonths: List<String> = runs.map { it.dateTimeUtc.toFormattedMonth() }.distinct(),
-    val selectedMonth: String? = distinctMonths.firstOrNull(),
+    val selectedMonth: String? = distinctMonths.lastOrNull(),
     val dataType: AnalyticsGraphType = AnalyticsGraphType.SPEED,
 ) {
     private val runsForSelectedMonth: List<Run>

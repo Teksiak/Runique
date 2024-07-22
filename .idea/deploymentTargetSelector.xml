@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-07-22T15:39:32.693632100Z">
+        <DropdownSelection timestamp="2024-07-22T16:17:16.417252800Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\wojte\.android\avd\Pixel_7_API_34.avd" />
@@ -15,7 +15,7 @@
       </SelectionState>
       <SelectionState runConfigName="wear.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-07-22T15:39:27.636342700Z">
+        <DropdownSelection timestamp="2024-07-22T16:17:11.703877100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\wojte\.android\avd\Pixel_7_API_34.avd" />

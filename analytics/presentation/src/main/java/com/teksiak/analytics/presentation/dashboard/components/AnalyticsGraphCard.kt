@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -88,12 +89,14 @@ fun AnalyticsGraphCard(
             onTypeSelect = onTypeSelect
         )
         Spacer(modifier = Modifier.height(16.dp))
-        AnalyticsGraph(
-            graphData = graphData,
-            modifier = Modifier.fillMaxWidth(),
-            onDaySelect = onDaySelect,
-            selectedDay = selectedDay
-        )
+        key(graphData.selectedMonth) {
+            AnalyticsGraph(
+                graphData = graphData,
+                modifier = Modifier.fillMaxWidth(),
+                onDaySelect = onDaySelect,
+                selectedDay = selectedDay
+            )
+        }
         Spacer(modifier = Modifier.height(12.dp))
         if (graphData.runs.isNotEmpty()) {
             MonthSelect(
