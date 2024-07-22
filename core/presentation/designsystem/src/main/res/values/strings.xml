@@ -14,4 +14,6 @@
     <string name="total_elevation">Total elevation</string>
     <string name="compare">Compare</string>
     <string name="delete">Delete</string>
+    <string name="avg_heart_rate">Avg. heart rate</string>
+    <string name="max_hear_rate">Max heart rate</string>
 </resources>

@@ -53,6 +53,11 @@ class TrackerViewModel(
                     isConnectedPhoneNearby = connectedNode.isNearby
                 )
             }
+            .combine(isTracking) { _, isTracking ->
+                if(!isTracking) {
+                    phoneConnector.sendActionToPhone(MessagingAction.ConnectionRequest)
+                }
+            }
             .launchIn(viewModelScope)
 
         runningTracker
@@ -61,16 +66,6 @@ class TrackerViewModel(
                 state = state.copy(
                     isTrackable = isTrackable
                 )
-            }
-            .launchIn(viewModelScope)
-
-        phoneConnector
-            .connectedNode
-            .filterNotNull()
-            .combine(isTracking) { _, isTracking ->
-                if(!isTracking) {
-                    phoneConnector.sendActionToPhone(MessagingAction.ConnectionRequest)
-                }
             }
             .launchIn(viewModelScope)
 
@@ -220,7 +215,10 @@ class TrackerViewModel(
                         state = state.copy(isTrackable = true)
                     }
                     MessagingAction.Untrackable -> {
-                        state = state.copy(isTrackable = false)
+                        state = state.copy(
+                            isTrackable = false,
+                            hasStartedRunning = false
+                        )
                     }
                     else -> Unit
                 }

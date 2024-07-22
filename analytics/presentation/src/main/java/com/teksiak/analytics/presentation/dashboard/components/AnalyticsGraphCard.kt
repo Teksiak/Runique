@@ -464,7 +464,9 @@ private fun AnalyticsGraphCardPreview() {
                         location = Location(0.0, 0.0),
                         maxSpeedKmh = 15.0,
                         totalElevationMeters = 123,
-                        mapPictureUrl = null
+                        mapPictureUrl = null,
+                        avgHeartRate = 120,
+                        maxHeartRate = 150,
                     )
                 )
             ),
@@ -492,7 +494,9 @@ private fun AnalyticsGraphCardPreview2() {
                         location = Location(0.0, 0.0),
                         maxSpeedKmh = 15.0,
                         totalElevationMeters = 123,
-                        mapPictureUrl = null
+                        mapPictureUrl = null,
+                        avgHeartRate = 120,
+                        maxHeartRate = 150,
                     ),
                     Run(
                         id = "123",
@@ -504,7 +508,9 @@ private fun AnalyticsGraphCardPreview2() {
                         location = Location(0.0, 0.0),
                         maxSpeedKmh = 15.0,
                         totalElevationMeters = 123,
-                        mapPictureUrl = null
+                        mapPictureUrl = null,
+                        avgHeartRate = 120,
+                        maxHeartRate = 150,
                     )
                 )
             ),
@@ -532,7 +538,9 @@ private fun AnalyticsGraphCardPreview3() {
                         location = Location(0.0, 0.0),
                         maxSpeedKmh = 15.0,
                         totalElevationMeters = 123,
-                        mapPictureUrl = null
+                        mapPictureUrl = null,
+                        avgHeartRate = 120,
+                        maxHeartRate = 150,
                     ),
                     Run(
                         id = "123",
@@ -544,7 +552,9 @@ private fun AnalyticsGraphCardPreview3() {
                         location = Location(0.0, 0.0),
                         maxSpeedKmh = 15.0,
                         totalElevationMeters = 123,
-                        mapPictureUrl = null
+                        mapPictureUrl = null,
+                        avgHeartRate = 120,
+                        maxHeartRate = 150,
                     ),
                     Run(
                         id = "123",
@@ -556,7 +566,9 @@ private fun AnalyticsGraphCardPreview3() {
                         location = Location(0.0, 0.0),
                         maxSpeedKmh = 15.0,
                         totalElevationMeters = 123,
-                        mapPictureUrl = null
+                        mapPictureUrl = null,
+                        avgHeartRate = 120,
+                        maxHeartRate = 150,
                     )
                 )
             ),

@@ -4,6 +4,7 @@ import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.ui.formatted
 import com.teksiak.core.presentation.ui.model.RunUi
 import com.teksiak.core.presentation.ui.toFormattedDateTime
+import com.teksiak.core.presentation.ui.toFormattedHeartRate
 import com.teksiak.core.presentation.ui.toFormattedKm
 import com.teksiak.core.presentation.ui.toFormattedKmh
 import com.teksiak.core.presentation.ui.toFormattedMeters
@@ -19,6 +20,8 @@ fun Run.toRunUi(): RunUi {
         distance = distanceKm.toFormattedKm(),
         avgSpeed = avgSpeedKmh.toFormattedKmh(),
         maxSpeed = maxSpeedKmh.toFormattedKmh(),
+        avgHeartRate = avgHeartRate.toFormattedHeartRate(),
+        maxHeartRate = maxHeartRate.toFormattedHeartRate(),
         pace = duration.toFormattedPace(distanceKm),
         totalElevation = totalElevationMeters.toFormattedMeters(),
         mapPictureUrl = mapPictureUrl,

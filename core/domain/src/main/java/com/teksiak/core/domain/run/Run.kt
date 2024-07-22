@@ -3,7 +3,6 @@ package com.teksiak.core.domain.run
 import com.teksiak.core.domain.location.Location
 import java.time.ZonedDateTime
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
 data class Run(
@@ -14,7 +13,9 @@ data class Run(
     val location: Location,
     val maxSpeedKmh: Double,
     val totalElevationMeters: Int,
-    val mapPictureUrl: String?
+    val mapPictureUrl: String?,
+    val avgHeartRate: Int?,
+    val maxHeartRate: Int?
 ) {
     val avgSpeedKmh: Double
         get() = (distanceMeters / 1000.0) / duration.toDouble(DurationUnit.HOURS)

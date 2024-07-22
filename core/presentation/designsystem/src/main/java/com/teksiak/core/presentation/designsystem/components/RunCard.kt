@@ -74,6 +74,8 @@ import com.teksiak.core.presentation.designsystem.RunOutlinedIcon
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
 import com.teksiak.core.presentation.ui.getLocationName
 import com.teksiak.core.presentation.ui.mapper.toRunUi
+import com.teksiak.core.presentation.ui.model.RunDataUi
+import com.teksiak.core.presentation.ui.model.RunUi
 import java.time.ZonedDateTime
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -322,7 +324,7 @@ fun InteractiveRunCard(
                         }
                     )
                 }
-                .padding(16.dp)
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 4.dp)
         ) {
             RunMapImage(
                 imageUrl = runUi.mapPictureUrl,
@@ -386,7 +388,9 @@ fun InteractiveRunCard(
             locationName?.let { location ->
                 LocationNameSection(
                     locationName = location,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
                 )
             }
 
@@ -513,29 +517,37 @@ private fun RunningDateSection(
 
 @Composable
 private fun DataGrid(
-    run: com.teksiak.core.presentation.ui.model.RunUi,
+    run: RunUi,
     modifier: Modifier = Modifier
 ) {
     val runDataUiList = listOf(
-        com.teksiak.core.presentation.ui.model.RunDataUi(
+        RunDataUi(
             name = stringResource(id = R.string.distance),
             value = run.distance
         ),
-        com.teksiak.core.presentation.ui.model.RunDataUi(
+        RunDataUi(
             name = stringResource(id = R.string.pace),
             value = run.pace
         ),
-        com.teksiak.core.presentation.ui.model.RunDataUi(
+        RunDataUi(
             name = stringResource(id = R.string.avg_speed),
             value = run.avgSpeed
         ),
-        com.teksiak.core.presentation.ui.model.RunDataUi(
+        RunDataUi(
             name = stringResource(id = R.string.max_speed),
             value = run.maxSpeed
         ),
-        com.teksiak.core.presentation.ui.model.RunDataUi(
+        RunDataUi(
             name = stringResource(id = R.string.total_elevation),
             value = run.totalElevation
+        ),
+        RunDataUi(
+            name = stringResource(id = R.string.avg_heart_rate),
+            value = run.avgHeartRate
+        ),
+        RunDataUi(
+            name = stringResource(id = R.string.max_hear_rate),
+            value = run.maxHeartRate
         ),
     )
 
@@ -565,7 +577,7 @@ private fun DataGrid(
 
 @Composable
 private fun DataGridCell(
-    runData: com.teksiak.core.presentation.ui.model.RunDataUi,
+    runData: RunDataUi,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -642,21 +654,21 @@ fun RunActionPopup(
                 text = {
                     Text(
                         text = stringResource(id = R.string.compare),
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 },
                 leadingIcon = {
                     Icon(
                         imageVector = CompareIcon,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface,
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                 },
                 onClick = {
                     onCompareClick()
                     onDismissRequest()
                 },
-                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.2f)
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
             )
             PopupAction(
                 text = {
@@ -720,7 +732,9 @@ private fun RunCardPreview() {
                 location = Location(0.0, 0.0),
                 maxSpeedKmh = 15.0,
                 totalElevationMeters = 123,
-                mapPictureUrl = null
+                mapPictureUrl = null,
+                avgHeartRate = 123,
+                maxHeartRate = 150
             )
         )
     }
@@ -739,7 +753,9 @@ private fun FocusableRunCardPreview() {
                 location = Location(0.0, 0.0),
                 maxSpeedKmh = 15.0,
                 totalElevationMeters = 123,
-                mapPictureUrl = null
+                mapPictureUrl = null,
+                avgHeartRate = 123,
+                maxHeartRate = 150
             ),
             focusedRunId = "",
             onDeleteClick = {},

@@ -245,7 +245,9 @@ private fun AnalyticsDashboardScreenPreview() {
                             location = Location(0.0, 0.0),
                             maxSpeedKmh = 15.0,
                             totalElevationMeters = 123,
-                            mapPictureUrl = null
+                            mapPictureUrl = null,
+                            avgHeartRate = 120,
+                            maxHeartRate = 150,
                         )
                     )
                 ),

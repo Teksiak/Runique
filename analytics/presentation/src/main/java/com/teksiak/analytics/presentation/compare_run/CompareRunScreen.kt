@@ -324,7 +324,9 @@ private fun CompareRunScreenPreview() {
                         location = Location(0.0, 0.0),
                         maxSpeedKmh = 15.0,
                         totalElevationMeters = 123,
-                        mapPictureUrl = null
+                        mapPictureUrl = null,
+                        avgHeartRate = 120,
+                        maxHeartRate = 150,
                     ),
                     Run(
                         id = "123",
@@ -334,7 +336,9 @@ private fun CompareRunScreenPreview() {
                         location = Location(0.0, 0.0),
                         maxSpeedKmh = 15.0,
                         totalElevationMeters = 123,
-                        mapPictureUrl = null
+                        mapPictureUrl = null,
+                        avgHeartRate = 120,
+                        maxHeartRate = 150,
                     ),
                 ),
                 comparedRun = Run(
@@ -345,7 +349,9 @@ private fun CompareRunScreenPreview() {
                     location = Location(0.0, 0.0),
                     maxSpeedKmh = 15.0,
                     totalElevationMeters = 123,
-                    mapPictureUrl = null
+                    mapPictureUrl = null,
+                    avgHeartRate = 120,
+                    maxHeartRate = 150,
                 ),
             ),
             onAction = {}
@@ -368,7 +374,9 @@ private fun CompareRunScreenPreview2() {
                     location = Location(0.0, 0.0),
                     maxSpeedKmh = 15.0,
                     totalElevationMeters = 123,
-                    mapPictureUrl = null
+                    mapPictureUrl = null,
+                    avgHeartRate = 120,
+                    maxHeartRate = 150,
                 ),
                 otherRun = Run(
                     id = "123",
@@ -378,7 +386,9 @@ private fun CompareRunScreenPreview2() {
                     location = Location(0.0, 0.0),
                     maxSpeedKmh = 15.0,
                     totalElevationMeters = 123,
-                    mapPictureUrl = null
+                    mapPictureUrl = null,
+                    avgHeartRate = 120,
+                    maxHeartRate = 150,
                 ),
                 compareRunData = CompareRunsDataUi(
                     duration = CompareDataUi(

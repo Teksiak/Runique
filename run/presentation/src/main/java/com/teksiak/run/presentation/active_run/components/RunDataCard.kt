@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
 import com.teksiak.core.presentation.ui.formatted
+import com.teksiak.core.presentation.ui.toFormattedHeartRate
 import com.teksiak.core.presentation.ui.toFormattedKm
 import com.teksiak.core.presentation.ui.toFormattedPace
 import com.teksiak.run.domain.RunData
@@ -65,7 +65,7 @@ fun RunDataCard(
             )
             RunDataItem(
                 title = stringResource(id = R.string.heart_rate),
-                value = "-",
+                value = runData.heartRates.lastOrNull().toFormattedHeartRate(),
                 modifier = Modifier
                     .defaultMinSize(75.dp)
             )
@@ -112,6 +112,7 @@ private fun RunDataCardPreview() {
             runData = RunData(
                 distanceMeters = 1345,
                 pace = 5.minutes,
+                heartRates = listOf(123),
                 locations = emptyList()
             )
         )
