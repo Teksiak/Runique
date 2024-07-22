@@ -69,8 +69,12 @@ class TrackerViewModel(
             .isTrackable
             .onEach { isTrackable ->
                 state = state.copy(
-                    isTrackable = isTrackable
+                    isTrackable = isTrackable,
+                    isRunActive = isTrackable && state.hasStartedRunning
                 )
+                if(!isTrackable) {
+                    exerciseTracker.stopExercise()
+                }
             }
             .launchIn(viewModelScope)
 
