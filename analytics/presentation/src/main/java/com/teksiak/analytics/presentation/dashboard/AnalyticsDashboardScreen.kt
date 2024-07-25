@@ -174,7 +174,7 @@ fun AnalyticsDashboardScreen(
                             AnalyticsCard(
                                 analyticsData = AnalyticsDataUi(
                                     name = stringResource(id = R.string.highest_heart_rate),
-                                    value = "-"
+                                    value = state.maxHeartRate
                                 ),
                                 modifier = Modifier.weight(1f)
                             )

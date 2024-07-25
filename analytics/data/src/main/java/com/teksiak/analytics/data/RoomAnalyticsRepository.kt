@@ -20,12 +20,14 @@ class RoomAnalyticsRepository(
             val totalDistance = async { analyticsDao.getTotalDistance() }
             val totalDuration = async { analyticsDao.getTotalDuration() }
             val maxSpeed = async { analyticsDao.getMaxSpeed() }
+            val maxHeartRate = async { analyticsDao.getMaxHeartRate() }
             val runs = async { localRunDataSource.getUnsortedRuns() }
 
             AnalyticsData(
                 totalDistance = totalDistance.await(),
                 totalDuration = totalDuration.await().milliseconds,
                 maxSpeed = maxSpeed.await(),
+                maxHeartRate = maxHeartRate.await(),
                 graphData = AnalyticsGraphData(runs.await())
             )
         }

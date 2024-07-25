@@ -15,6 +15,9 @@ interface AnalyticsDao {
     @Query("SELECT MAX(maxSpeedKmh) FROM Run")
     suspend fun getMaxSpeed(): Double
 
+    @Query("SELECT MAX(maxHeartRate) FROM Run")
+    suspend fun getMaxHeartRate(): Int
+
     @Query("SELECT AVG(distanceMeters) FROM Run")
     suspend fun getAvgDistancePerRun(): Double
 
