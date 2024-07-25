@@ -17,6 +17,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -115,18 +118,23 @@ fun GraphTypeSelect(
     selectedType: AnalyticsGraphType,
     onTypeSelect: (AnalyticsGraphType) -> Unit
 ) {
-    Row(
+    LazyRow(
+        state = rememberLazyListState(),
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+
     ) {
-        AnalyticsGraphType.entries.forEach { type ->
+        items(AnalyticsGraphType.entries) { type ->
             FilterChip(
                 selected = selectedType == type,
                 onClick = {
                     onTypeSelect(type)
                 },
                 label = {
-                    Text(text = type.title)
+                    Text(
+                        text = type.title,
+                        maxLines = 1
+                    )
                 },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
@@ -134,7 +142,6 @@ fun GraphTypeSelect(
             )
         }
     }
-
 }
 
 @Composable
@@ -223,13 +230,13 @@ fun AnalyticsGraph(
 
         if(graphData.runByDay.isEmpty()) {
             val textSize = textMeasurer.measure(
-                "No available data",
+                "No data available",
                 infoTextStyle
             ).size
 
             drawText(
                 textMeasurer = textMeasurer,
-                text = "No available data",
+                text = "No data available",
                 style = infoTextStyle,
                 topLeft = Offset(
                     x = (size.width - textSize.width) / 2 ,
