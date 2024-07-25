@@ -58,6 +58,7 @@ import com.teksiak.core.domain.run.Run
 import com.teksiak.core.presentation.designsystem.KeyboardArrowDownIcon
 import com.teksiak.core.presentation.designsystem.RuniqueBlack
 import com.teksiak.core.presentation.designsystem.RuniqueTheme
+import com.teksiak.core.presentation.ui.toFormattedHeartRate
 import com.teksiak.core.presentation.ui.toFormattedKmh
 import com.teksiak.core.presentation.ui.toFormattedPace
 import java.time.ZoneId
@@ -155,6 +156,10 @@ fun AnalyticsGraph(
         color = RuniqueBlack,
         fontSize = 12.sp
     )
+    val infoTextStyle = TextStyle(
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        fontSize = 18.sp
+    )
 
     val backgroundLinesColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -196,25 +201,6 @@ fun AnalyticsGraph(
         val graphHeight = size.height - 16.dp.toPx()
         val graphWidth = size.width - 60.dp.toPx()
 
-        graphData.days.forEach { day ->
-            val doubleDigitMargin = if (day >= 10) 4.sp.toPx() else 0f
-            val x = if (graphData.days.size > 1) {
-                graphWidth - ((graphData.lastDay - day) / graphData.daysRange * graphWidth) + 28.dp.toPx() - doubleDigitMargin
-            } else {
-                size.width / 2 - doubleDigitMargin - 2.sp.toPx()
-            }
-
-            drawText(
-                textMeasurer = textMeasurer,
-                text = day.toString(),
-                style = axisTextStyle,
-                topLeft = Offset(
-                    x = x,
-                    y = size.height - 12.sp.toPx()
-                ),
-            )
-        }
-
         (0..4).forEach {
             drawLine(
                 start = Offset(x = size.width / 4 * it, y = 0f),
@@ -234,6 +220,43 @@ fun AnalyticsGraph(
             color = backgroundLinesColor,
             strokeWidth = 2f
         )
+
+        if(graphData.runByDay.isEmpty()) {
+            val textSize = textMeasurer.measure(
+                "No available data",
+                infoTextStyle
+            ).size
+
+            drawText(
+                textMeasurer = textMeasurer,
+                text = "No available data",
+                style = infoTextStyle,
+                topLeft = Offset(
+                    x = (size.width - textSize.width) / 2 ,
+                    y = (size.height - textSize.height) / 2 - 12.dp.toPx()
+                ),
+            )
+            return@Canvas
+        }
+
+        graphData.days.forEach { day ->
+            val doubleDigitMargin = if (day >= 10) 4.sp.toPx() else 0f
+            val x = if (graphData.days.size > 1) {
+                graphWidth - ((graphData.lastDay - day) / graphData.daysRange * graphWidth) + 28.dp.toPx() - doubleDigitMargin
+            } else {
+                size.width / 2 - doubleDigitMargin - 2.sp.toPx()
+            }
+
+            drawText(
+                textMeasurer = textMeasurer,
+                text = day.toString(),
+                style = axisTextStyle,
+                topLeft = Offset(
+                    x = x,
+                    y = size.height - 12.sp.toPx()
+                ),
+            )
+        }
 
         graphData.valueByDay.forEach { (day, value) ->
             val x = if (graphData.days.size > 1) {
@@ -345,6 +368,7 @@ fun AnalyticsGraph(
             val formattedValue = when(graphData.dataType) {
                 AnalyticsGraphType.SPEED -> (graphData.valueByDay[day] as Double).toFormattedKmh()
                 AnalyticsGraphType.PACE -> (graphData.valueByDay[day] as Double).seconds.toFormattedPace()
+                AnalyticsGraphType.HEART -> (graphData.valueByDay[day] as Int).toFormattedHeartRate()
             }
 
             val valueSize = textMeasurer.measure(
@@ -449,6 +473,21 @@ fun MonthSelect(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AnalyticsGraphCardEmptyPreview() {
+    RuniqueTheme {
+        AnalyticsGraphCard(
+            graphData = AnalyticsGraphData(
+                runs = listOf()
+            ),
+            onDaySelect = {},
+            onMonthSelect = {},
+            onTypeSelect = {}
+        )
     }
 }
 
