@@ -9,15 +9,16 @@ enum class DataComparison {
 }
 
 data class CompareData<T: Comparable<T>>(
-    val first: T,
-    val second: T
+    val first: T?,
+    val second: T?
 ) {
 
     val comparison: DataComparison
         get() = when {
-            first == second -> DataComparison.EQUALS
+            first == null || second == null -> DataComparison.EQUALS
+            first < second -> DataComparison.SECOND_BIGGER
             first > second -> DataComparison.FIRST_BIGGER
-            else -> DataComparison.SECOND_BIGGER
+            else -> DataComparison.EQUALS
         }
 }
 
@@ -27,5 +28,7 @@ data class CompareRunsData(
     val pace: CompareData<Duration>,
     val avgSpeed: CompareData<Double>,
     val maxSpeed: CompareData<Double>,
-    val elevation: CompareData<Int>
+    val elevation: CompareData<Int>,
+    val avgHeartRate: CompareData<Int>,
+    val maxHeartRate: CompareData<Int>,
 )

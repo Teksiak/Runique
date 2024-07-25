@@ -13,5 +13,7 @@ data class CompareRunsDataUi(
     val pace: CompareDataUi,
     val avgSpeed: CompareDataUi,
     val maxSpeed: CompareDataUi,
-    val elevation: CompareDataUi
+    val elevation: CompareDataUi,
+    val avgHeartRate: CompareDataUi,
+    val maxHeartRate: CompareDataUi
 )

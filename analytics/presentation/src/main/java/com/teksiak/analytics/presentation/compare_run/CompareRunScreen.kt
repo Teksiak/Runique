@@ -244,6 +244,18 @@ fun CompareDataList(
             compareData = compareRunData.elevation,
             modifier = modifier
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        CompareDataRow(
+            name = stringResource(id = com.teksiak.core.presentation.designsystem.R.string.avg_heart_rate),
+            compareData = compareRunData.avgHeartRate,
+            modifier = modifier
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        CompareDataRow(
+            name = stringResource(id = com.teksiak.core.presentation.designsystem.R.string.max_hear_rate),
+            compareData = compareRunData.maxHeartRate,
+            modifier = modifier
+        )
     }
 }
 
@@ -414,7 +426,15 @@ private fun CompareRunScreenPreview2() {
                     elevation = CompareDataUi(
                         data = "120 m" to "100 m",
                         comparison = DataComparison.FIRST_BIGGER
-                    )
+                    ),
+                    avgHeartRate = CompareDataUi(
+                        data = "120 bpm" to "130 bpm",
+                        comparison = DataComparison.SECOND_BIGGER
+                    ),
+                    maxHeartRate = CompareDataUi(
+                        data = "150 bpm" to "150 bpm",
+                        comparison = DataComparison.EQUALS
+                    ),
                 )
             ),
             onAction = {}

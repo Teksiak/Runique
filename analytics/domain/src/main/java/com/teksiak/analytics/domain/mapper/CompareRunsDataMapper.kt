@@ -12,6 +12,8 @@ fun Pair<Run, Run>.toCompareRunsData(): CompareRunsData {
         pace = CompareData(first.pace.seconds, second.pace.seconds),
         avgSpeed = CompareData(first.avgSpeedKmh, second.avgSpeedKmh),
         maxSpeed = CompareData(first.maxSpeedKmh, second.maxSpeedKmh),
-        elevation = CompareData(first.totalElevationMeters, second.totalElevationMeters)
+        elevation = CompareData(first.totalElevationMeters, second.totalElevationMeters),
+        avgHeartRate = CompareData(first.avgHeartRate, second.avgHeartRate),
+        maxHeartRate = CompareData(first.maxHeartRate, second.maxHeartRate)
     )
 }
