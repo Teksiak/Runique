@@ -24,7 +24,7 @@ fun RunDataCard(
     Column(
         modifier = modifier
             .clip(shape = RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.90f))
             .padding(8.dp)
     ) {
         Text(

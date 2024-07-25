@@ -9,4 +9,6 @@
     <string name="finish_run">Finish run</string>
     <string name="error_ongoing_exercise">There is already an ongoing exercise.</string>
     <string name="error_exercise_already_ended">The exercise has already ended.</string>
+    <string name="running_is_paused">Running is paused</string>
+    <string name="finish_or_resume">Do you want to resume or finish this run?</string>
 </resources>

@@ -10,13 +10,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -32,6 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
+import androidx.wear.compose.material.dialog.Alert
+import androidx.wear.compose.material.dialog.Dialog
 import androidx.wear.compose.material3.FilledTonalIconButton
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.IconButtonDefaults
@@ -42,6 +48,7 @@ import com.teksiak.core.notification.ActiveRunService
 import com.teksiak.core.presentation.designsystem.ExclamationMarkIcon
 import com.teksiak.core.presentation.designsystem.FinishIcon
 import com.teksiak.core.presentation.designsystem.PauseIcon
+import com.teksiak.core.presentation.designsystem.RunIcon
 import com.teksiak.core.presentation.designsystem.StartIcon
 import com.teksiak.core.presentation.designsystem_wear.RuniqueTheme
 import com.teksiak.core.presentation.ui.ObserveAsEvents
@@ -135,6 +142,8 @@ fun TrackerScreen(
         }
     )
 
+    val dialogScrollState = rememberScalingLazyListState()
+
     if (state.isConnectedPhoneNearby) {
         Box(
             modifier = Modifier
@@ -151,6 +160,7 @@ fun TrackerScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.weight(1f))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -178,17 +188,7 @@ fun TrackerScreen(
                         modifier = Modifier.weight(1f)
                     )
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = state.elapsedDuration.formatted(),
-                    fontSize = 24.sp,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.primary)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -202,19 +202,68 @@ fun TrackerScreen(
                                 onAction(TrackerAction.OnToggleRunClick)
                             }
                         )
-                        if (!state.isRunActive && state.hasStartedRunning) {
-                            FilledTonalIconButton(
-                                onClick = {
-                                    onAction(TrackerAction.OnFinishRunClick)
+                        Dialog(
+                            showDialog = !state.isRunActive && state.hasStartedRunning,
+                            onDismissRequest = { onAction(TrackerAction.OnToggleRunClick) },
+                            scrollState = dialogScrollState,
+                        ) {
+                            Alert(
+                                scrollState = dialogScrollState,
+                                verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
+                                contentPadding = PaddingValues(start = 10.dp, end = 10.dp, top = 24.dp, bottom = 52.dp),
+                                icon = {
+                                    Icon(
+                                        imageVector = RunIcon,
+                                        contentDescription = "airplane",
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .wrapContentSize(align = Alignment.Center),
+                                    )
                                 },
-                                colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                    contentColor = MaterialTheme.colorScheme.onBackground
-                                )
+                                title = {
+                                    Text(
+                                        text = stringResource(id = R.string.running_is_paused),
+                                        textAlign = TextAlign.Center,
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                },
+                                message = {
+                                    Text(
+                                        text = stringResource(id = R.string.finish_or_resume),
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Center,
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                    )
+                                },
                             ) {
-                                Icon(
-                                    imageVector = FinishIcon,
-                                    contentDescription = stringResource(id = R.string.finish_run),
-                                )
+                                item {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        ToggleRunButton(
+                                            isRunActive = state.isRunActive,
+                                            onClick = {
+                                                onAction(TrackerAction.OnToggleRunClick)
+                                            }
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        FilledTonalIconButton(
+                                            onClick = {
+                                                onAction(TrackerAction.OnFinishRunClick)
+                                            },
+                                            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                                containerColor = MaterialTheme.colorScheme.primary
+                                            )
+                                        ) {
+                                            Icon(
+                                                imageVector = FinishIcon,
+                                                contentDescription = stringResource(id = R.string.finish_run),
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     } else {
@@ -229,6 +278,17 @@ fun TrackerScreen(
                         )
                     }
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = state.elapsedDuration.formatted(),
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(vertical = 4.dp)
+                )
             }
         }
     } else {
