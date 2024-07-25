@@ -8,6 +8,7 @@ import android.app.Service
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -92,7 +93,7 @@ class ActiveRunService: Service() {
                 this,
                 NOTIFICATION_ID,
                 notification,
-                0
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) FOREGROUND_SERVICE_TYPE_LOCATION else 0
             )
 
             updateNotification()

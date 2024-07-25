@@ -48,6 +48,8 @@ import com.teksiak.core.presentation.ui.ObserveAsEvents
 import com.teksiak.core.presentation.ui.formatted
 import com.teksiak.core.presentation.ui.toFormattedHeartRate
 import com.teksiak.core.presentation.ui.toFormattedKm
+import com.teksiak.wear.run.presentation.ambient.AmbientObserver
+import com.teksiak.wear.run.presentation.ambient.ambientMode
 import com.teksiak.wear.run.presentation.components.RunDataCard
 import com.teksiak.wear.run.presentation.components.TrackerMap
 import org.koin.androidx.compose.koinViewModel
@@ -124,8 +126,21 @@ fun TrackerScreen(
         permissionLauncher.launch(permissions.toTypedArray())
     }
 
+    AmbientObserver(
+        onEnterAmbient = {
+            onAction(TrackerAction.OnEnterAmbientMode(it.burnInProtectionRequired))
+        },
+        onExitAmbient = {
+            onAction(TrackerAction.OnExitAmbientMode)
+        }
+    )
+
     if (state.isConnectedPhoneNearby) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .ambientMode(state.isAmbientMode, state.burnInProtectionRequired)
+        ) {
             TrackerMap(
                 modifier = Modifier.fillMaxSize()
             )
@@ -157,7 +172,7 @@ fun TrackerScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     RunDataCard(
-                        title = stringResource(id = R.string.heart_rate),
+                        title = stringResource(id = com.teksiak.core.presentation.designsystem.R.string.distance),
                         value = (state.distanceMeters / 1000.0).toFormattedKm(),
                         modifier = Modifier.weight(1f)
                     )
