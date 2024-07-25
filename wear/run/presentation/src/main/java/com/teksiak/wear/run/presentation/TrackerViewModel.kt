@@ -151,6 +151,21 @@ class TrackerViewModel(
             }
             .launchIn(viewModelScope)
 
+        isAmbientMode
+            .flatMapLatest { isAmbient ->
+                if(isAmbient) {
+                    runningTracker
+                        .currentLocation
+                        .sample(10.seconds)
+                } else {
+                    runningTracker.currentLocation
+                }
+            }
+            .onEach {
+                state = state.copy(currentLocation = it)
+            }
+            .launchIn(viewModelScope)
+
         runningTracker
             .distanceMetres
             .onEach {

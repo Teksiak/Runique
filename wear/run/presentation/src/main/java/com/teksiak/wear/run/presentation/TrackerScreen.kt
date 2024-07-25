@@ -142,6 +142,7 @@ fun TrackerScreen(
                 .ambientMode(state.isAmbientMode, state.burnInProtectionRequired)
         ) {
             TrackerMap(
+                currentLocation = state.currentLocation,
                 modifier = Modifier.fillMaxSize()
             )
             Column(

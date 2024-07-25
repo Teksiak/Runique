@@ -23,4 +23,6 @@ sealed interface MessagingActionDto {
     data class DistanceUpdate(val distanceMeters: Int): MessagingActionDto
     @Serializable
     data class TimeUpdate(val elapsedDuration: Duration): MessagingActionDto
+    @Serializable
+    data class LocationUpdate(val lat: Double, val long: Double): MessagingActionDto
 }

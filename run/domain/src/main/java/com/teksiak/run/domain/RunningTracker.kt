@@ -142,6 +142,16 @@ class RunningTracker(
                 watchConnector.sendActionToWatch(MessagingAction.DistanceUpdate(it))
             }
             .launchIn(applicationScope)
+
+        runData
+            .map { it.locations.lastOrNull()?.lastOrNull()?.location?.location }
+            .distinctUntilChanged()
+            .onEach { location ->
+                location?.let {
+                    watchConnector.sendActionToWatch(MessagingAction.LocationUpdate(it))
+                }
+            }
+            .launchIn(applicationScope)
     }
 
     fun setIsTracking(isTracking: Boolean) {

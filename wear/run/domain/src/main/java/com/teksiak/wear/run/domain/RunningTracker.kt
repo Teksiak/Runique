@@ -52,6 +52,16 @@ class RunningTracker(
             Duration.ZERO
         )
 
+    val currentLocation = watchToPhoneConnector
+        .messagingActions
+        .filterIsInstance<MessagingAction.LocationUpdate>()
+        .map { it.location }
+        .stateIn(
+            applicationScope,
+            SharingStarted.Lazily,
+            null
+        )
+
     init {
         watchToPhoneConnector
             .messagingActions
