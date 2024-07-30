@@ -1,5 +1,6 @@
 package com.teksiak.core.android_test
 
+import com.teksiak.auth.data.LoginResponse
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.engine.mock.MockEngine
@@ -10,6 +11,13 @@ import io.ktor.util.InternalAPI
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
+
+val loginResponseStub = LoginResponse(
+    accessToken = "test-access-token",
+    refreshToken = "test-refresh-token",
+    accessTokenExpirationTimestamp = System.currentTimeMillis(),
+    userId = "test-user-id"
+)
 
 class TestMockEngine(
     override val dispatcher: CoroutineDispatcher,
